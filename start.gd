@@ -6,9 +6,15 @@ const MAINPANEL = preload("res://addons/butterflycck/uploader/uploader.tscn")
 var main_panel_instance
 
 func _enter_tree() -> void:
+	# setup uplaod panel
 	main_panel_instance = MAINPANEL.instantiate()
 	EditorInterface.get_editor_main_screen().add_child(main_panel_instance)
 	_make_visible(false)
+	
+	# register gizmos
+	for file in DirAccess.get_files_at("res://addons/butterflycck/toolkit/gizmos/"):
+		if file.ends_with(".gd"):
+			add_node_3d_gizmo_plugin(load("res://addons/butterflycck/toolkit/gizmos/%s" % file).new())
 
 
 func _exit_tree() -> void:
