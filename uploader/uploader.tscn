@@ -1,12 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://dmcr1nov2l4dq"]
+[gd_scene load_steps=6 format=3 uid="uid://dmcr1nov2l4dq"]
 
+[ext_resource type="Script" uid="uid://bysfki02h8dyt" path="res://addons/butterflycck/uploader/main_screen_tabs.gd" id="1_edmbh"]
 [ext_resource type="Script" uid="uid://dldpy6k6gwhh7" path="res://addons/butterflycck/uploader/content_finder.gd" id="1_l8q2r"]
-
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_l8q2r"]
-size = Vector2(32, 32)
+[ext_resource type="Script" uid="uid://ccaj40o72q7bn" path="res://addons/butterflycck/uploader/object_inspector.gd" id="3_vh56r"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_l8q2r"]
-viewport_path = NodePath("TabContainer/Upload/VBoxContainer2/Preview/ObjectPreview")
+viewport_path = NodePath("TabContainer/Upload/ObjectInspector/Preview/ObjectPreview")
 
 [sub_resource type="BoxMesh" id="BoxMesh_edmbh"]
 
@@ -43,228 +42,104 @@ size_flags_vertical = 3
 current_tab = 0
 clip_tabs = false
 tabs_visible = false
+script = ExtResource("1_edmbh")
 
 [node name="Upload" type="HBoxContainer" parent="TabContainer"]
 layout_mode = 2
 metadata/_tab_index = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Upload"]
+[node name="ObjectSelector" type="VBoxContainer" parent="TabContainer/Upload" node_paths=PackedStringArray("object_list", "inspector")]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 3.0
 script = ExtResource("1_l8q2r")
+object_list = NodePath("ScrollContainer/VBoxContainer")
+inspector = NodePath("../ObjectInspector")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/Upload/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/Upload/ObjectSelector"]
 layout_mode = 2
 
-[node name="Avatars" type="Button" parent="TabContainer/Upload/VBoxContainer/HBoxContainer"]
+[node name="Avatars" type="Button" parent="TabContainer/Upload/ObjectSelector/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "avatars"
 
-[node name="Worlds" type="Button" parent="TabContainer/Upload/VBoxContainer/HBoxContainer"]
+[node name="Worlds" type="Button" parent="TabContainer/Upload/ObjectSelector/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "worlds"
 
-[node name="Components" type="Button" parent="TabContainer/Upload/VBoxContainer/HBoxContainer"]
+[node name="Components" type="Button" parent="TabContainer/Upload/ObjectSelector/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+disabled = true
 text = "components"
 
-[node name="Props" type="Button" parent="TabContainer/Upload/VBoxContainer/HBoxContainer"]
+[node name="Props" type="Button" parent="TabContainer/Upload/ObjectSelector/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+disabled = true
 text = "props"
 
-[node name="HSeparator" type="HSeparator" parent="TabContainer/Upload/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="TabContainer/Upload/ObjectSelector"]
 layout_mode = 2
 
-[node name="ScrollContainer" type="ScrollContainer" parent="TabContainer/Upload/VBoxContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="TabContainer/Upload/ObjectSelector"]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Upload/VBoxContainer/ScrollContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Upload/ObjectSelector/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Item" type="PanelContainer" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item"]
-layout_mode = 2
-
-[node name="TextureRect" type="TextureRect" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item/HBoxContainer"]
-layout_mode = 2
-texture = SubResource("PlaceholderTexture2D_l8q2r")
-stretch_mode = 4
-
-[node name="Label" type="Label" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item/HBoxContainer"]
+[node name="ObjectInspector" type="VBoxContainer" parent="TabContainer/Upload"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "name"
+script = ExtResource("3_vh56r")
 
-[node name="Label2" type="Label" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "attached id"
-
-[node name="Button" type="Button" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "select"
-
-[node name="Item2" type="PanelContainer" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item2"]
-layout_mode = 2
-
-[node name="TextureRect" type="TextureRect" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item2/HBoxContainer"]
-layout_mode = 2
-texture = SubResource("PlaceholderTexture2D_l8q2r")
-stretch_mode = 4
-
-[node name="Label" type="Label" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item2/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "name"
-
-[node name="Label2" type="Label" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item2/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "attached id"
-
-[node name="Button" type="Button" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item2/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "select"
-
-[node name="Item3" type="PanelContainer" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item3"]
-layout_mode = 2
-
-[node name="TextureRect" type="TextureRect" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item3/HBoxContainer"]
-layout_mode = 2
-texture = SubResource("PlaceholderTexture2D_l8q2r")
-stretch_mode = 4
-
-[node name="Label" type="Label" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item3/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "name"
-
-[node name="Label2" type="Label" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item3/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "attached id"
-
-[node name="Button" type="Button" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item3/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "select"
-
-[node name="Item4" type="PanelContainer" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item4"]
-layout_mode = 2
-
-[node name="TextureRect" type="TextureRect" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item4/HBoxContainer"]
-layout_mode = 2
-texture = SubResource("PlaceholderTexture2D_l8q2r")
-stretch_mode = 4
-
-[node name="Label" type="Label" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item4/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "name"
-
-[node name="Label2" type="Label" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item4/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "attached id"
-
-[node name="Button" type="Button" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item4/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "select"
-
-[node name="Item5" type="PanelContainer" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item5"]
-layout_mode = 2
-
-[node name="TextureRect" type="TextureRect" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item5/HBoxContainer"]
-layout_mode = 2
-texture = SubResource("PlaceholderTexture2D_l8q2r")
-stretch_mode = 4
-
-[node name="Label" type="Label" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item5/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "name"
-
-[node name="Label2" type="Label" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item5/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "attached id"
-
-[node name="Button" type="Button" parent="TabContainer/Upload/VBoxContainer/ScrollContainer/VBoxContainer/Item5/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "select"
-
-[node name="VBoxContainer2" type="VBoxContainer" parent="TabContainer/Upload"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Preview" type="TextureRect" parent="TabContainer/Upload/VBoxContainer2"]
+[node name="Preview" type="TextureRect" parent="TabContainer/Upload/ObjectInspector"]
 layout_mode = 2
 texture = SubResource("ViewportTexture_l8q2r")
 
-[node name="ObjectPreview" type="SubViewport" parent="TabContainer/Upload/VBoxContainer2/Preview"]
+[node name="ObjectPreview" type="SubViewport" parent="TabContainer/Upload/ObjectInspector/Preview"]
 size = Vector2i(256, 256)
 
-[node name="TMP2" type="MeshInstance3D" parent="TabContainer/Upload/VBoxContainer2/Preview/ObjectPreview"]
+[node name="TMP2" type="MeshInstance3D" parent="TabContainer/Upload/ObjectInspector/Preview/ObjectPreview"]
 mesh = SubResource("BoxMesh_edmbh")
 
-[node name="TMP" type="Camera3D" parent="TabContainer/Upload/VBoxContainer2/Preview/ObjectPreview"]
+[node name="TMP" type="Camera3D" parent="TabContainer/Upload/ObjectInspector/Preview/ObjectPreview"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3)
 current = true
 
-[node name="Info" type="VBoxContainer" parent="TabContainer/Upload/VBoxContainer2"]
+[node name="Info" type="VBoxContainer" parent="TabContainer/Upload/ObjectInspector"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="TabContainer/Upload/VBoxContainer2/Info"]
+[node name="Label" type="Label" parent="TabContainer/Upload/ObjectInspector/Info"]
 layout_mode = 2
 text = "name"
 metadata/_edit_use_anchors_ = true
 
-[node name="Label2" type="Label" parent="TabContainer/Upload/VBoxContainer2/Info"]
+[node name="Label2" type="Label" parent="TabContainer/Upload/ObjectInspector/Info"]
 layout_mode = 2
 text = "attached id"
 metadata/_edit_use_anchors_ = true
 
-[node name="HSeparator" type="HSeparator" parent="TabContainer/Upload/VBoxContainer2/Info"]
+[node name="HSeparator" type="HSeparator" parent="TabContainer/Upload/ObjectInspector/Info"]
 layout_mode = 2
 
-[node name="ScrollContainer" type="ScrollContainer" parent="TabContainer/Upload/VBoxContainer2/Info"]
+[node name="ScrollContainer" type="ScrollContainer" parent="TabContainer/Upload/ObjectInspector/Info"]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Upload/VBoxContainer2/Info/ScrollContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Upload/ObjectInspector/Info/ScrollContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="TabContainer/Upload/VBoxContainer2/Info/ScrollContainer/VBoxContainer"]
+[node name="Label" type="Label" parent="TabContainer/Upload/ObjectInspector/Info/ScrollContainer/VBoxContainer"]
 layout_mode = 2
 text = "an issue:
 bla bla bla bla bla bla bla bla. therefore, bla and bla and dont forget the bla
@@ -276,10 +151,10 @@ an issue:
 bla bla bla bla bla bla bla bla. therefore, bla and bla and dont forget the bla"
 autowrap_mode = 2
 
-[node name="HSeparator2" type="HSeparator" parent="TabContainer/Upload/VBoxContainer2"]
+[node name="HSeparator2" type="HSeparator" parent="TabContainer/Upload/ObjectInspector"]
 layout_mode = 2
 
-[node name="Button" type="Button" parent="TabContainer/Upload/VBoxContainer2"]
+[node name="Button" type="Button" parent="TabContainer/Upload/ObjectInspector"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 text = "Continue"
@@ -298,3 +173,12 @@ metadata/_tab_index = 2
 visible = false
 layout_mode = 2
 metadata/_tab_index = 3
+
+[connection signal="pressed" from="HBoxContainer2/Button" to="TabContainer" method="_on_upload_button_pressed"]
+[connection signal="pressed" from="HBoxContainer2/Button2" to="TabContainer" method="_on_manage_button_pressed"]
+[connection signal="pressed" from="HBoxContainer2/Button3" to="TabContainer" method="_on_settings_button_pressed"]
+[connection signal="visibility_changed" from="TabContainer/Upload/ObjectSelector" to="TabContainer/Upload/ObjectSelector" method="_on_visibility_changed"]
+[connection signal="pressed" from="TabContainer/Upload/ObjectSelector/HBoxContainer/Avatars" to="TabContainer/Upload/ObjectSelector" method="on_target_type_changed" binds= [0]]
+[connection signal="pressed" from="TabContainer/Upload/ObjectSelector/HBoxContainer/Worlds" to="TabContainer/Upload/ObjectSelector" method="on_target_type_changed" binds= [1]]
+[connection signal="pressed" from="TabContainer/Upload/ObjectSelector/HBoxContainer/Components" to="TabContainer/Upload/ObjectSelector" method="on_target_type_changed" binds= [2]]
+[connection signal="pressed" from="TabContainer/Upload/ObjectSelector/HBoxContainer/Props" to="TabContainer/Upload/ObjectSelector" method="on_target_type_changed" binds= [3]]

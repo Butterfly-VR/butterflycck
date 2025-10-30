@@ -2,14 +2,15 @@
 extends Node
 class_name BaseRoot
 
-@export var string_uuid:String
+@export var object_name:String
+@export var uuid:String
 
 @export_tool_button("assign UUID", "Callable") var assign_button = assign_uuid
 
 var attached_uuid:UUID
 
 func assign_uuid() -> void:
-	var new_uuid = UUID.from_String(string_uuid)
+	var new_uuid = UUID.from_String(uuid)
 	if new_uuid != UUID.new():
 		attached_uuid = new_uuid
 	else:
