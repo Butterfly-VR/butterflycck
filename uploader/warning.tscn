@@ -1,0 +1,87 @@
+[gd_scene load_steps=3 format=3 uid="uid://d00xuekcwf8dg"]
+
+[ext_resource type="Script" uid="uid://ddkoim1l6ni0k" path="res://addons/butterflycck/uploader/object_listing.gd" id="1_1kelv"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_vgdig"]
+size = Vector2(32, 32)
+
+[node name="Item" type="PanelContainer" node_paths=PackedStringArray("object_name", "uuid", "select_button")]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -88.5
+offset_top = -47.0
+offset_right = 88.5
+offset_bottom = 47.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+script = ExtResource("1_1kelv")
+object_name = NodePath("HBoxContainer2/VBoxContainer/HBoxContainer/Label")
+uuid = NodePath("HBoxContainer2/VBoxContainer/Label2")
+select_button = NodePath("HBoxContainer2/VBoxContainer/HBoxContainer2/Find")
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="VSeparator" type="VSeparator" parent="HBoxContainer2"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer2/VBoxContainer"]
+layout_mode = 2
+
+[node name="IconType" type="TabContainer" parent="HBoxContainer2/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+current_tab = 0
+tabs_visible = false
+
+[node name="Info" type="TextureRect" parent="HBoxContainer2/VBoxContainer/HBoxContainer/IconType"]
+layout_mode = 2
+texture = SubResource("PlaceholderTexture2D_vgdig")
+stretch_mode = 4
+metadata/_tab_index = 0
+
+[node name="Warning" type="TextureRect" parent="HBoxContainer2/VBoxContainer/HBoxContainer/IconType"]
+visible = false
+layout_mode = 2
+texture = SubResource("PlaceholderTexture2D_vgdig")
+stretch_mode = 4
+metadata/_tab_index = 1
+
+[node name="Error" type="TextureRect" parent="HBoxContainer2/VBoxContainer/HBoxContainer/IconType"]
+visible = false
+layout_mode = 2
+texture = SubResource("PlaceholderTexture2D_vgdig")
+stretch_mode = 4
+metadata/_tab_index = 2
+
+[node name="Label" type="Label" parent="HBoxContainer2/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UNNAMED"
+
+[node name="Label2" type="Label" parent="HBoxContainer2/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "UNNAMED"
+autowrap_mode = 2
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="HBoxContainer2/VBoxContainer"]
+layout_mode = 2
+
+[node name="Find" type="Button" parent="HBoxContainer2/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Source"
+
+[node name="AutoFix" type="Button" parent="HBoxContainer2/VBoxContainer/HBoxContainer2"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Fix"

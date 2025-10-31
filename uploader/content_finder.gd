@@ -91,8 +91,8 @@ func find_objects_in_scene(type:GDScript, scene_root:Node) -> void:
 	for object:BaseRoot in objects:
 		var listing = OBJECT_LISTING.instantiate()
 		
-		listing.object_name = object.object_name if !object.object_name.is_empty() else object.name
-		listing.uuid = object.attached_uuid.to_string() if object.attached_uuid else "never uploaded"
+		listing.object_name.text = object.object_name if !object.object_name.is_empty() else object.name
+		listing.uuid.text = object.attached_uuid.to_string() if object.attached_uuid else "never uploaded"
 		listing.select_button.pressed.connect(inspector.object_selected.bind(object))
 		
 		object_list.add_child(listing)

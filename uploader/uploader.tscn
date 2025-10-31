@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://dmcr1nov2l4dq"]
+[gd_scene load_steps=5 format=3 uid="uid://dmcr1nov2l4dq"]
 
 [ext_resource type="Script" uid="uid://bysfki02h8dyt" path="res://addons/butterflycck/uploader/main_screen_tabs.gd" id="1_edmbh"]
 [ext_resource type="Script" uid="uid://dldpy6k6gwhh7" path="res://addons/butterflycck/uploader/content_finder.gd" id="1_l8q2r"]
@@ -6,8 +6,6 @@
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_l8q2r"]
 viewport_path = NodePath("TabContainer/Upload/ObjectInspector/Preview/ObjectPreview")
-
-[sub_resource type="BoxMesh" id="BoxMesh_edmbh"]
 
 [node name="Uploader" type="VBoxContainer"]
 anchors_preset = 15
@@ -81,7 +79,12 @@ size_flags_horizontal = 3
 disabled = true
 text = "props"
 
-[node name="HSeparator" type="HSeparator" parent="TabContainer/Upload/ObjectSelector"]
+[node name="HSeparator3" type="Label" parent="TabContainer/Upload/ObjectSelector"]
+layout_mode = 2
+text = "you can create an object using the AvatarRoot or WorldRoot nodes"
+horizontal_alignment = 1
+
+[node name="HSeparator2" type="HSeparator" parent="TabContainer/Upload/ObjectSelector"]
 layout_mode = 2
 
 [node name="ScrollContainer" type="ScrollContainer" parent="TabContainer/Upload/ObjectSelector"]
@@ -93,10 +96,15 @@ horizontal_scroll_mode = 0
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ObjectInspector" type="VBoxContainer" parent="TabContainer/Upload"]
+[node name="ObjectInspector" type="VBoxContainer" parent="TabContainer/Upload" node_paths=PackedStringArray("preview", "name_text", "uuid_text", "warnings_list", "upload_button")]
 layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("3_vh56r")
+preview = NodePath("Preview/ObjectPreview")
+name_text = NodePath("Info/Label")
+uuid_text = NodePath("Info/Label2")
+warnings_list = NodePath("Info/ScrollContainer/VBoxContainer")
+upload_button = NodePath("Button")
 
 [node name="Preview" type="TextureRect" parent="TabContainer/Upload/ObjectInspector"]
 layout_mode = 2
@@ -104,13 +112,6 @@ texture = SubResource("ViewportTexture_l8q2r")
 
 [node name="ObjectPreview" type="SubViewport" parent="TabContainer/Upload/ObjectInspector/Preview"]
 size = Vector2i(256, 256)
-
-[node name="TMP2" type="MeshInstance3D" parent="TabContainer/Upload/ObjectInspector/Preview/ObjectPreview"]
-mesh = SubResource("BoxMesh_edmbh")
-
-[node name="TMP" type="Camera3D" parent="TabContainer/Upload/ObjectInspector/Preview/ObjectPreview"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3)
-current = true
 
 [node name="Info" type="VBoxContainer" parent="TabContainer/Upload/ObjectInspector"]
 layout_mode = 2
@@ -138,18 +139,6 @@ horizontal_scroll_mode = 0
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-
-[node name="Label" type="Label" parent="TabContainer/Upload/ObjectInspector/Info/ScrollContainer/VBoxContainer"]
-layout_mode = 2
-text = "an issue:
-bla bla bla bla bla bla bla bla. therefore, bla and bla and dont forget the bla
-an issue:
-bla bla bla bla bla bla bla bla. therefore, bla and bla and dont forget the bla
-an issue:
-bla bla bla bla bla bla bla bla. therefore, bla and bla and dont forget the bla
-an issue:
-bla bla bla bla bla bla bla bla. therefore, bla and bla and dont forget the bla"
-autowrap_mode = 2
 
 [node name="HSeparator2" type="HSeparator" parent="TabContainer/Upload/ObjectInspector"]
 layout_mode = 2
@@ -182,3 +171,4 @@ metadata/_tab_index = 3
 [connection signal="pressed" from="TabContainer/Upload/ObjectSelector/HBoxContainer/Worlds" to="TabContainer/Upload/ObjectSelector" method="on_target_type_changed" binds= [1]]
 [connection signal="pressed" from="TabContainer/Upload/ObjectSelector/HBoxContainer/Components" to="TabContainer/Upload/ObjectSelector" method="on_target_type_changed" binds= [2]]
 [connection signal="pressed" from="TabContainer/Upload/ObjectSelector/HBoxContainer/Props" to="TabContainer/Upload/ObjectSelector" method="on_target_type_changed" binds= [3]]
+[connection signal="pressed" from="TabContainer/Upload/ObjectInspector/Button" to="TabContainer/Upload/ObjectInspector" method="_on_upload_started"]

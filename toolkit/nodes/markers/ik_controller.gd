@@ -37,22 +37,22 @@ func check_bone_config(target:Skeleton3D) -> bool:
 			target.find_bone(spine_bone) == -1 or 
 			target.find_bone(hip_bone) == -1)
 
-func get_uploader_warnings() -> Array[Warning]:
-	var warnings:Array[Warning] = []
+func get_uploader_warnings() -> Array[BaseRoot.Warning]:
+	var warnings:Array[BaseRoot.Warning] = []
 	if get_parent() is not Skeleton3D:
-		warnings.append(Warning.new(Warning.WarningLevel.Error, 
+		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
 				"IKController must be child of Skeleton3D", 
 				"the IKController acts as a Skelleton3DModifier ingame, 
 				this means it also needs to be a child of a Skeleton3D"))
 	
 	else:
 		if !check_bone_config(get_parent()):
-			warnings.append(Warning.new(Warning.WarningLevel.Error, 
+			warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
 					"IKController is missing bone targets", 
 					"all target bones in the IKController must be assigned to valid bones in the Skeleton3D"))
 	
 	if eye_placement == null:
-		warnings.append(Warning.new(Warning.WarningLevel.Error, 
+		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
 				"IKController does not have eye position", 
 				"the IKController needs a node that tell it where to place the player's camera 
 				relative to the head"))
