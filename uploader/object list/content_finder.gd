@@ -1,7 +1,7 @@
 @tool
 extends VBoxContainer
 
-const OBJECT_LISTING:PackedScene = preload("res://addons/butterflycck/uploader/object_listing.tscn")
+const OBJECT_LISTING:PackedScene = preload("res://addons/butterflycck/uploader/object list/object_listing.tscn")
 
 @export var object_list:VBoxContainer
 @export var inspector:ObjectInspector
