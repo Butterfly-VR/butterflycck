@@ -59,6 +59,7 @@ func find_objects_in_scene(type:GDScript, scene_root:Node) -> void:
 				object.object_name if !object.object_name.is_empty() else object.name)
 		listing.uuid.text = (
 				object.attached_uuid.to_string() if object.attached_uuid else "never uploaded")
+		
 		listing.select_button.pressed.connect(inspector.object_selected.bind(object))
 		
 		object_list.add_child(listing)

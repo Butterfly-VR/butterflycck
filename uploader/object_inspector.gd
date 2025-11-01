@@ -9,16 +9,26 @@ class_name ObjectInspector
 @export var warnings_list:VBoxContainer
 @export var upload_button:Button
 
+var previewed_object_root:Node
+
 func object_selected(root:BaseRoot) -> void:
+	if previewed_object_root:
+		previewed_object_root.queue_free()
+	
+	await get_tree().physics_frame
+	
 	if root == null:
 		modulate = Color.TRANSPARENT
-		for child:Node in preview.get_children():
-			child.queue_free()
 		return
 	
 	if root.get_parent():
 		root.get_parent().remove_child(root)
+	if root.owner:
+		root.owner = null
+	
 	preview.add_child(root)
+	previewed_object_root = root
+	
 	preview_camera.transform = root.get_preview_camera_transform()
 	preview.render_target_update_mode = SubViewport.UPDATE_ONCE
 	
