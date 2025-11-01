@@ -72,8 +72,26 @@ func get_upload_warnings() -> Array[Warning]:
 func _process(delta: float) -> void:
 	update_configuration_warnings() # todo: this should be callled only when needed
 
+# bindings are applied in reverse order so we need the second binding argument to be first
+func get_combined_aabb(node:Node, buffer:AABB) -> bool:
+	print(node.get_class())
+	if node is VisualInstance3D:
+		print("got one")
+		buffer = buffer.merge((node as VisualInstance3D).get_aabb())
+	return true
+
+# default camera position calculation
+# positions the camera such that it sees the entire object based on its bounding box
 func get_preview_camera_transform() -> Transform3D:
-	return Transform3D.IDENTITY
+	const FOV:float = 75.0
+	var aabb:AABB = AABB()
+	SceneTreeHelper.call_children_recursive(self, get_combined_aabb.bind(aabb))
+	var pos:Vector3 = aabb.position
+	print("size and distance calculations")
+	print(max(aabb.size.x, aabb.size.y))
+	print(max(aabb.size.x, aabb.size.y) / tan(FOV / 2))
+	pos.z -= maxf(aabb.size.z / 2, maxf(aabb.size.x, aabb.size.y) / abs(tan(FOV / 2))) * 1.1
+	return Transform3D(Basis.IDENTITY, pos)
 
 func _get_configuration_warnings():
 	var warnings:Array[String] = []

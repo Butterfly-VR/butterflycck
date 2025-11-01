@@ -12,7 +12,17 @@ class_name ObjectInspector
 func object_selected(root:BaseRoot) -> void:
 	if root == null:
 		modulate = Color.TRANSPARENT
+		for child:Node in preview.get_children():
+			child.queue_free()
 		return
+	
+	if root.get_parent():
+		root.get_parent().remove_child(root)
+	preview.add_child(root)
+	preview_camera.transform = root.get_preview_camera_transform()
+	preview.render_target_update_mode = SubViewport.UPDATE_ONCE
+	
+	await get_tree().physics_frame
 	
 	modulate = Color.WHITE
 
