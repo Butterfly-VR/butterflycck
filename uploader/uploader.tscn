@@ -96,11 +96,13 @@ horizontal_scroll_mode = 0
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ObjectInspector" type="VBoxContainer" parent="TabContainer/Upload" node_paths=PackedStringArray("preview", "name_text", "uuid_text", "warnings_list", "upload_button")]
+[node name="ObjectInspector" type="VBoxContainer" parent="TabContainer/Upload" node_paths=PackedStringArray("preview", "preview_camera", "name_text", "uuid_text", "warnings_list", "upload_button")]
+modulate = Color(1, 1, 1, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("3_vh56r")
 preview = NodePath("Preview/ObjectPreview")
+preview_camera = NodePath("Preview/ObjectPreview/Camera3D")
 name_text = NodePath("Info/Label")
 uuid_text = NodePath("Info/Label2")
 warnings_list = NodePath("Info/ScrollContainer/VBoxContainer")
@@ -112,6 +114,9 @@ texture = SubResource("ViewportTexture_l8q2r")
 
 [node name="ObjectPreview" type="SubViewport" parent="TabContainer/Upload/ObjectInspector/Preview"]
 size = Vector2i(256, 256)
+render_target_update_mode = 0
+
+[node name="Camera3D" type="Camera3D" parent="TabContainer/Upload/ObjectInspector/Preview/ObjectPreview"]
 
 [node name="Info" type="VBoxContainer" parent="TabContainer/Upload/ObjectInspector"]
 layout_mode = 2

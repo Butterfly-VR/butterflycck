@@ -9,6 +9,8 @@ const OBJECT_LISTING:PackedScene = preload("res://addons/butterflycck/uploader/o
 var selected_type:int = 0
 
 func on_target_type_changed(selected_type:int) -> void:
+	inspector.object_selected(null)
+	
 	for child in object_list.get_children():
 		child.queue_free()
 	await get_tree().physics_frame
@@ -21,20 +23,6 @@ func on_target_type_changed(selected_type:int) -> void:
 			find_objects(WorldRoot)
 		_:
 			push_error("unhandled root search type")
-
-class NodeStackItem:
-	var node:Node
-	var current_index:int = 0
-	
-	func get_next_child() -> NodeStackItem:
-		if node.get_children().size() > current_index:
-			var child = node.get_child(current_index)
-			current_index += 1
-			return NodeStackItem.new(child)
-		return null
-	
-	func _init(node:Node) -> void:
-		self.node = node
 
 # searches the file system for scenes, then searches those scenes for objects
 func find_objects(type:GDScript) -> void:
@@ -62,31 +50,7 @@ func find_objects_recursive(type:GDScript, path:String) -> Array[String]:
 # todo: should probably hoist listing creation out to the outer function
 func find_objects_in_scene(type:GDScript, scene_root:Node) -> void:
 	var objects:Array[BaseRoot]
-	var node_stack:Array[NodeStackItem] = [NodeStackItem.new(scene_root)]
-	# need to check the case where the root is a object since traversal misses it
-	# good news is this should be a common case and when it happens we skip traversal
-	if is_instance_of(scene_root, type):
-		# found an object, since nesting isnt allowed we skip this branch and add it to the list
-		objects.push_back(scene_root)
-	
-	else:
-		# scene tree traversal looking for nodes with the correct type
-		# this would be nicer with recursion but no tail call optimization in gdscript
-		while !node_stack.is_empty():
-			# get the next unsearched branch if it exists
-			var next_node:NodeStackItem = node_stack[node_stack.size() - 1].get_next_child()
-			
-			if next_node:
-				if is_instance_of(next_node.node, type):
-					# since nesting isnt allowed we skip this branch and add it to the list
-					objects.push_back(next_node.node)
-					continue
-				
-				node_stack.push_back(next_node)
-			
-			# dead end / end of this branch
-			node_stack.pop_front()
-	
+	SceneTreeHelper.call_children_recursive(scene_root, check_node_is_object.bind(objects, type), true)
 	# list the objects we found in the ui
 	for object:BaseRoot in objects:
 		var listing = OBJECT_LISTING.instantiate()
@@ -99,6 +63,13 @@ func find_objects_in_scene(type:GDScript, scene_root:Node) -> void:
 		
 		object_list.add_child(listing)
 
+# bindings are applied in reverse order so we need the second binding argument to be first
+func check_node_is_object(node:Node, objects:Array[BaseRoot], type:GDScript) -> bool:
+	if is_instance_of(node, type):
+		# since nesting isnt allowed we skip this branch and add it to the list
+		objects.push_back(node)
+		return false
+	return true
 
 func _on_visibility_changed() -> void:
 	if is_visible_in_tree():

@@ -30,22 +30,6 @@ class Warning:
 		self.header = header
 		self.body = body
 
-class NodeStackItem:
-	var node:Node
-	var current_index:int = 0
-	
-	func get_next_child() -> NodeStackItem:
-		if node.get_children().size() > current_index:
-			var child = node.get_child(current_index)
-			current_index += 1
-			return NodeStackItem.new(child)
-		return null
-	
-	func _init(node:Node) -> void:
-		self.node = node
-
-
-
 func assign_uuid() -> void:
 	var new_uuid = UUID.from_String(uuid)
 	if new_uuid != UUID.new():
@@ -59,11 +43,22 @@ func on_pre_upload() -> Node:
 		attached_uuid = UUID.new(true)
 	return null # todo
 
+# bindings are applied in reverse order so we need the second binding argument to be first
+func get_child_warnings(node:Node, warnings:Array[Warning]) -> bool:
+	if blacklisted_types.any(
+			func(blacklist_type:GDScript) -> bool: return is_instance_of(node, blacklist_type)):
+		warnings.push_back(Warning.new(Warning.WarningLevel.Error, 
+				"Blacklisted Type", 
+				"this object contains a node of type %s, which is not allowed" % (
+				node.get_class())))
+	elif node is CCKMarker:
+		warnings.append_array((node as CCKMarker).get_uploader_warnings())
+	return true
+
 func get_upload_warnings() -> Array[Warning]:
 	var warnings:Array[Warning] = []
-	var node_stack:Array[NodeStackItem] = []
 	if get_children().size() > 0:
-		node_stack.push_back(NodeStackItem.new(get_child(0)))
+		SceneTreeHelper.call_children_recursive(get_child(0), get_child_warnings.bind(warnings))
 	
 	# get config warnings from self
 	var self_warnings:Array[String] = _get_configuration_warnings()
@@ -72,29 +67,13 @@ func get_upload_warnings() -> Array[Warning]:
 				Warning.WarningLevel.Warning, 
 				"Config Error", 
 				warning))
-	
-	# scene tree traversal to aquire warnings from children
-	while !node_stack.is_empty():
-		# get the next unsearched branch if it exists
-		var next_node:NodeStackItem = node_stack[node_stack.size() - 1].get_next_child()
-		
-		if next_node:
-			if blacklisted_types.any(func(blacklist_type:GDScript) -> bool: 
-					return is_instance_of(next_node.node, blacklist_type)):
-				warnings.push_back(Warning.new(Warning.WarningLevel.Error, 
-						"Blacklisted Type", 
-						"this object contains a node of type %s, which is not allowed" % (
-						next_node.node.get_class())))
-			elif next_node.node is CCKMarker:
-				warnings.append_array((next_node.node as CCKMarker).get_uploader_warnings())
-			node_stack.push_back(next_node)
-		
-		# dead end / end of this branch
-		node_stack.pop_front()
 	return warnings
 
 func _process(delta: float) -> void:
 	update_configuration_warnings() # todo: this should be callled only when needed
+
+func get_preview_camera_transform() -> Transform3D:
+	return Transform3D.IDENTITY
 
 func _get_configuration_warnings():
 	var warnings:Array[String] = []
