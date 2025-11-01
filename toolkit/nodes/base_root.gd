@@ -79,10 +79,12 @@ func get_upload_warnings() -> Array[Warning]:
 		var next_node:NodeStackItem = node_stack[node_stack.size() - 1].get_next_child()
 		
 		if next_node:
-			if blacklisted_types.any(func(blacklist_type:GDScript) -> bool: return is_instance_of(next_node.node, blacklist_type)):
+			if blacklisted_types.any(func(blacklist_type:GDScript) -> bool: 
+					return is_instance_of(next_node.node, blacklist_type)):
 				warnings.push_back(Warning.new(Warning.WarningLevel.Error, 
 						"Blacklisted Type", 
-						"this object contains a node of type %s, which is not allowed" % next_node.node.get_class()))
+						"this object contains a node of type %s, which is not allowed" % (
+						next_node.node.get_class())))
 			elif next_node.node is CCKMarker:
 				warnings.append_array((next_node.node as CCKMarker).get_uploader_warnings())
 			node_stack.push_back(next_node)

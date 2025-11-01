@@ -49,7 +49,8 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 		if !check_bone_config(get_parent()):
 			warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
 					"IKController is missing bone targets", 
-					"all target bones in the IKController must be assigned to valid bones in the Skeleton3D"))
+					"all target bones in the IKController must be assigned 
+					to valid bones in the Skeleton3D"))
 	
 	if eye_placement == null:
 		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 

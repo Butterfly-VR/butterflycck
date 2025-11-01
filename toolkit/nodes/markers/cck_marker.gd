@@ -2,10 +2,11 @@ extends Node
 class_name CCKMarker
 # base class for all cck nodes
 
-# this function gets called before uploading the object, it should place the scene in the correct state for uploading
-# if a node is incorrectly configured it can return false to prevent uploading
-# generally you should always return true here and instead check for issues in get_uploader_warnings
-# Error level warnings prevent uploading and are preferred over returnign false here
+# this function gets called before uploading the object, 
+# it should place the scene in the correct state for uploading.
+# if a node is incorrectly configured it can return false to prevent uploading.
+# generally you should always return true here and instead use get_uploader_warnings.
+# Error level warnings prevent uploading and are preferred over returning false here.
 func prep_for_upload() -> bool:
 	return true
 

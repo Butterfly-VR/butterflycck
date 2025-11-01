@@ -2,6 +2,7 @@
 extends EditorPlugin
 
 const MAINPANEL = preload("res://addons/butterflycck/uploader/uploader.tscn")
+const GIZMO_FOLDER:String = "res://addons/butterflycck/toolkit/gizmos/"
 
 var main_panel_instance
 
@@ -12,9 +13,10 @@ func _enter_tree() -> void:
 	_make_visible(false)
 	
 	# register gizmos
-	for file in DirAccess.get_files_at("res://addons/butterflycck/toolkit/gizmos/"):
-		if file.ends_with(".gd"):
-			add_node_3d_gizmo_plugin(load("res://addons/butterflycck/toolkit/gizmos/%s" % file).new())
+	if DirAccess.dir_exists_absolute(GIZMO_FOLDER):
+		for file in DirAccess.get_files_at(GIZMO_FOLDER):
+			if file.ends_with(".gd"):
+				add_node_3d_gizmo_plugin(load(GIZMO_FOLDER + file).new())
 
 
 func _exit_tree() -> void:

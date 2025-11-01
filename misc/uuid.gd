@@ -12,7 +12,9 @@ func _init(randomize:bool = false) -> void:
 			backing_storage.push_back(0)
 
 func _to_string() -> String:
-	return '%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x' % (backing_storage as Array[int])
+	return '%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x' % (
+			backing_storage as Array[int]
+			)
 
 static func from_String(uuid:String) -> UUID:
 	uuid = uuid.replace("-", "")
