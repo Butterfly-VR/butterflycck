@@ -17,6 +17,7 @@ class NodeStackItem:
 
 # callable should return a boolean
 # if the callable is false then that nodes children are skipped
+# todo: this feels kinda awkward with godot semantics maybe theres a better way?
 static func call_children_recursive(root:Node, callable:Callable, run_on_root:bool = false) -> void:
 	var node_stack:Array[NodeStackItem] = [NodeStackItem.new(root)]
 	
@@ -24,7 +25,7 @@ static func call_children_recursive(root:Node, callable:Callable, run_on_root:bo
 		callable.bind(root).call()
 	
 	while !node_stack.is_empty():
-		# get the next unsearched branch if it exists
+		# get the next unsearched node if it exists
 		var next_node:NodeStackItem = node_stack[node_stack.size() - 1].get_next_child()
 		
 		if next_node:
@@ -33,4 +34,4 @@ static func call_children_recursive(root:Node, callable:Callable, run_on_root:bo
 			continue
 		
 		# dead end / end of this branch
-		node_stack.pop_front()
+		node_stack.pop_back()

@@ -11,15 +11,17 @@ class_name ObjectInspector
 
 var previewed_object_root:Node
 
-func object_selected(root:BaseRoot) -> void:
+func hide_self() -> void:
+	modulate = Color.TRANSPARENT
+	if previewed_object_root:
+		previewed_object_root.queue_free()
+
+func object_selected(original_root:BaseRoot) -> void:
+	var root:BaseRoot = original_root.duplicate()
 	if previewed_object_root:
 		previewed_object_root.queue_free()
 	
 	await get_tree().physics_frame
-	
-	if root == null:
-		modulate = Color.TRANSPARENT
-		return
 	
 	if root.get_parent():
 		root.get_parent().remove_child(root)
@@ -39,3 +41,8 @@ func object_selected(root:BaseRoot) -> void:
 
 func _on_upload_started() -> void:
 	pass # Replace with function body.
+
+
+func _on_visibility_changed() -> void:
+	if !is_visible_in_tree():
+		hide_self()

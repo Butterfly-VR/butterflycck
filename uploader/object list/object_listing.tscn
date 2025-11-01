@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://yntpdf3md7t"]
 
-[ext_resource type="Script" uid="uid://ddkoim1l6ni0k" path="res://addons/butterflycck/uploader/object_listing.gd" id="1_wk8oa"]
+[ext_resource type="Script" uid="uid://ddkoim1l6ni0k" path="res://addons/butterflycck/uploader/object list/object_listing.gd" id="1_wk8oa"]
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_vgdig"]
 size = Vector2(32, 32)

@@ -1,11 +1,11 @@
 [gd_scene load_steps=3 format=3 uid="uid://d00xuekcwf8dg"]
 
-[ext_resource type="Script" uid="uid://ddkoim1l6ni0k" path="res://addons/butterflycck/uploader/object_listing.gd" id="1_1kelv"]
+[ext_resource type="Script" uid="uid://blpnyx5jma7tv" path="res://addons/butterflycck/uploader/inspector/warning.gd" id="1_pejd5"]
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_vgdig"]
 size = Vector2(32, 32)
 
-[node name="Item" type="PanelContainer" node_paths=PackedStringArray("object_name", "uuid", "select_button")]
+[node name="Item" type="PanelContainer"]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -18,10 +18,7 @@ offset_bottom = 47.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
-script = ExtResource("1_1kelv")
-object_name = NodePath("HBoxContainer2/VBoxContainer/HBoxContainer/Label")
-uuid = NodePath("HBoxContainer2/VBoxContainer/Label2")
-select_button = NodePath("HBoxContainer2/VBoxContainer/HBoxContainer2/Find")
+script = ExtResource("1_pejd5")
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="."]
 layout_mode = 2

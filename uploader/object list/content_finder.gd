@@ -9,7 +9,7 @@ const OBJECT_LISTING:PackedScene = preload("res://addons/butterflycck/uploader/o
 var selected_type:int = 0
 
 func on_target_type_changed(selected_type:int) -> void:
-	inspector.object_selected(null)
+	inspector.hide_self()
 	
 	for child in object_list.get_children():
 		child.queue_free()
@@ -73,8 +73,7 @@ func check_node_is_object(node:Node, objects:Array[BaseRoot], type:GDScript) -> 
 	return true
 
 func _on_visibility_changed() -> void:
-	if is_visible_in_tree():
-		on_target_type_changed(selected_type)
+	on_target_type_changed(selected_type)
 
 
 func _on_avatars_pressed(extra_arg_0: int) -> void:

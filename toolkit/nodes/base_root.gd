@@ -72,25 +72,38 @@ func get_upload_warnings() -> Array[Warning]:
 func _process(delta: float) -> void:
 	update_configuration_warnings() # todo: this should be callled only when needed
 
+# AABB is passed by value (technically CoW but whatever) but we need it passed by ref
+# only way i know to do this is to wrap it in a class
+class AABBRef:
+	var is_init:bool = false
+	var aabb:AABB
+
 # bindings are applied in reverse order so we need the second binding argument to be first
-func get_combined_aabb(node:Node, buffer:AABB) -> bool:
-	print(node.get_class())
+func get_combined_aabb(node:Node, buffer:AABBRef) -> bool:
 	if node is VisualInstance3D:
-		print("got one")
-		buffer = buffer.merge((node as VisualInstance3D).get_aabb())
+		var aabb:AABB = (node as VisualInstance3D).get_aabb()
+		aabb.position = (node as Node3D).to_global(aabb.position)
+		if buffer.is_init:
+			buffer.aabb = buffer.aabb.merge(aabb)
+		else:
+			buffer.aabb = aabb
+			buffer.is_init = true
+	
 	return true
 
 # default camera position calculation
 # positions the camera such that it sees the entire object based on its bounding box
 func get_preview_camera_transform() -> Transform3D:
 	const FOV:float = 75.0
-	var aabb:AABB = AABB()
-	SceneTreeHelper.call_children_recursive(self, get_combined_aabb.bind(aabb))
-	var pos:Vector3 = aabb.position
-	print("size and distance calculations")
-	print(max(aabb.size.x, aabb.size.y))
-	print(max(aabb.size.x, aabb.size.y) / tan(FOV / 2))
-	pos.z -= maxf(aabb.size.z / 2, maxf(aabb.size.x, aabb.size.y) / abs(tan(FOV / 2))) * 1.1
+	var aabb_ref:AABBRef = AABBRef.new()
+	SceneTreeHelper.call_children_recursive(self, get_combined_aabb.bind(aabb_ref))
+	var aabb:AABB = aabb_ref.aabb
+	var pos:Vector3 = aabb.position + (aabb.size / 2)
+	# todo: something is broken here.
+	# this should place the camera as close as possible to the object,
+	# while leaving everything visible.
+	# right now it places the camers way too far away and i have no idea why
+	pos.z += (maxf(aabb.size.x, aabb.size.y) / 2) / abs(tan(FOV / 2)) * 1.1
 	return Transform3D(Basis.IDENTITY, pos)
 
 func _get_configuration_warnings():
