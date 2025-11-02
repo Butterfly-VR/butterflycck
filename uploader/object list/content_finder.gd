@@ -53,7 +53,7 @@ func find_objects_in_scene(type:GDScript, scene_root:Node) -> void:
 	SceneTreeHelper.call_children_recursive(scene_root, check_node_is_object.bind(objects, type), true)
 	# list the objects we found in the ui
 	for object:BaseRoot in objects:
-		var listing = OBJECT_LISTING.instantiate()
+		var listing:ObjectListing = OBJECT_LISTING.instantiate()
 		
 		listing.object_name.text = (
 				object.object_name if !object.object_name.is_empty() else object.name)

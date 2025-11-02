@@ -1,6 +1,6 @@
 @tool
 extends TabContainer
-
+class_name PageSelector
 
 func _on_upload_button_pressed() -> void:
 	current_tab = 0

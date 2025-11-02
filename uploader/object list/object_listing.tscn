@@ -1,9 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://yntpdf3md7t"]
 
 [ext_resource type="Script" uid="uid://ddkoim1l6ni0k" path="res://addons/butterflycck/uploader/object list/object_listing.gd" id="1_wk8oa"]
-
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_vgdig"]
-size = Vector2(32, 32)
+[ext_resource type="Texture2D" uid="uid://cibhaukxqck2k" path="res://addons/butterflycck/uploader/object list/spacer_icon.png" id="2_yy21i"]
 
 [node name="Item" type="PanelContainer" node_paths=PackedStringArray("object_name", "uuid", "select_button")]
 script = ExtResource("1_wk8oa")
@@ -16,7 +14,7 @@ layout_mode = 2
 
 [node name="TextureRect" type="TextureRect" parent="HBoxContainer"]
 layout_mode = 2
-texture = SubResource("PlaceholderTexture2D_vgdig")
+texture = ExtResource("2_yy21i")
 stretch_mode = 4
 
 [node name="Label" type="Label" parent="HBoxContainer"]

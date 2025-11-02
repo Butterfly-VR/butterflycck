@@ -49,7 +49,7 @@ metadata/_tab_index = 0
 [node name="ObjectSelector" type="VBoxContainer" parent="TabContainer/Upload" node_paths=PackedStringArray("object_list", "inspector")]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_stretch_ratio = 3.0
+size_flags_stretch_ratio = 2.0
 script = ExtResource("1_l8q2r")
 object_list = NodePath("ScrollContainer/VBoxContainer")
 inspector = NodePath("../ObjectInspector")
@@ -96,7 +96,7 @@ horizontal_scroll_mode = 0
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ObjectInspector" type="VBoxContainer" parent="TabContainer/Upload" node_paths=PackedStringArray("preview", "preview_camera", "name_text", "uuid_text", "warnings_list", "upload_button")]
+[node name="ObjectInspector" type="VBoxContainer" parent="TabContainer/Upload" node_paths=PackedStringArray("preview", "preview_camera", "name_text", "uuid_text", "warnings_list", "upload_button", "page_selector")]
 modulate = Color(1, 1, 1, 0)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -107,6 +107,7 @@ name_text = NodePath("Info/Label")
 uuid_text = NodePath("Info/Label2")
 warnings_list = NodePath("Info/ScrollContainer/VBoxContainer")
 upload_button = NodePath("Button")
+page_selector = NodePath("../..")
 
 [node name="Preview" type="TextureRect" parent="TabContainer/Upload/ObjectInspector"]
 layout_mode = 2

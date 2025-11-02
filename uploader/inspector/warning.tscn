@@ -1,11 +1,11 @@
-[gd_scene load_steps=3 format=3 uid="uid://d00xuekcwf8dg"]
+[gd_scene load_steps=5 format=3 uid="uid://d00xuekcwf8dg"]
 
 [ext_resource type="Script" uid="uid://blpnyx5jma7tv" path="res://addons/butterflycck/uploader/inspector/warning.gd" id="1_pejd5"]
+[ext_resource type="Texture2D" uid="uid://v3ddwx0vjume" path="res://addons/butterflycck/uploader/inspector/warning_info.png" id="2_l2ba6"]
+[ext_resource type="Texture2D" uid="uid://b1r6q0e2bqme1" path="res://addons/butterflycck/uploader/inspector/warning_warn.png" id="3_qw8pj"]
+[ext_resource type="Texture2D" uid="uid://bse5ylreuy1cf" path="res://addons/butterflycck/uploader/inspector/warning_error.png" id="4_i774x"]
 
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_vgdig"]
-size = Vector2(32, 32)
-
-[node name="Item" type="PanelContainer"]
+[node name="Item" type="PanelContainer" node_paths=PackedStringArray("warning_level", "heading", "message", "find_button", "fix_button")]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -19,66 +19,81 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 script = ExtResource("1_pejd5")
+warning_level = NodePath("VBoxContainer/HBoxContainer2/VBoxContainer/HBoxContainer/IconType")
+heading = NodePath("VBoxContainer/HBoxContainer2/VBoxContainer/HBoxContainer/Label")
+message = NodePath("VBoxContainer/HBoxContainer2/VBoxContainer/Label2")
+find_button = NodePath("VBoxContainer/HBoxContainer2/VBoxContainer/HBoxContainer2/Find")
+fix_button = NodePath("VBoxContainer/HBoxContainer2/VBoxContainer/HBoxContainer2/AutoFix")
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
 
-[node name="VSeparator" type="VSeparator" parent="HBoxContainer2"]
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer2"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="VSeparator" type="VSeparator" parent="VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer2/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HBoxContainer2/VBoxContainer"]
 layout_mode = 2
 
-[node name="IconType" type="TabContainer" parent="HBoxContainer2/VBoxContainer/HBoxContainer"]
+[node name="IconType" type="TabContainer" parent="VBoxContainer/HBoxContainer2/VBoxContainer/HBoxContainer"]
+self_modulate = Color(1, 1, 1, 0)
 layout_mode = 2
-current_tab = 0
+current_tab = 2
 tabs_visible = false
 
-[node name="Info" type="TextureRect" parent="HBoxContainer2/VBoxContainer/HBoxContainer/IconType"]
+[node name="Info" type="TextureRect" parent="VBoxContainer/HBoxContainer2/VBoxContainer/HBoxContainer/IconType"]
+visible = false
 layout_mode = 2
-texture = SubResource("PlaceholderTexture2D_vgdig")
+texture = ExtResource("2_l2ba6")
 stretch_mode = 4
 metadata/_tab_index = 0
 
-[node name="Warning" type="TextureRect" parent="HBoxContainer2/VBoxContainer/HBoxContainer/IconType"]
+[node name="Warning" type="TextureRect" parent="VBoxContainer/HBoxContainer2/VBoxContainer/HBoxContainer/IconType"]
 visible = false
 layout_mode = 2
-texture = SubResource("PlaceholderTexture2D_vgdig")
+texture = ExtResource("3_qw8pj")
 stretch_mode = 4
 metadata/_tab_index = 1
 
-[node name="Error" type="TextureRect" parent="HBoxContainer2/VBoxContainer/HBoxContainer/IconType"]
-visible = false
+[node name="Error" type="TextureRect" parent="VBoxContainer/HBoxContainer2/VBoxContainer/HBoxContainer/IconType"]
 layout_mode = 2
-texture = SubResource("PlaceholderTexture2D_vgdig")
+texture = ExtResource("4_i774x")
 stretch_mode = 4
 metadata/_tab_index = 2
 
-[node name="Label" type="Label" parent="HBoxContainer2/VBoxContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer2/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "UNNAMED"
 
-[node name="Label2" type="Label" parent="HBoxContainer2/VBoxContainer"]
+[node name="Label2" type="Label" parent="VBoxContainer/HBoxContainer2/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "UNNAMED"
 autowrap_mode = 2
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="HBoxContainer2/VBoxContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/HBoxContainer2/VBoxContainer"]
 layout_mode = 2
 
-[node name="Find" type="Button" parent="HBoxContainer2/VBoxContainer/HBoxContainer2"]
+[node name="Find" type="Button" parent="VBoxContainer/HBoxContainer2/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Source"
+text = "Find"
 
-[node name="AutoFix" type="Button" parent="HBoxContainer2/VBoxContainer/HBoxContainer2"]
+[node name="AutoFix" type="Button" parent="VBoxContainer/HBoxContainer2/VBoxContainer/HBoxContainer2"]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Fix"
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2

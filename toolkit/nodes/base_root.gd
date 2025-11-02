@@ -24,11 +24,15 @@ class Warning:
 	var level:WarningLevel
 	var header:String
 	var body:String
+	var source:Node
+	var has_autofix:bool = false
+	var autofix:Callable
 	
-	func _init(level:WarningLevel, header:String, body:String) -> void:
+	func _init(level:WarningLevel, header:String, body:String, source:Node) -> void:
 		self.level = level
 		self.header = header
 		self.body = body
+		self.source = source
 
 func assign_uuid() -> void:
 	var new_uuid = UUID.from_String(uuid)
@@ -50,7 +54,8 @@ func get_child_warnings(node:Node, warnings:Array[Warning]) -> bool:
 		warnings.push_back(Warning.new(Warning.WarningLevel.Error, 
 				"Blacklisted Type", 
 				"this object contains a node of type %s, which is not allowed" % (
-				node.get_class())))
+				node.get_class()), 
+				self))
 	elif node is CCKMarker:
 		warnings.append_array((node as CCKMarker).get_uploader_warnings())
 	return true
@@ -66,7 +71,8 @@ func get_upload_warnings() -> Array[Warning]:
 		warnings.push_back(Warning.new(
 				Warning.WarningLevel.Warning, 
 				"Config Error", 
-				warning))
+				warning, 
+				self))
 	return warnings
 
 func _process(delta: float) -> void:
@@ -112,7 +118,6 @@ func _get_configuration_warnings():
 	if get_children().size() == 0:
 		warnings.append("object root requires a child")
 	if get_children().size() > 1:
-		warnings.append("multiple children are not allowed on an object root, 
-				children beyond the first child will be ignored")
+		warnings.append("multiple children are not allowed on an object root, children beyond the first child will be ignored")
 	
 	return warnings

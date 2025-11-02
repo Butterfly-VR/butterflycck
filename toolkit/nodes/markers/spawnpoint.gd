@@ -16,8 +16,8 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	if get_parent() is not Node3D:
 		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
 				"Spawnpoint invalid parent", 
-				"A spawnpoint marker must be attached to a Node3D or subclass, 
-				this node determines the actual spawning location"))
+				"A spawnpoint marker must be attached to a Node3D or subclass, this node determines the actual spawning location", 
+				self))
 	
 	return warnings
 

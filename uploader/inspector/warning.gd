@@ -1,4 +1,5 @@
 extends PanelContainer
+class_name WarningListing
 
 @export var warning_level:TabContainer
 @export var heading:Label

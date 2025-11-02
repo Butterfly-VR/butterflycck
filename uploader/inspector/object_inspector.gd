@@ -2,12 +2,15 @@
 extends VBoxContainer
 class_name ObjectInspector
 
+const WARNING_LISTING:PackedScene = preload("res://addons/butterflycck/uploader/inspector/warning.tscn")
+
 @export var preview:SubViewport
 @export var preview_camera:Camera3D
 @export var name_text:Label
 @export var uuid_text:Label
 @export var warnings_list:VBoxContainer
 @export var upload_button:Button
+@export var page_selector:PageSelector
 
 var previewed_object_root:Node
 
@@ -34,13 +37,50 @@ func object_selected(original_root:BaseRoot) -> void:
 	preview_camera.transform = root.get_preview_camera_transform()
 	preview.render_target_update_mode = SubViewport.UPDATE_ONCE
 	
+	name_text.text = (
+			root.object_name if !root.object_name.is_empty() else root.name)
+	uuid_text.text = (
+			root.attached_uuid.to_string() if root.attached_uuid else "never uploaded")
+	
+	for child:Node in warnings_list.get_children():
+		child.queue_free()
+	
+	await get_tree().physics_frame
+	
+	var warnings:Array[BaseRoot.Warning] = root.get_upload_warnings()
+	
+	upload_button.disabled = false
+	
+	for warning:BaseRoot.Warning in warnings:
+		if warning.level == BaseRoot.Warning.WarningLevel.Error:
+			upload_button.disabled = true
+		
+		var listing:WarningListing = WARNING_LISTING.instantiate()
+		
+		listing.warning_level.current_tab = warning.level
+		listing.heading.text = warning.header
+		listing.message.text = warning.body
+		
+		# todo: this dosent do what we want, 
+		# we need to open the scene and select the node in there instead
+		# would require passing the scene path and node path into the Warning
+		#listing.find_button.pressed.connect(func(): EditorInterface.edit_node(warning.source))
+		
+		if warning.has_autofix:
+			listing.fix_button.visible = true
+			# autofix function should return a bool to indicate success
+			# todo: this should probably just refresh the entire object inspector on success
+			listing.find_button.pressed.connect(func(): if warning.autofix.call(): listing.queue_free())
+		
+		warnings_list.add_child(listing)
+	
 	await get_tree().physics_frame
 	
 	modulate = Color.WHITE
 
 
 func _on_upload_started() -> void:
-	pass # Replace with function body.
+	page_selector.go_to_upload_tab(previewed_object_root)
 
 
 func _on_visibility_changed() -> void:
