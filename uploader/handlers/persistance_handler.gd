@@ -1,3 +1,4 @@
+@tool
 extends Node
 class_name PersistanceHandler
 # provides a homogenous ConfigFile style interface over multiple files containing persistant data

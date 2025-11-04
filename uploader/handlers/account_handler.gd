@@ -1,3 +1,4 @@
+@tool
 extends Node
 class_name AccountHandler
 # handles token renewal and caches player info
@@ -27,9 +28,9 @@ var renew_timer:Timer = Timer.new()
 
 func _enter_tree() -> void:
 	var saved_token:Array[int] = []
-	saved_token.assign(persistance_handler.register_value("user_login", "token", "token", []))
-	var expiry:int = persistance_handler.register_value("user_login", "token", "expiry", -1)
-	var renewable:bool = persistance_handler.register_value("user_login", "token", "renewable", false)
+	saved_token.assign(persistance_handler.register_value("upload_token", "token", "token", []))
+	var expiry:int = persistance_handler.register_value("upload_token", "token", "expiry", -1)
+	var renewable:bool = persistance_handler.register_value("upload_token", "token", "renewable", false)
 	if await is_token_valid(saved_token, expiry):
 		token_valid = true
 		set_token(saved_token, expiry, renewable)
@@ -50,9 +51,9 @@ func set_token(token:Array[int], expiry_utc:int, renewable:bool) -> void:
 	token_expiry_utc = expiry_utc
 	token_renewable = renewable
 	if persist_token:
-		persistance_handler.set_value("user_login", "token", "token", token)
-		persistance_handler.set_value("user_login", "token", "expiry", expiry_utc)
-		persistance_handler.set_value("user_login", "token", "renewable", renewable)
+		persistance_handler.set_value("upload_token", "token", "token", token)
+		persistance_handler.set_value("upload_token", "token", "expiry", expiry_utc)
+		persistance_handler.set_value("upload_token", "token", "renewable", renewable)
 	if await is_token_valid(session_token, token_expiry_utc):
 		user_id = await get_uuid(false)
 

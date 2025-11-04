@@ -1,3 +1,4 @@
+@abstract
 extends Node
 class_name CCKMarker
 # base class for all cck nodes
@@ -7,10 +8,10 @@ class_name CCKMarker
 # if a node is incorrectly configured it can return false to prevent uploading.
 # generally you should always return true here and instead use get_uploader_warnings.
 # Error level warnings prevent uploading and are preferred over returning false here.
-func prep_for_upload() -> bool:
-	return true
+@abstract
+func prep_for_upload() -> bool
 
 # this function is used to refresh the uploader warning list
 # it should return a list of any configuration issues with this marker
-func get_uploader_warnings() -> Array[BaseRoot.Warning]:
-	return []
+@abstract
+func get_uploader_warnings() -> Array[BaseRoot.Warning]

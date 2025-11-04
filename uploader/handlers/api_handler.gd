@@ -1,3 +1,4 @@
+@tool
 extends Node
 class_name APIHandler
 
@@ -32,6 +33,7 @@ class Request:
 var is_ready:bool = false
 var client:HTTPClient
 var waiting_requests:Array[Request]
+var failed_connections:int = 0
 @onready var tree:SceneTree = get_tree()
 
 # todo: make readonly once its available
@@ -89,6 +91,9 @@ func _ready() -> void:
 	var err:Error = client.connect_to_host(TARGET_HOST, TARGET_PORT)
 	if err != OK:
 		push_error("error while connecting to api: ", str(err))
+		failed_connections += 1
+		if failed_connections > 3:
+			return
 		await tree.create_timer(3).timeout
 		push_warning("retrying connection...")
 		_ready.call_deferred()
@@ -100,6 +105,9 @@ func _ready() -> void:
 	while true:
 		if client.get_status() != HTTPClient.STATUS_CONNECTED:
 			push_error("error in api connection: client state should be connected but was ", client.get_status())
+			failed_connections += 1
+			if failed_connections > 3:
+				return
 			await tree.create_timer(3).timeout
 			push_warning("retrying connection...")
 			_ready.call_deferred()
@@ -113,6 +121,9 @@ func _ready() -> void:
 			await tree.process_frame
 		if client.get_status() != HTTPClient.STATUS_BODY and client.get_status() != HTTPClient.STATUS_CONNECTED:
 			push_error("error in api connection: expected body or ready connection, got: ", client.get_status())
+			failed_connections += 1
+			if failed_connections > 3:
+				return
 			await tree.create_timer(3).timeout
 			push_warning("retrying connection...")
 			_ready.call_deferred()
