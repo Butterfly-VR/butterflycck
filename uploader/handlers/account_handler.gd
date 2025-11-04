@@ -13,7 +13,7 @@ const TOKEN_RENEW_ENDPOINT:String = "API/V0/token/"
 const TOKEN_VERIFY_ENDPOINT:String = "API/V0/token/validate"
 const TOKEN_USER_ENDPOINT:String = "API/V0/token/user"
 
-var session_token:Array[int] = []
+var session_token:PackedByteArray = PackedByteArray()
 # expiry time in seconds since epoch, -1 indicates no token or a token that never expires
 var token_expiry_utc:int = -1
 # tokens for temporary sessions cannot renew themselves, in that case renewal logic is disabled
@@ -27,8 +27,8 @@ var renew_timer:Timer = Timer.new()
 @export var persistance_handler:PersistanceHandler
 
 func _enter_tree() -> void:
-	var saved_token:Array[int] = []
-	saved_token.assign(persistance_handler.register_value("upload_token", "token", "token", []))
+	var saved_token:PackedByteArray = PackedByteArray()
+	saved_token = persistance_handler.register_value("upload_token", "token", "token", PackedByteArray())
 	var expiry:int = persistance_handler.register_value("upload_token", "token", "expiry", -1)
 	var renewable:bool = persistance_handler.register_value("upload_token", "token", "renewable", false)
 	if await is_token_valid(saved_token, expiry):
@@ -46,7 +46,7 @@ func logout() -> void:
 	token_valid = false
 	set_token([], -1, false)
 
-func set_token(token:Array[int], expiry_utc:int, renewable:bool) -> void:
+func set_token(token:PackedByteArray, expiry_utc:int, renewable:bool) -> void:
 	session_token = token
 	token_expiry_utc = expiry_utc
 	token_renewable = renewable
@@ -76,8 +76,8 @@ func get_uuid(use_cached_value:bool = true) -> UUID:
 		return UUID.new()
 	return UUID.from_String(values[0])
 
-func is_token_valid(token:Array[int], expiry_utc:int) -> bool:
-	if token == []:
+func is_token_valid(token:PackedByteArray, expiry_utc:int) -> bool:
+	if token == PackedByteArray():
 		return false
 	if expiry_utc != -1 and Time.get_unix_time_from_system() > expiry_utc:
 		return false
