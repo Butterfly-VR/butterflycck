@@ -93,6 +93,9 @@ func is_token_valid(token:Array[int], expiry_utc:int) -> bool:
 		return false
 
 func check_renew() -> void:
+	if token_expiry_utc < 0 or !token_renewable:
+		return
+	
 	# indicate when token has expired
 	# should only happen with non renewable tokens and a session lasting longer than the token expiry time
 	if int(Time.get_unix_time_from_system()) > token_expiry_utc:
@@ -100,9 +103,6 @@ func check_renew() -> void:
 		token_valid = false
 		set_token([], -1, false)
 	
-	# renewal logic
-	if token_expiry_utc < 0 or !token_renewable:
-		return
 	if int(Time.get_unix_time_from_system()) + TOKEN_RENEWAL_THRESHOLD > token_expiry_utc:
 		var token_header:PackedStringArray = PackedStringArray([get_token_header()])
 		api_handler.make_request(HTTPClient.METHOD_GET, TOKEN_RENEW_ENDPOINT, token_header).connect(on_token_request)

@@ -1,10 +1,9 @@
-[gd_scene load_steps=10 format=3 uid="uid://dmcr1nov2l4dq"]
+[gd_scene load_steps=9 format=3 uid="uid://dmcr1nov2l4dq"]
 
 [ext_resource type="Script" uid="uid://bysfki02h8dyt" path="res://addons/butterflycck/uploader/main_screen_tabs.gd" id="1_edmbh"]
 [ext_resource type="Script" uid="uid://dldpy6k6gwhh7" path="res://addons/butterflycck/uploader/object list/content_finder.gd" id="1_l8q2r"]
 [ext_resource type="Script" uid="uid://ccaj40o72q7bn" path="res://addons/butterflycck/uploader/inspector/object_inspector.gd" id="3_vh56r"]
 [ext_resource type="Script" uid="uid://bhll6v7in6gnl" path="res://addons/butterflycck/uploader/handlers/persistance_handler.gd" id="4_lr6p3"]
-[ext_resource type="Script" uid="uid://bxq4jew81mer6" path="res://addons/butterflycck/uploader/settings/token_setting.gd" id="4_u2pg2"]
 [ext_resource type="Script" uid="uid://dmxb78w86ykns" path="res://addons/butterflycck/uploader/handlers/api_handler.gd" id="5_u2pg2"]
 [ext_resource type="Script" uid="uid://by0bg3o6n23tr" path="res://addons/butterflycck/uploader/settings/game_path_setting.gd" id="5_y1y70"]
 [ext_resource type="Script" uid="uid://ev7sb04axtf" path="res://addons/butterflycck/uploader/handlers/account_handler.gd" id="6_3y055"]
@@ -166,6 +165,17 @@ visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Manage"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="TabContainer/Manage/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 6
+text = "todo"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="Settings" type="HBoxContainer" parent="TabContainer"]
 layout_mode = 2
 metadata/_tab_index = 2
@@ -173,22 +183,6 @@ metadata/_tab_index = 2
 [node name="SettingsList" type="VBoxContainer" parent="TabContainer/Settings"]
 layout_mode = 2
 size_flags_horizontal = 3
-
-[node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/Settings/SettingsList" node_paths=PackedStringArray("token_input", "persistance_handler")]
-layout_mode = 2
-script = ExtResource("4_u2pg2")
-token_input = NodePath("LineEdit")
-persistance_handler = NodePath("../../../../PersistanceHandler")
-
-[node name="Label" type="Label" parent="TabContainer/Settings/SettingsList/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-text = "Upload Token:"
-
-[node name="LineEdit" type="LineEdit" parent="TabContainer/Settings/SettingsList/HBoxContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-placeholder_text = "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="TabContainer/Settings/SettingsList" node_paths=PackedStringArray("persistance_handler", "path_button", "file_explorer")]
 layout_mode = 2
@@ -242,6 +236,5 @@ persistance_handler = NodePath("../PersistanceHandler")
 [connection signal="pressed" from="TabContainer/Upload/ObjectSelector/HBoxContainer/Props" to="TabContainer/Upload/ObjectSelector" method="on_target_type_changed" binds= [3]]
 [connection signal="visibility_changed" from="TabContainer/Upload/ObjectInspector" to="TabContainer/Upload/ObjectInspector" method="_on_visibility_changed"]
 [connection signal="pressed" from="TabContainer/Upload/ObjectInspector/Button" to="TabContainer/Upload/ObjectInspector" method="_on_upload_started"]
-[connection signal="text_submitted" from="TabContainer/Settings/SettingsList/HBoxContainer/LineEdit" to="TabContainer/Settings/SettingsList/HBoxContainer" method="_on_line_edit_text_submitted"]
 [connection signal="file_selected" from="TabContainer/Settings/SettingsList/HBoxContainer2/FileDialog" to="TabContainer/Settings/SettingsList/HBoxContainer2" method="_on_file_dialog_file_selected"]
 [connection signal="pressed" from="TabContainer/Settings/SettingsList/HBoxContainer2/PathButton" to="TabContainer/Settings/SettingsList/HBoxContainer2" method="_on_path_button_pressed"]
