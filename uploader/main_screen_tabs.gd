@@ -13,5 +13,5 @@ func _on_manage_button_pressed() -> void:
 func _on_settings_button_pressed() -> void:
 	current_tab = 2
 
-func go_to_upload_tab(selected_object:BaseRoot) -> void:
+func go_to_upload_tab(selected_object:BaseRoot, default_image:FileAccess) -> void:
 	current_tab = 3
