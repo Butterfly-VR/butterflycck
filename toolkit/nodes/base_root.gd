@@ -13,6 +13,13 @@ const blacklisted_types:Array[GDScript] = []
 
 var attached_uuid:UUID
 
+enum ObjectType{
+	world,
+	avatar,
+	prop,
+	component
+}
+
 # warning to be displayed in the upload panel
 # Error level warnings prevent uploading
 class Warning:

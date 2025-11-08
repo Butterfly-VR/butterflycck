@@ -1,0 +1,32 @@
+[gd_scene load_steps=2 format=3 uid="uid://c2kshvwc82tcg"]
+
+[ext_resource type="Script" uid="uid://cq45f0rgkqlsv" path="res://addons/butterflycck/uploader/upload menu/tag_box.gd" id="1_3binl"]
+
+[node name="TagBox" type="PanelContainer" node_paths=PackedStringArray("line_edit")]
+offset_right = 90.0
+offset_bottom = 40.0
+script = ExtResource("1_3binl")
+line_edit = NodePath("MarginContainer/Panel/LineEdit")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 4
+
+[node name="Panel" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="MarginContainer/Panel"]
+layout_mode = 2
+text = " X "
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/Panel"]
+layout_mode = 2
+placeholder_text = "UNNAMED"
+max_length = 16
+expand_to_text_length = true
+
+[connection signal="pressed" from="MarginContainer/Panel/Button" to="." method="_on_button_pressed"]
+[connection signal="text_changed" from="MarginContainer/Panel/LineEdit" to="." method="_on_line_edit_text_changed"]

@@ -12,14 +12,16 @@ const KILOBYTE:int = 1024
 @export var image_size:Label
 @export var last_update_time:Label
 @export var image_select:FileDialog
+@export var description_box:TextEdit
+@export var tag_manager:TagManager
 
-var object_file:FileAccess
 var image:Image
 
 # preexisting_values allows intializing with the values aquired from the api, 
 # if this object already exists
 # contains []
-func setup(root:BaseRoot, current_image:Image, upload_name:String, last_update_string:String) -> void:
+func setup(root:BaseRoot, root_pack:FileAccess, current_image:Image, upload_name:String, 
+		last_update_string:String, tags:PackedStringArray, description:String) -> void:
 	if upload_name:
 		object_name.text = upload_name
 	elif root.object_name:
@@ -33,12 +35,16 @@ func setup(root:BaseRoot, current_image:Image, upload_name:String, last_update_s
 	image = current_image
 	image_display.texture = ImageTexture.create_from_image(current_image)
 	
-	object_file = create_object_file(root)
-	
 	image_size.text = get_size_string(current_image.get_data_size())
-	upload_size.text = get_size_string(FileAccess.get_size(object_file.get_path()))
+	upload_size.text = get_size_string(FileAccess.get_size(root_pack.get_path()))
 	
 	last_update_time.text = last_update_string
+	
+	tag_manager.clear_tags()
+	for tag:String in tags:
+		tag_manager.add_tag(tag)
+	
+	description_box.text = description
 
 func get_size_string(size:int) -> String:
 	if size > GIGABYTE:
@@ -48,27 +54,11 @@ func get_size_string(size:int) -> String:
 	else:
 		return "%.2f KB" % (size as float / KILOBYTE)
 
-func create_object_file(root:BaseRoot) -> FileAccess:
-	# this is kinda messy we just need a random file name to save the scene to temporarily
-	var path = FileAccess.create_temp(
-			FileAccess.ModeFlags.WRITE_READ, "%s" % root.uuid, ".pck", true).get_path()
-	var scene:PackedScene = PackedScene.new()
-	match scene.pack(root):
-		OK:
-			ResourceSaver.save(scene, path, 
-					ResourceSaver.FLAG_BUNDLE_RESOURCES + ResourceSaver.FLAG_OMIT_EDITOR_PROPERTIES +
-					ResourceSaver.FLAG_COMPRESS + ResourceSaver.FLAG_CHANGE_PATH)
-		var err:
-			push_error("failed to save scene to temp file: %s." % err)
-	return FileAccess.open(path, FileAccess.READ)
-
 func _on_uuid_randomize() -> void:
 	uuid.text = UUID.new(true).to_string()
 
-
 func _on_image_upload_start() -> void:
 	image_select.visible = true
-
 
 func _on_image_selected(path: String) -> void:
 	var new_image:Image = Image.new()
