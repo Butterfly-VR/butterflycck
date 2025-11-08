@@ -2,6 +2,12 @@
 extends TabContainer
 class_name PageSelector
 
+@export var button_section:HBoxContainer
+
+func leave_token_entry() -> void:
+	button_section.visible = true
+	current_tab = 0
+
 func _on_upload_button_pressed() -> void:
 	current_tab = 0
 

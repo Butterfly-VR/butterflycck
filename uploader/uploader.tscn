@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://dmcr1nov2l4dq"]
+[gd_scene load_steps=14 format=3 uid="uid://dmcr1nov2l4dq"]
 
 [ext_resource type="Script" uid="uid://bysfki02h8dyt" path="res://addons/butterflycck/uploader/main_screen_tabs.gd" id="1_edmbh"]
 [ext_resource type="Script" uid="uid://dldpy6k6gwhh7" path="res://addons/butterflycck/uploader/object list/content_finder.gd" id="1_l8q2r"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" uid="uid://cldi6lmhnkah6" path="res://addons/butterflycck/uploader/upload menu/stage_selector.gd" id="6_y1y70"]
 [ext_resource type="Script" uid="uid://cxo8vuqrwttpa" path="res://addons/butterflycck/uploader/upload menu/info.gd" id="7_tippu"]
 [ext_resource type="Script" uid="uid://bxrga38xhucjl" path="res://addons/butterflycck/uploader/upload menu/tag_manager.gd" id="8_fv5sc"]
+[ext_resource type="Script" uid="uid://5f73oeepgswp" path="res://addons/butterflycck/uploader/enter_token.gd" id="9_wa4l3"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_l8q2r"]
 viewport_path = NodePath("TabContainer/Upload/ObjectInspector/Preview/ObjectPreview")
@@ -45,7 +46,7 @@ text = "settings"
 [node name="TabContainer" type="TabContainer" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
-current_tab = 3
+current_tab = 4
 clip_tabs = false
 tabs_visible = false
 script = ExtResource("1_edmbh")
@@ -234,6 +235,7 @@ size_flags_horizontal = 3
 text = "Log Out"
 
 [node name="ObjectUpload" type="HBoxContainer" parent="TabContainer"]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 3
 
@@ -468,6 +470,23 @@ visible = false
 layout_mode = 2
 metadata/_tab_index = 2
 
+[node name="EnterToken" type="VBoxContainer" parent="TabContainer"]
+layout_mode = 2
+script = ExtResource("9_wa4l3")
+metadata/_tab_index = 4
+
+[node name="Label" type="Label" parent="TabContainer/EnterToken"]
+layout_mode = 2
+text = "enter a valid CCK token to continue (you can get one in game or from the website)"
+
+[node name="LineEdit" type="LineEdit" parent="TabContainer/EnterToken"]
+layout_mode = 2
+placeholder_text = "Token..."
+
+[node name="Button" type="Button" parent="TabContainer/EnterToken"]
+layout_mode = 2
+text = "continue"
+
 [node name="PersistanceHandler" type="Node" parent="."]
 script = ExtResource("4_lr6p3")
 
@@ -499,3 +518,4 @@ persistance_handler = NodePath("../PersistanceHandler")
 [connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/TagBox/Panel/Button" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer" method="add_tag"]
 [connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer2/VBoxContainer/Button" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info" method="_on_image_upload_start"]
 [connection signal="file_selected" from="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/FileDialog" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info" method="_on_image_selected"]
+[connection signal="pressed" from="TabContainer/EnterToken/Button" to="TabContainer/EnterToken" method="_on_token_entered"]

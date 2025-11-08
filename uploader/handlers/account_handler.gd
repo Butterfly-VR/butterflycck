@@ -104,8 +104,11 @@ func check_renew() -> void:
 		set_token([], -1, false)
 	
 	if int(Time.get_unix_time_from_system()) + TOKEN_RENEWAL_THRESHOLD > token_expiry_utc:
-		var token_header:PackedStringArray = PackedStringArray([get_token_header()])
-		api_handler.make_request(HTTPClient.METHOD_GET, TOKEN_RENEW_ENDPOINT, token_header).connect(on_token_request)
+		renew_token()
+
+func renew_token() ->  void:
+	var token_header:PackedStringArray = PackedStringArray([get_token_header()])
+	api_handler.make_request(HTTPClient.METHOD_GET, TOKEN_RENEW_ENDPOINT, token_header).connect(on_token_request)
 
 func on_token_request(response_code:HTTPClient.ResponseCode, _headers:PackedStringArray, body:String) -> void:
 	if response_code != HTTPClient.RESPONSE_OK:
