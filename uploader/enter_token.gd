@@ -1,3 +1,4 @@
+@tool
 extends VBoxContainer
 
 const TOKEN_VERIFY_ENDPOINT:String = "API/V0/token/validate"

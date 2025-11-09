@@ -42,6 +42,8 @@ class Warning:
 		self.body = body
 		self.source = source
 
+@abstract func get_object_type() -> ObjectType
+
 func assign_uuid() -> void:
 	var new_uuid = UUID.from_String(uuid)
 	if new_uuid != UUID.new():

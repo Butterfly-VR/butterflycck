@@ -43,13 +43,16 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "settings"
 
-[node name="TabContainer" type="TabContainer" parent="."]
+[node name="TabContainer" type="TabContainer" parent="." node_paths=PackedStringArray("button_section", "upload_handler", "account_handler")]
 layout_mode = 2
 size_flags_vertical = 3
 current_tab = 4
 clip_tabs = false
 tabs_visible = false
 script = ExtResource("1_edmbh")
+button_section = NodePath("../HBoxContainer2")
+upload_handler = NodePath("ObjectUpload/HBoxContainer/TabContainer")
+account_handler = NodePath("../AccountHandler")
 
 [node name="Upload" type="HBoxContainer" parent="TabContainer"]
 visible = false
@@ -106,13 +109,14 @@ horizontal_scroll_mode = 0
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ObjectInspector" type="VBoxContainer" parent="TabContainer/Upload" node_paths=PackedStringArray("preview", "preview_camera", "name_text", "uuid_text", "warnings_list", "upload_button", "page_selector")]
+[node name="ObjectInspector" type="VBoxContainer" parent="TabContainer/Upload" node_paths=PackedStringArray("preview", "preview_camera", "preview_texture", "name_text", "uuid_text", "warnings_list", "upload_button", "page_selector")]
 modulate = Color(1, 1, 1, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("3_vh56r")
 preview = NodePath("Preview/ObjectPreview")
 preview_camera = NodePath("Preview/ObjectPreview/Camera3D")
+preview_texture = NodePath("Preview")
 name_text = NodePath("Info/Label")
 uuid_text = NodePath("Info/Label2")
 warnings_list = NodePath("Info/ScrollContainer/VBoxContainer")
@@ -216,9 +220,13 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 3.0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/Settings/SettingsList"]
+[node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/Settings/SettingsList" node_paths=PackedStringArray("account_handler", "api_handler", "name_label", "page_selector")]
 layout_mode = 2
 script = ExtResource("5_3y055")
+account_handler = NodePath("../../../../AccountHandler")
+api_handler = NodePath("../../../../APIHandler")
+name_label = NodePath("Label2")
+page_selector = NodePath("../../..")
 
 [node name="Label" type="Label" parent="TabContainer/Settings/SettingsList/HBoxContainer"]
 layout_mode = 2
@@ -268,36 +276,42 @@ theme_override_constants/margin_bottom = 4
 
 [node name="Button2" type="Button" parent="TabContainer/ObjectUpload/HBoxContainer/VBoxContainer/MarginContainer2"]
 layout_mode = 2
-text = "tags"
+text = "flags"
 
-[node name="MarginContainer3" type="MarginContainer" parent="TabContainer/ObjectUpload/HBoxContainer/VBoxContainer"]
+[node name="Button3" type="Button" parent="TabContainer/ObjectUpload/HBoxContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 4
-theme_override_constants/margin_right = 8
-theme_override_constants/margin_bottom = 4
-
-[node name="Button3" type="Button" parent="TabContainer/ObjectUpload/HBoxContainer/VBoxContainer/MarginContainer3"]
-layout_mode = 2
+size_flags_stretch_ratio = 0.2
 text = "upload"
 
-[node name="TabContainer" type="TabContainer" parent="TabContainer/ObjectUpload/HBoxContainer"]
+[node name="Button4" type="Button" parent="TabContainer/ObjectUpload/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.2
+text = "test"
+
+[node name="TabContainer" type="TabContainer" parent="TabContainer/ObjectUpload/HBoxContainer" node_paths=PackedStringArray("api_handler", "account_handler", "info_menu")]
 layout_mode = 2
 size_flags_horizontal = 3
 current_tab = 0
 tabs_visible = false
 script = ExtResource("6_y1y70")
+api_handler = NodePath("../../../../APIHandler")
+account_handler = NodePath("../../../../AccountHandler")
+info_menu = NodePath("Info")
 
-[node name="Info" type="VBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer" node_paths=PackedStringArray("object_name", "uuid", "upload_size", "image_size", "last_update_time", "image_select")]
+[node name="Info" type="VBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer" node_paths=PackedStringArray("object_name", "uuid", "upload_size", "image_display", "image_size", "last_update_time", "image_select", "description_box", "tag_manager")]
 layout_mode = 2
 script = ExtResource("7_tippu")
 object_name = NodePath("HBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer/LineEdit")
 uuid = NodePath("HBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer2/Button")
 upload_size = NodePath("HBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer3/HBoxContainer/Label2")
+image_display = NodePath("HBoxContainer/HBoxContainer2/VBoxContainer/ImagePreview")
 image_size = NodePath("HBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer3/HBoxContainer2/Label4")
 last_update_time = NodePath("HBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer3/HBoxContainer3/Label6")
 image_select = NodePath("FileDialog")
+description_box = NodePath("HBoxContainer/HBoxContainer/VBoxContainer/TextEdit")
+tag_manager = NodePath("HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer")
 metadata/_tab_index = 0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info"]
@@ -460,19 +474,22 @@ access = 2
 filters = PackedStringArray("*.png", "*.jpg", "*.jpeg", "*.webp")
 use_native_dialog = true
 
-[node name="Tags" type="VBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer"]
+[node name="Flags" type="VBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer"]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="Upload" type="VBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer"]
-visible = false
+[node name="Label" type="Label" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Flags"]
 layout_mode = 2
-metadata/_tab_index = 2
+text = "Sorry, flags are not implemented yet. When complete they are intended to be a form of moderated tags for certain types of content that some users may not want to see."
+autowrap_mode = 2
 
-[node name="EnterToken" type="VBoxContainer" parent="TabContainer"]
+[node name="EnterToken" type="VBoxContainer" parent="TabContainer" node_paths=PackedStringArray("token_entry", "account_handler", "page_selector")]
 layout_mode = 2
 script = ExtResource("9_wa4l3")
+token_entry = NodePath("LineEdit")
+account_handler = NodePath("../../AccountHandler")
+page_selector = NodePath("..")
 metadata/_tab_index = 4
 
 [node name="Label" type="Label" parent="TabContainer/EnterToken"]
@@ -511,9 +528,8 @@ persistance_handler = NodePath("../PersistanceHandler")
 [connection signal="file_selected" from="TabContainer/Settings/SettingsList/HBoxContainer2/FileDialog" to="TabContainer/Settings/SettingsList/HBoxContainer2" method="_on_file_dialog_file_selected"]
 [connection signal="pressed" from="TabContainer/Settings/SettingsList/HBoxContainer2/PathButton" to="TabContainer/Settings/SettingsList/HBoxContainer2" method="_on_path_button_pressed"]
 [connection signal="pressed" from="TabContainer/Settings/SettingsList/HBoxContainer/Button" to="TabContainer/Settings/SettingsList/HBoxContainer" method="_on_button_pressed"]
-[connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/VBoxContainer/MarginContainer/Button" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer" method="change_stage" binds= [0]]
-[connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/VBoxContainer/MarginContainer2/Button2" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer" method="change_stage" binds= [1]]
-[connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/VBoxContainer/MarginContainer3/Button3" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer" method="change_stage" binds= [2]]
+[connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/VBoxContainer/Button3" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer" method="upload"]
+[connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/VBoxContainer/Button4" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer" method="test_locally"]
 [connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer2/Button" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info" method="_on_uuid_randomize"]
 [connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/TagBox/Panel/Button" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer" method="add_tag"]
 [connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer2/VBoxContainer/Button" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info" method="_on_image_upload_start"]

@@ -6,6 +6,7 @@ const WARNING_LISTING:PackedScene = preload("res://addons/butterflycck/uploader/
 
 @export var preview:SubViewport
 @export var preview_camera:Camera3D
+@export var preview_texture:TextureRect
 @export var name_text:Label
 @export var uuid_text:Label
 @export var warnings_list:VBoxContainer
@@ -80,7 +81,7 @@ func object_selected(original_root:BaseRoot) -> void:
 
 
 func _on_upload_started() -> void:
-	page_selector.go_to_upload_tab(previewed_object_root)
+	page_selector.go_to_upload_tab(previewed_object_root, preview_texture.texture.get_image())
 
 
 func _on_visibility_changed() -> void:

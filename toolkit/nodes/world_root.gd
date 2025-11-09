@@ -2,6 +2,9 @@
 extends BaseRoot
 class_name WorldRoot
 
+func get_object_type() -> ObjectType:
+	return ObjectType.world
+
 # transform is passed by value (technically CoW but whatever) but we need it passed by ref
 # only way i know to do this is to wrap it in a class
 class TransformWrapper:

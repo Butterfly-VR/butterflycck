@@ -1,5 +1,6 @@
 @tool
 extends VBoxContainer
+class_name InfoMenu
 
 const GIGABYTE:int = MEGABYTE * 1024
 const MEGABYTE:int = KILOBYTE * 1024
@@ -20,14 +21,9 @@ var image:Image
 # preexisting_values allows intializing with the values aquired from the api, 
 # if this object already exists
 # contains []
-func setup(root:BaseRoot, root_pack:FileAccess, current_image:Image, upload_name:String, 
+func setup(root:BaseRoot, root_pack:FileAccess, current_image:Image,
 		last_update_string:String, tags:PackedStringArray, description:String) -> void:
-	if upload_name:
-		object_name.text = upload_name
-	elif root.object_name:
-		object_name.text = root.object_name
-	else:
-		object_name.text = root.name
+	object_name.text = root.object_name
 	
 	root.uuid = root.uuid if root.uuid else UUID.new(true)
 	uuid.text = root.uuid
