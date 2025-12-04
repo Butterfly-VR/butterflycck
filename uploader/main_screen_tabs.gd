@@ -8,8 +8,10 @@ class_name PageSelector
 
 func _ready() -> void:
 	if await account_handler.is_token_valid(
-			account_handler.session_token, account_handler.token_expiry_utc):
+			await account_handler.get_token(), account_handler.token_expiry_utc):
 		leave_token_entry()
+	else:
+		enter_token_entry()
 
 func leave_token_entry() -> void:
 	button_section.visible = true

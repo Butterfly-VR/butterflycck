@@ -1,14 +1,21 @@
 @tool
 extends HBoxContainer
 
-const USER_INFO_ENDPOINT:String = "API/V0/user/%s"
+const USER_INFO_ENDPOINT:String = "/api/v0/user/%s"
 
 @export var account_handler:AccountHandler
 @export var api_handler:APIHandler
 @export var name_label:Label
 @export var page_selector:PageSelector
 
-func _ready() -> void:
+func _process(delta: float) -> void:
+	if !is_visible_in_tree():
+		return
+	if account_handler.get_token_header() == "token: []":
+		return
+	if name_label.text != "":
+		return
+	
 	var response:Array[Variant] = await api_handler.make_request(
 			HTTPClient.METHOD_GET, 
 			USER_INFO_ENDPOINT % (await account_handler.get_uuid()).to_string(), 
@@ -18,8 +25,8 @@ func _ready() -> void:
 			response[2], 
 			[200], 
 			["username"])
-	var values:Array[Variant] = result[4]
-	name_label.text = values[0]
+	var values:Dictionary[String, Variant] = result[4]
+	name_label.text = values["username"]
 
 
 func _on_button_pressed() -> void:
