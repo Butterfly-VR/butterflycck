@@ -1,4 +1,5 @@
-extends HBoxContainer
+@tool
+extends PanelContainer
 class_name TagBox
 
 var tag_string:String

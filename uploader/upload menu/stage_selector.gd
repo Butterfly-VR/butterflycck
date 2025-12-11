@@ -4,80 +4,247 @@ class_name UploadHandler
 
 const OBJECT_INFO_ENDPOINT:String = "api/v0/%s/%s"
 const OBJECT_IMAGE_ENDPOINT:String = "api/v0/%s/%s/image"
+const GIGABYTE:int = MEGABYTE * 1024
+const MEGABYTE:int = KILOBYTE * 1024
+const KILOBYTE:int = 1024
+const CUSTOM_LICENSE_TYPE:int = 3
+const PCK_INTERNAL_PATH:String = "res://_loaded_content/%s/%s"
 
 @export var api_handler:APIHandler
 @export var account_handler:AccountHandler
 @export var info_menu:InfoMenu
+@export var upload_menu:UploadMenu
+
+var object_file:FileAccess
+var object_type:BaseRoot.ObjectType
+var uuid:UUID
+var object_owner:UUID
 
 class ObjectMeta:
 	var name:String
 	var object_type:BaseRoot.ObjectType
+	var publicity:int
+	var license:int
+	var custom_license:String
 	var description:String
-	var tags:Array[String]
+	var tags:PackedStringArray
 	var uuid:UUID
 	var owner:UUID
 	var object_size_KB:int
 	var image_size_KB:int
+	# image is used in the editor, image_bytes is used when uploading
 	var image:Image
+	var image_bytes:PackedByteArray
+	
+	var creation_time_utc:int
+	var modified_time_utc:int
 
 func change_stage(idx:int) -> void:
 	current_tab = idx
 
 func setup(root:BaseRoot, default_image:Image) -> void:
-	var object:ObjectMeta = await get_object_info(root.attached_uuid, root.get_object_type())
-	if object:
-		root.object_name = object.name
-		root.uuid = object.uuid.to_string()
-		info_menu.setup(root, create_finialized_file(root), object.image, object.name, 
-				object.tags, object.description)
+	var object:ObjectMeta = await get_object_info(root.attached_uuid, 
+			root.get_object_type())
+	
+	if !object:
+		object = await make_object(root, default_image)
+	
+	object_file = await create_finialized_file(root, object.uuid)
+	
+	object_type = object.object_type
+	uuid = object.uuid
+	object_owner = object.owner
+	
+	var creation_time_string:String
+	if object.creation_time_utc == 0:
+		creation_time_string = "Never"
 	else:
-		info_menu.setup(root, create_finialized_file(root), default_image, "never", 
-				PackedStringArray(), "")
+		creation_time_string = Time.get_date_string_from_unix_time(
+				object.creation_time_utc)
+	
+	var modified_time_string:String
+	if object.modified_time_utc == 0:
+		modified_time_string = "Never"
+	else:
+		modified_time_string = Time.get_date_string_from_unix_time(
+				object.modified_time_utc)
+	
+	info_menu.setup(object.name, object_file, object.image, object.tags, 
+			object.description)
+	
+	upload_menu.setup(object.uuid, object_file, creation_time_string, 
+			modified_time_string, object.publicity, object.license, 
+			object.custom_license)
+
+# gets the set values from the upload menus
+func collect_object_values() -> ObjectMeta:
+	if !upload_menu.confirmation1.button_pressed:
+		return null
+	if !upload_menu.confirmation2.button_pressed:
+		return null
+	
+	var object = ObjectMeta.new()
+	object.name = info_menu.object_name.text
+	object.object_type = object_type
+	
+	object.description = info_menu.description_box.text
+	object.tags = info_menu.tag_manager.get_tags()
+	
+	object.uuid = uuid if uuid else UUID.new(true)
+	object.owner = object_owner
+	
+	object.object_size_KB = upload_menu.object_size_kb / 1000
+	object.image_size_KB = info_menu.image_bytes.size() / 1000
+	
+	object.publicity = upload_menu.publicity_options.get_selected_id()
+	object.license = upload_menu.license_options.get_selected_id()
+	
+	object.creation_time_utc = upload_menu.creation_text.text
+	object.modified_time_utc = upload_menu.last_update_text.text
+	
+	object.image_bytes = info_menu.image_bytes
+	return object
 
 func upload() -> void:
-	print("upload started")
+	var object = collect_object_values()
+	for property in object.get_property_list():
+		if property["name"] == "image_bytes":
+			print("bytes go here")
+			continue
+		print("%s = %s" % [property["name"], object.get(property["name"])])
 
 func test_locally() -> void:
-	print("test started")
+	var object = collect_object_values()
+	for property in object.get_property_list():
+		if property["name"] == "image_bytes":
+			print("bytes go here")
+			continue
+		print("%s = %s" % [property["name"], object.get(property["name"])])
 
-func create_finialized_file(root:BaseRoot) -> FileAccess:
+func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
+	var internal_path = PCK_INTERNAL_PATH % [root.get_object_type(), uuid]
+	
 	root.on_pre_upload()
+	
+	# post-prep, since the root isnt included in the file all nodes 
+	# need their owner set to the new root node
+	await get_tree().physics_frame
+	SceneTreeHelper.call_children_recursive(
+			root.get_child(0), 
+			func(x:Node) -> bool: 
+				x.owner = root.get_child(0) 
+				return true)
+	
 	var pack:PackedScene = PackedScene.new()
 	pack.pack(root.get_child(0))
+	
 	var path:String = FileAccess.create_temp(
+			FileAccess.ModeFlags.WRITE_READ, "scene_tmp", ".tscn", true).get_path()
+	
+	ResourceSaver.save(pack, path, 2 + 4 + 8 + 32 + 64)
+	
+	var pck_path:String = FileAccess.create_temp(
 			FileAccess.ModeFlags.WRITE_READ, "upload_tmp", ".pck", true).get_path()
-	ResourceSaver.save(pack, path, 2 + 4 + 8 + 32)
-	return FileAccess.open(path, FileAccess.READ)
+	var pck := PCKPacker.new()
+	pck.pck_start(pck_path)
+	
+	var scene_file:FileAccess = FileAccess.open(path, FileAccess.READ)
+	for line in scene_file.get_as_text(true).split("\n"):
+		if line.begins_with("load_path = \""):
+			var dependancy_path:String = line.trim_prefix(
+					"load_path = \"").trim_suffix("\"")
+			pck.add_file(dependancy_path, dependancy_path)
+	
+	scene_file.close()
+	
+	pck.add_file(internal_path, path)
+	
+	pck.flush()
+	
+	var unencrypted:FileAccess = FileAccess.open(pck_path, FileAccess.READ)
+	
+	var encrypted:FileAccess = FileAccess.create_temp(
+			FileAccess.ModeFlags.WRITE_READ, "final_tmp", ".epck", true)
+	
+	# TODO: compress and encrypt
+	
+	return 
+
+func make_object(root:BaseRoot, image:Image) -> ObjectMeta:
+	var object:ObjectMeta = ObjectMeta.new()
+	
+	object.name = root.object_name if root.object_name else root.name
+	object.object_type = root.get_object_type()
+	
+	object.description = ""
+	object.tags = PackedStringArray()
+	
+	object.uuid = null
+	object.owner = await account_handler.get_uuid()
+	
+	object.object_size_KB = 0
+	object.image_size_KB = 0
+	
+	object.publicity = 0
+	object.license = 0
+	
+	object.creation_time_utc = 0
+	object.modified_time_utc = 0
+	
+	object.image = image
+	
+	return object
 
 func get_object_info(uuid:UUID, object_type:BaseRoot.ObjectType) -> ObjectMeta:
 	if !uuid:
 		return null
+	
 	var response = await api_handler.make_request(
 			HTTPClient.METHOD_GET, 
 			OBJECT_INFO_ENDPOINT % [object_type, uuid], 
 			PackedStringArray([account_handler.get_token_header()]))
 	var result = api_handler.handle_response(response[0], response[2], [200], 
 			["name", "object_type", "description", "tags", "uuid", 
-			"owner", "object_size_kb", "image_size_kb"])
+			"owner", "object_size_kb", "image_size_kb", "publicity", 
+			"license", "creation_time_utc", "modified_time_utc"])
+	
 	if !result[0]:
 		return null
 	if UUID.from_String(result[4][5]) != await account_handler.get_uuid():
 		return null
+	
 	var object:ObjectMeta = ObjectMeta.new()
+	
 	object.name = result[4][0]
 	object.object_type = result[4][1]
+	
 	object.description = result[4][2]
 	object.tags = PackedStringArray(result[4][3])
+	
 	object.uuid = UUID.from_String(result[4][4])
 	object.owner = UUID.from_String(result[4][5])
+	
 	object.object_size_KB = result[4][6]
 	object.image_size_KB = result[4][7]
+	
+	object.publicity = result[4][8]
+	object.license = result[4][9]
+	
+	object.creation_time_utc = result[4][10]
+	object.modified_time_utc = result[4][11]
+	
+	if object.license == 3 and ("custom_license" in response[2]):
+		object.custom_license = response[2]["custom_license"]
+	
 	object.image = Image.new()
+	
 	var bytes:PackedByteArray = (await api_handler.make_request(HTTPClient.METHOD_GET, 
 			OBJECT_IMAGE_ENDPOINT % [object_type, uuid], 
 			PackedStringArray([account_handler.get_token_header()])))[2] as PackedByteArray
+	
 	if object.image.load_png_from_buffer(bytes) != OK:
 		if object.image.load_webp_from_buffer(bytes) != OK:
 			if object.image.load_jpg_from_buffer(bytes) != OK:
 				push_error("failed to parse response image")
+	
 	return object

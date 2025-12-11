@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://dmcr1nov2l4dq"]
+[gd_scene load_steps=15 format=3 uid="uid://dmcr1nov2l4dq"]
 
 [ext_resource type="Script" uid="uid://bysfki02h8dyt" path="res://addons/butterflycck/uploader/main_screen_tabs.gd" id="1_edmbh"]
 [ext_resource type="Script" uid="uid://dldpy6k6gwhh7" path="res://addons/butterflycck/uploader/object list/content_finder.gd" id="1_l8q2r"]
@@ -11,6 +11,7 @@
 [ext_resource type="Script" uid="uid://cldi6lmhnkah6" path="res://addons/butterflycck/uploader/upload menu/stage_selector.gd" id="6_y1y70"]
 [ext_resource type="Script" uid="uid://cxo8vuqrwttpa" path="res://addons/butterflycck/uploader/upload menu/info.gd" id="7_tippu"]
 [ext_resource type="Script" uid="uid://bxrga38xhucjl" path="res://addons/butterflycck/uploader/upload menu/tag_manager.gd" id="8_fv5sc"]
+[ext_resource type="Script" uid="uid://bqx1e2wx8thi7" path="res://addons/butterflycck/uploader/upload menu/upload.gd" id="9_su35f"]
 [ext_resource type="Script" uid="uid://5f73oeepgswp" path="res://addons/butterflycck/uploader/enter_token.gd" id="9_wa4l3"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_l8q2r"]
@@ -46,7 +47,7 @@ text = "settings"
 [node name="TabContainer" type="TabContainer" parent="." node_paths=PackedStringArray("button_section", "upload_handler", "account_handler")]
 layout_mode = 2
 size_flags_vertical = 3
-current_tab = 3
+current_tab = 0
 clip_tabs = false
 tabs_visible = false
 script = ExtResource("1_edmbh")
@@ -55,7 +56,6 @@ upload_handler = NodePath("ObjectUpload/HBoxContainer/TabContainer")
 account_handler = NodePath("../AccountHandler")
 
 [node name="Upload" type="HBoxContainer" parent="TabContainer"]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -242,6 +242,7 @@ size_flags_horizontal = 3
 text = "Log Out"
 
 [node name="ObjectUpload" type="HBoxContainer" parent="TabContainer"]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 3
 
@@ -274,6 +275,7 @@ theme_override_constants/margin_bottom = 4
 
 [node name="Button2" type="Button" parent="TabContainer/ObjectUpload/HBoxContainer/VBoxContainer/MarginContainer2"]
 layout_mode = 2
+disabled = true
 text = "flags"
 
 [node name="MarginContainer3" type="MarginContainer" parent="TabContainer/ObjectUpload/HBoxContainer/VBoxContainer"]
@@ -288,26 +290,23 @@ theme_override_constants/margin_bottom = 4
 layout_mode = 2
 text = "upload"
 
-[node name="TabContainer" type="TabContainer" parent="TabContainer/ObjectUpload/HBoxContainer" node_paths=PackedStringArray("api_handler", "account_handler", "info_menu")]
+[node name="TabContainer" type="TabContainer" parent="TabContainer/ObjectUpload/HBoxContainer" node_paths=PackedStringArray("api_handler", "account_handler", "info_menu", "upload_menu")]
 layout_mode = 2
 size_flags_horizontal = 3
-current_tab = 2
+current_tab = 0
 tabs_visible = false
 script = ExtResource("6_y1y70")
 api_handler = NodePath("../../../../APIHandler")
 account_handler = NodePath("../../../../AccountHandler")
 info_menu = NodePath("Info")
+upload_menu = NodePath("Upload")
 
-[node name="Info" type="VBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer" node_paths=PackedStringArray("object_name", "uuid", "upload_size", "image_display", "image_size", "last_update_time", "image_select", "description_box", "tag_manager")]
-visible = false
+[node name="Info" type="VBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer" node_paths=PackedStringArray("object_name", "image_display", "image_size", "image_select", "description_box", "tag_manager")]
 layout_mode = 2
 script = ExtResource("7_tippu")
 object_name = NodePath("HBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer/LineEdit")
-uuid = NodePath("")
-upload_size = NodePath("")
 image_display = NodePath("HBoxContainer/HBoxContainer2/VBoxContainer/ImagePreview")
 image_size = NodePath("HBoxContainer/HBoxContainer2/VBoxContainer/HBoxContainer2/Label4")
-last_update_time = NodePath("")
 image_select = NodePath("FileDialog")
 description_box = NodePath("HBoxContainer/HBoxContainer/VBoxContainer/TextEdit")
 tag_manager = NodePath("HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer")
@@ -367,6 +366,8 @@ layout_mode = 2
 custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_constants/h_separation = 1
+theme_override_constants/v_separation = 1
 
 [node name="HSeparator4" type="HSeparator" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer"]
 layout_mode = 2
@@ -443,8 +444,18 @@ layout_mode = 2
 text = "Sorry, flags are not implemented yet. When complete they are intended to be a set of moderated tags for certain types of content that some users may not want to see."
 autowrap_mode = 2
 
-[node name="Upload" type="VBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer"]
+[node name="Upload" type="VBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer" node_paths=PackedStringArray("uuid_text", "size_text", "creation_text", "last_update_text", "publicity_options", "license_options", "confirmation1", "confirmation2")]
+visible = false
 layout_mode = 2
+script = ExtResource("9_su35f")
+uuid_text = NodePath("VBoxContainer/HBoxContainer2/Label")
+size_text = NodePath("VBoxContainer/HBoxContainer5/Label2")
+creation_text = NodePath("VBoxContainer/HBoxContainer7/Label6")
+last_update_text = NodePath("VBoxContainer/HBoxContainer6/Label6")
+publicity_options = NodePath("VBoxContainer/HBoxContainer/OptionButton")
+license_options = NodePath("VBoxContainer/HBoxContainer4/OptionButton")
+confirmation1 = NodePath("VBoxContainer/CheckBox")
+confirmation2 = NodePath("VBoxContainer/CheckBox2")
 metadata/_tab_index = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload"]
@@ -457,37 +468,46 @@ layout_mode = 2
 layout_mode = 2
 text = "Upload UUID:"
 
-[node name="Button" type="Button" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer/HBoxContainer2"]
+[node name="Label" type="Label" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "UNNAMED"
+text = "Never Uploaded"
 
-[node name="HBoxContainer3" type="HBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer"]
-layout_mode = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer/HBoxContainer3"]
+[node name="HBoxContainer5" type="HBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Label" type="Label" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer/HBoxContainer3/HBoxContainer"]
+[node name="Label" type="Label" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer/HBoxContainer5"]
 layout_mode = 2
 text = "Size:"
 
-[node name="Label2" type="Label" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer/HBoxContainer3/HBoxContainer"]
+[node name="Label2" type="Label" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer/HBoxContainer5"]
 layout_mode = 2
 text = "0KB"
 
-[node name="HBoxContainer3" type="HBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer/HBoxContainer3"]
+[node name="HBoxContainer7" type="HBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Label5" type="Label" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer/HBoxContainer3/HBoxContainer3"]
+[node name="Label5" type="Label" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer/HBoxContainer7"]
+layout_mode = 2
+text = "Uploaded:"
+
+[node name="Label6" type="Label" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer/HBoxContainer7"]
+layout_mode = 2
+text = "Never"
+
+[node name="HBoxContainer6" type="HBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label5" type="Label" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer/HBoxContainer6"]
 layout_mode = 2
 text = "Last Update:"
 
-[node name="Label6" type="Label" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer/HBoxContainer3/HBoxContainer3"]
+[node name="Label6" type="Label" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer/HBoxContainer6"]
 layout_mode = 2
-text = "never"
+text = "Never"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer"]
 layout_mode = 2
@@ -520,16 +540,16 @@ text = "License:"
 [node name="OptionButton" type="OptionButton" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer/HBoxContainer4"]
 layout_mode = 2
 size_flags_vertical = 0
-selected = 2
+selected = 0
 item_count = 4
-popup/item_0/text = "MIT"
-popup/item_0/id = 0
-popup/item_0/disabled = true
-popup/item_1/text = "GPL V3"
-popup/item_1/id = 1
+popup/item_0/text = "Source Available"
+popup/item_0/id = 2
+popup/item_1/text = "MIT"
+popup/item_1/id = 0
 popup/item_1/disabled = true
-popup/item_2/text = "Source Available"
-popup/item_2/id = 2
+popup/item_2/text = "GPL V3"
+popup/item_2/id = 1
+popup/item_2/disabled = true
 popup/item_3/text = "Custom"
 popup/item_3/id = 3
 popup/item_3/disabled = true
@@ -538,7 +558,19 @@ popup/item_3/disabled = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 12
-text = "By choosing a license here you agreed that you understand the terms of the license and are binding the uploaded content to the terms of this license. Additionally, you accept full responsability for ensuring the content within the uploaded object can be licensed by the user under these terms. For more information view the *TODO* section of the terms and service, which contains all requirements and license information. ButterflyVR accepts no responsability for copyright or trademark violations within user uploaded content."
+text = "By choosing a license here you agreed that you understand the terms of the license and are binding the uploaded content to the terms of this license. Additionally, you accept full responsability for ensuring the uploaded object can be licensed by you under these terms."
+autowrap_mode = 2
+
+[node name="CheckBox" type="CheckBox" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "By uploading these files you confirm that you are the copyright owner, or have permission from the copyright holder, and can provide this content to ButterflyVR under the specified license. You take full responsabillity for any legal claims, copyright infringment, or trademark infringment caused by this content."
+autowrap_mode = 2
+
+[node name="CheckBox2" type="CheckBox" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "By uploading these files you confirm that you have read and are following the terms of service and the content guidelines and you have correctly flagged this object for unwanted content. You also confirm that this object contains no illegal content, in your jurisdiction or any jurisdiction applicable to ButterflyVR."
 autowrap_mode = 2
 
 [node name="VBoxContainer2" type="VBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload"]
@@ -607,6 +639,10 @@ persistance_handler = NodePath("../PersistanceHandler")
 [connection signal="file_selected" from="TabContainer/Settings/SettingsList/HBoxContainer2/FileDialog" to="TabContainer/Settings/SettingsList/HBoxContainer2" method="_on_file_dialog_file_selected"]
 [connection signal="pressed" from="TabContainer/Settings/SettingsList/HBoxContainer2/PathButton" to="TabContainer/Settings/SettingsList/HBoxContainer2" method="_on_path_button_pressed"]
 [connection signal="pressed" from="TabContainer/Settings/SettingsList/HBoxContainer/Button" to="TabContainer/Settings/SettingsList/HBoxContainer" method="_on_button_pressed"]
+[connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/VBoxContainer/MarginContainer/Button" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer" method="change_stage" binds= [0]]
+[connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/VBoxContainer/MarginContainer2/Button2" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer" method="change_stage" binds= [1]]
+[connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/VBoxContainer/MarginContainer3/Button2" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer" method="change_stage" binds= [2]]
+[connection signal="text_submitted" from="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/TagBox/Panel/LineEdit" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer" method="add_tag"]
 [connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/TagBox/Panel/Button" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer" method="add_tag"]
 [connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer2/VBoxContainer/Button" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info" method="_on_image_upload_start"]
 [connection signal="file_selected" from="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/FileDialog" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info" method="_on_image_selected"]

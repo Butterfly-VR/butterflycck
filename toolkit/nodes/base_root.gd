@@ -7,7 +7,7 @@ class_name BaseRoot
 const blacklisted_types:Array[GDScript] = []
 
 @export var object_name:String
-@export var uuid:String
+@export var _uuid:String
 
 @export_tool_button("assign UUID", "Callable") var assign_button = assign_uuid
 
@@ -45,17 +45,28 @@ class Warning:
 @abstract func get_object_type() -> ObjectType
 
 func assign_uuid() -> void:
-	var new_uuid = UUID.from_String(uuid)
+	var new_uuid = UUID.from_String(_uuid)
 	if new_uuid != UUID.new():
 		attached_uuid = new_uuid
 	else:
 		attached_uuid = null
 
 # setup self and call prep on children, then return children
-func on_pre_upload() -> Node:
+func on_pre_upload() -> bool:
+	var success:bool = true
+	SceneTreeHelper.call_children_recursive(
+			self.get_child(0), 
+			func(x:Node) -> bool: 
+				if x is CCKMarker:
+					if !(x as CCKMarker).prep_for_upload():
+						success = false
+				return true)
+	
+	
 	if !attached_uuid:
 		attached_uuid = UUID.new(true)
-	return null # todo
+	
+	return success
 
 # bindings are applied in reverse order so we need the second binding argument to be first
 func get_child_warnings(node:Node, warnings:Array[Warning]) -> bool:

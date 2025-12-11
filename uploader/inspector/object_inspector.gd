@@ -81,7 +81,7 @@ func object_selected(original_root:BaseRoot) -> void:
 
 
 func _on_upload_started() -> void:
-	page_selector.go_to_upload_tab(previewed_object_root, preview_texture.texture.get_image())
+	page_selector.go_to_upload_tab(previewed_object_root.duplicate(), preview_texture.texture.get_image())
 
 
 func _on_visibility_changed() -> void:

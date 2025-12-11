@@ -1,3 +1,4 @@
+@tool
 extends PanelContainer
 class_name TagManager
 
@@ -10,6 +11,7 @@ func add_tag(tag:String = "") -> void:
 	var tag_box:TagBox = TAG_BOX.instantiate()
 	if tag.is_empty():
 		tag_box.tag_string = tag_entry.text
+		tag_entry.text = ""
 	else:
 		tag_box.tag_string = tag
 	tag_container.add_child(tag_box)

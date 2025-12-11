@@ -40,7 +40,7 @@ var waiting_requests:Array[Request]
 var headers:PackedStringArray = PackedStringArray(["User-Agent: Pirulo/1.0 (Godot)", "Accept: */*"])
 
 # makes a request for the handler to process, requests are handled sequentially.
-# returns a signal that can be awaited to get the response (if it is received).
+# returns a signal that can be awaited to get the response.
 # user-agent, accept, content-type, and content-length headers are managed automatically.
 func make_request(method:HTTPClient.Method, target:String, 
 		request_headers:PackedStringArray = PackedStringArray(), body:String = "") -> Signal:
@@ -97,7 +97,7 @@ func _ready() -> void:
 	var err:Error = client.connect_to_host(TARGET_HOST, TARGET_PORT)
 	if err != OK:
 		push_error("error while connecting to api: ", str(err))
-		await tree.create_timer(3).timeout
+		await tree.create_timer(RECONNECT_DELAY_TIME).timeout
 		push_warning("retrying connection...")
 		_ready.call_deferred()
 		return
@@ -109,27 +109,22 @@ func _ready() -> void:
 		if client.get_status() != HTTPClient.STATUS_CONNECTED:
 			if client.get_status() == 4:
 				push_error("couldnt connect: server unavailable?")
-				push_error("failing all active requests, then retrying")
-				for request:Request in waiting_requests:
-					request.on_complete.emit(-1, PackedStringArray(), "")
-				waiting_requests.clear()
 			else:
 				push_error("error in api connection: client state should be connected but was ", client.get_status())
-			await tree.create_timer(3).timeout
+			await tree.create_timer(RECONNECT_DELAY_TIME).timeout
 			push_warning("retrying connection...")
 			_ready.call_deferred()
 			return
 		while waiting_requests.is_empty():
 			await tree.physics_frame
 		var request:Request = waiting_requests.pop_back()
-		print(request.method, request.target, headers + request.additional_headers, request.body)
 		client.request(request.method, request.target, headers + request.additional_headers, request.body)
 		while client.get_status() == HTTPClient.STATUS_REQUESTING:
 			client.poll()
 			await tree.process_frame
 		if client.get_status() != HTTPClient.STATUS_BODY and client.get_status() != HTTPClient.STATUS_CONNECTED:
 			push_error("error in api connection: expected body or ready connection, got: ", client.get_status())
-			await tree.create_timer(3).timeout
+			await tree.create_timer(RECONNECT_DELAY_TIME).timeout
 			push_warning("retrying connection...")
 			_ready.call_deferred()
 			return
