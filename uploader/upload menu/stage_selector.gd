@@ -16,9 +16,14 @@ const PCK_INTERNAL_PATH:String = "res://_loaded_content/%s/%s"
 @export var upload_menu:UploadMenu
 
 var object_file:FileAccess
+
 var object_type:BaseRoot.ObjectType
 var uuid:UUID
 var object_owner:UUID
+
+var object_key:PackedByteArray
+var object_iv:PackedByteArray
+var object_padding:int
 
 class ObjectMeta:
 	var name:String
@@ -161,14 +166,50 @@ func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
 	
 	pck.flush()
 	
-	var unencrypted:FileAccess = FileAccess.open(pck_path, FileAccess.READ)
+	# todo: this requires 2 copies of the object in memory
+	# one in pack_bytes, the other created by compress
+	# dont think theres a streaming solution in godot so probably need a rust module
+	var pack_bytes:PackedByteArray = FileAccess.get_file_as_bytes(pck_path)
+	
+	var unencrypted:FileAccess = FileAccess.create_temp(
+			FileAccess.ModeFlags.WRITE_READ, "compressed_pck", ".tmp")
+	
+	unencrypted.store_buffer(pack_bytes.compress(
+			FileAccess.CompressionMode.COMPRESSION_ZSTD))
+	
+	unencrypted.seek(0)
+	pack_bytes = PackedByteArray()
 	
 	var encrypted:FileAccess = FileAccess.create_temp(
-			FileAccess.ModeFlags.WRITE_READ, "final_tmp", ".epck", true)
+			FileAccess.ModeFlags.WRITE_READ, "final_tmp", ".epck")
 	
-	# TODO: compress and encrypt
+	var crypto := Crypto.new()
+	object_key = crypto.generate_random_bytes(32)
+	object_iv = crypto.generate_random_bytes(16)
 	
-	return 
+	var aes:AESContext = AESContext.new()
+	aes.start(AESContext.MODE_CBC_ENCRYPT, object_key, object_iv)
+	
+	while unencrypted.get_position() + 16 < unencrypted.get_length():
+		encrypted.store_buffer(aes.update(unencrypted.get_buffer(16)))
+	
+	var final_segment = unencrypted.get_buffer(
+			unencrypted.get_length() - unencrypted.get_position())
+	
+	object_padding = 0
+	while final_segment.size() < 16:
+		final_segment.push_back(0)
+		object_padding += 1
+	
+	encrypted.store_buffer(aes.update(final_segment))
+	
+	encrypted.seek(0)
+	
+	# cleanup temporary files we couldnt delete automatically
+	DirAccess.remove_absolute(path)
+	DirAccess.remove_absolute(pck_path)
+	
+	return encrypted
 
 func make_object(root:BaseRoot, image:Image) -> ObjectMeta:
 	var object:ObjectMeta = ObjectMeta.new()
