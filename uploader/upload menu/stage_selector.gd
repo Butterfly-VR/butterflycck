@@ -3,6 +3,7 @@ extends TabContainer
 class_name UploadHandler
 
 const OBJECT_INFO_ENDPOINT:String = "api/v0/%s/%s"
+const OBJECT_DOWNLOAD_ENDPOINT:String = "api/v0/%s/%s/epck"
 const OBJECT_IMAGE_ENDPOINT:String = "api/v0/%s/%s/image"
 const GIGABYTE:int = MEGABYTE * 1024
 const MEGABYTE:int = KILOBYTE * 1024
@@ -104,6 +105,9 @@ func collect_object_values() -> ObjectMeta:
 	object.publicity = upload_menu.publicity_options.get_selected_id()
 	object.license = upload_menu.license_options.get_selected_id()
 	
+	if object.license == 3:
+		pass # todo: custom licenses
+	
 	object.creation_time_utc = upload_menu.creation_text.text
 	object.modified_time_utc = upload_menu.last_update_text.text
 	
@@ -112,19 +116,66 @@ func collect_object_values() -> ObjectMeta:
 
 func upload() -> void:
 	var object = collect_object_values()
-	for property in object.get_property_list():
-		if property["name"] == "image_bytes":
-			print("bytes go here")
-			continue
-		print("%s = %s" % [property["name"], object.get(property["name"])])
+	
+	# todo: dont send unchanged object data? maybe keep remote object to compare
+	var upload_values:Dictionary[String, Variant] = {
+		"name":object.name,
+		"publicity":object.publicity,
+		"license":object.license,
+		"description":object.description,
+		"tags":object.tags,
+	}
+	
+	if object.license == 3:
+		upload_values["custom_license"] = object.custom_license
+	
+	var response = await api_handler.make_request(
+			HTTPClient.METHOD_POST, 
+			OBJECT_INFO_ENDPOINT % [object.object_type, object.uuid],
+			PackedStringArray([account_handler.get_token_header()]),
+			JSON.stringify(upload_values))
+	
+	if response[0] != 200:
+		return # todo: error handling
+	
+	var blob_uploader:HTTPRequest = HTTPRequest.new()
+	add_child(blob_uploader)
+	blob_uploader.request_raw(OBJECT_IMAGE_ENDPOINT, 
+			PackedStringArray([account_handler.get_token_header()]),
+			HTTPClient.METHOD_POST, object.image_bytes)
+	
+	response = await blob_uploader.request_completed
+	# todo: error handling
+	
+	object_file.seek(0)
+	
+	blob_uploader.request_raw(OBJECT_DOWNLOAD_ENDPOINT, 
+			PackedStringArray([account_handler.get_token_header()]),
+			HTTPClient.METHOD_POST, 
+			object_file.get_buffer(object_file.get_length()))
+	
+	response = await blob_uploader.request_completed
+	# todo: error handling
+	
+	print("upload completed!")
 
 func test_locally() -> void:
 	var object = collect_object_values()
-	for property in object.get_property_list():
-		if property["name"] == "image_bytes":
-			print("bytes go here")
-			continue
-		print("%s = %s" % [property["name"], object.get(property["name"])])
+	
+	var test_file:FileAccess = FileAccess.create_temp(FileAccess.WRITE_READ, 
+			"remote-object", ".cfg", true)
+	
+	test_file.store_line("type: %s" % object_type)
+	test_file.store_line("object path: %s" % object_file.get_path_absolute())
+	test_file.store_line("key: %s" % object_key)
+	test_file.store_line("iv: %s" % object_iv)
+	
+	test_file.flush()
+	
+	OS.create_instance(PackedStringArray(
+			["--object_override=%s" % test_file.get_path()]))
+	
+	print("starting game...")
 
 func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
 	var internal_path = PCK_INTERNAL_PATH % [root.get_object_type(), uuid]
