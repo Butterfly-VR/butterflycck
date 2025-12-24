@@ -2,9 +2,9 @@
 extends TabContainer
 class_name UploadHandler
 
-const OBJECT_INFO_ENDPOINT:String = "api/v0/%s/%s"
-const OBJECT_DOWNLOAD_ENDPOINT:String = "api/v0/%s/%s/epck"
-const OBJECT_IMAGE_ENDPOINT:String = "api/v0/%s/%s/image"
+const OBJECT_INFO_ENDPOINT:String = "/api/v0/%s/%s"
+const OBJECT_DOWNLOAD_ENDPOINT:String = "/api/v0/%s/%s/epck"
+const OBJECT_IMAGE_ENDPOINT:String = "/api/v0/%s/%s/image"
 const GIGABYTE:int = MEGABYTE * 1024
 const MEGABYTE:int = KILOBYTE * 1024
 const KILOBYTE:int = 1024
@@ -121,41 +121,64 @@ func upload() -> void:
 	var upload_values:Dictionary[String, Variant] = {
 		"name":object.name,
 		"publicity":object.publicity,
-		"license":object.license,
 		"description":object.description,
 		"tags":object.tags,
+		"flags": [],
+		"encryption_key":object_key as Array[int],
+		"encryption_iv":object_iv as Array[int]
 	}
 	
-	if object.license == 3:
-		upload_values["custom_license"] = object.custom_license
+	match object.license:
+		0:
+			upload_values["license"] = "GPL License"
+		1:
+			upload_values["license"] = "MIT License"
+		2:
+			upload_values["license"] = "Source Available License"
+		3:
+			upload_values["license"] = object.custom_license
+	
+	var type_string:String
+	match object.object_type:
+		0:
+			type_string = "World"
+		1:
+			type_string = "Avatar"
 	
 	var response = await api_handler.make_request(
 			HTTPClient.METHOD_POST, 
-			OBJECT_INFO_ENDPOINT % [object.object_type, object.uuid],
+			OBJECT_INFO_ENDPOINT % [type_string, object.uuid.to_string()],
 			PackedStringArray([account_handler.get_token_header()]),
 			JSON.stringify(upload_values))
 	
 	if response[0] != 200:
+		print(response)
 		return # todo: error handling
 	
 	var blob_uploader:HTTPRequest = HTTPRequest.new()
 	add_child(blob_uploader)
-	blob_uploader.request_raw(OBJECT_IMAGE_ENDPOINT, 
+	blob_uploader.request_raw( "http://" +
+			api_handler.TARGET_HOST + ":" + str(api_handler.TARGET_PORT)
+			 + OBJECT_IMAGE_ENDPOINT % [type_string, object.uuid.to_string()], 
 			PackedStringArray([account_handler.get_token_header()]),
 			HTTPClient.METHOD_POST, object.image_bytes)
 	
 	response = await blob_uploader.request_completed
 	# todo: error handling
+	print(response)
 	
 	object_file.seek(0)
 	
-	blob_uploader.request_raw(OBJECT_DOWNLOAD_ENDPOINT, 
+	blob_uploader.request_raw( "http://" +
+			api_handler.TARGET_HOST + ":" + str(api_handler.TARGET_PORT)
+			 + OBJECT_DOWNLOAD_ENDPOINT % [type_string, object.uuid.to_string()], 
 			PackedStringArray([account_handler.get_token_header()]),
 			HTTPClient.METHOD_POST, 
 			object_file.get_buffer(object_file.get_length()))
 	
 	response = await blob_uploader.request_completed
 	# todo: error handling
+	print(response)
 	
 	print("upload completed!")
 

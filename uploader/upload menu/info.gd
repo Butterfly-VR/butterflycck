@@ -22,10 +22,10 @@ func setup(object_name:String, root_pack:FileAccess, current_image:Image,
 		tags:PackedStringArray, description:String) -> void:
 	self.object_name.text = object_name
 	
-	image_bytes = current_image.get_data()
+	image_bytes = current_image.save_png_to_buffer()
 	image_display.texture = ImageTexture.create_from_image(current_image)
 	
-	image_size.text = get_size_string(current_image.get_data_size())
+	image_size.text = get_size_string(image_bytes.size())
 	#upload_size.text = get_size_string(FileAccess.get_size(root_pack.get_path()))
 	
 	tag_manager.clear_tags()
