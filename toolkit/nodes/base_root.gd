@@ -46,10 +46,8 @@ class Warning:
 
 func assign_uuid() -> void:
 	var new_uuid = UUID.from_String(_uuid)
-	if new_uuid != UUID.new():
-		attached_uuid = new_uuid
-	else:
-		attached_uuid = null
+	_uuid = new_uuid.to_string()
+	attached_uuid = new_uuid
 
 # setup self and call prep on children, then return children
 func on_pre_upload() -> bool:
@@ -130,8 +128,8 @@ func get_preview_camera_transform() -> Transform3D:
 	# this should place the camera as close as possible to the object,
 	# while leaving everything visible.
 	# right now it places the camers way too far away and i have no idea why
-	pos.z += (maxf(aabb.size.x, aabb.size.y) / 2) / abs(tan(FOV / 2)) * 1.1
-	return Transform3D(Basis.IDENTITY, pos)
+	pos.z -= (maxf(aabb.size.x, aabb.size.y) / 2) / abs(tan(FOV / 2)) * 1.1
+	return Transform3D(Basis.IDENTITY.rotated(Vector3.UP, deg_to_rad(180)), pos)
 
 func _get_configuration_warnings():
 	var warnings:Array[String] = []

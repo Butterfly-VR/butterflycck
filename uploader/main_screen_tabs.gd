@@ -7,10 +7,10 @@ class_name PageSelector
 @export var account_handler:AccountHandler
 
 func _ready() -> void:
-	if await account_handler.is_token_valid(
-			await account_handler.get_token(), account_handler.token_expiry_utc):
+	if await account_handler.check_token_valid():
 		leave_token_entry()
 	else:
+		account_handler.logout() # clear any invalid token
 		enter_token_entry()
 
 func leave_token_entry() -> void:
