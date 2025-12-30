@@ -3,10 +3,10 @@ extends CCKMarker
 class_name IKController
 
 @export_enum(" ") var head_bone: String
-@export_enum(" ") var left_arm_bone: String
-@export_enum(" ") var right_arm_bone: String
-@export_enum(" ") var left_leg_bone: String
-@export_enum(" ") var right_leg_bone: String
+@export_enum(" ") var left_hand_bone: String
+@export_enum(" ") var right_hand_bone: String
+@export_enum(" ") var left_foot_bone: String
+@export_enum(" ") var right_foot_bone: String
 @export_enum(" ") var spine_bone: String
 @export_enum(" ") var hip_bone: String
 
@@ -30,27 +30,40 @@ func _get_configuration_warnings():
 
 func check_bone_config(target:Skeleton3D) -> bool:
 	return (target.find_bone(head_bone) == -1 or 
-			target.find_bone(left_arm_bone) == -1 or 
-			target.find_bone(right_arm_bone) == -1 or 
-			target.find_bone(left_leg_bone) == -1 or 
-			target.find_bone(right_leg_bone) == -1 or 
+			target.find_bone(left_hand_bone) == -1 or 
+			target.find_bone(right_hand_bone) == -1 or 
+			target.find_bone(left_foot_bone) == -1 or 
+			target.find_bone(right_foot_bone) == -1 or 
 			target.find_bone(spine_bone) == -1 or 
 			target.find_bone(hip_bone) == -1)
 
+func check_bones_set() -> bool:
+	return (head_bone == "" or 
+			left_hand_bone == "" or 
+			right_hand_bone == "" or 
+			left_foot_bone == "" or 
+			right_foot_bone == "" or 
+			spine_bone == "" or 
+			hip_bone == "")
+
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	var warnings:Array[BaseRoot.Warning] = []
+	
 	if get_parent() is not Skeleton3D:
 		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
 				"IKController must be child of Skeleton3D", 
 				"the IKController acts as a Skelleton3DModifier ingame, this means it also needs to be a child of a Skeleton3D", 
 				self))
-	
-	else:
-		if !check_bone_config(get_parent()):
-			warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
-					"IKController is missing bone targets", 
-					"all target bones in the IKController must be assigned to valid bones in the Skeleton3D", 
-					self))
+	elif check_bones_set():
+		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
+				"IKController is missing bone targets", 
+				"all target bones in the IKController must be assigned", 
+				self))
+	elif check_bone_config(get_parent()):
+		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
+				"IKController has invalid bone targets", 
+				"all target bones in the IKController must be valid bones in the Skeleton3D", 
+				self))
 	
 	if eye_placement == null:
 		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
@@ -62,39 +75,22 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 
 func prep_for_upload() -> bool:
 	var target = get_parent()
+	
 	if target is not Skeleton3D or !check_bone_config(target):
 		return false
+	
 	var parent:Skeleton3D = get_parent()
 	
-	var bones:Array[String] = [head_bone, left_arm_bone, right_arm_bone, 
-			left_leg_bone, right_leg_bone, spine_bone, hip_bone]
-	var targets:Array[Node3D] = []
-	
-	# create bone targets in parent
-	for bone in bones:
-		var bone_target = Node3D.new()
-		parent.add_child(bone_target)
-		bone_target.transform = parent.get_bone_pose(parent.find_bone(bone))
-		targets.push_back(bone_target)
-	
-	# create meta value for parent
 	var meta_values:Dictionary[String, int] = {}
 	
-	meta_values["head_bone"] = parent.find_bone(bones[0])
-	meta_values["head_target"] = targets[0].get_index()
+	meta_values["head_bone"] = parent.find_bone(head_bone)
 	meta_values["head_view"] = eye_placement.get_index()
-	meta_values["left_arm_bone"] = parent.find_bone(bones[1])
-	meta_values["left_arm_target"] = targets[1].get_index()
-	meta_values["right_arm_bone"] = parent.find_bone(bones[2])
-	meta_values["right_arm_target"] = targets[2].get_index()
-	meta_values["left_leg_bone"] = parent.find_bone(bones[3])
-	meta_values["left_leg_target"] = targets[3].get_index()
-	meta_values["right_leg_bone"] = parent.find_bone(bones[4])
-	meta_values["right_leg_target"] = targets[4].get_index()
-	meta_values["spine_bone"] = parent.find_bone(bones[5])
-	meta_values["spine_target"] = targets[5].get_index()
-	meta_values["hip_bone"] = parent.find_bone(bones[6])
-	meta_values["hip_target"] = targets[6].get_index()
+	meta_values["left_hand_bone"] = parent.find_bone(left_hand_bone)
+	meta_values["right_hand_bone"] = parent.find_bone(right_hand_bone)
+	meta_values["left_foot_bone"] = parent.find_bone(left_foot_bone)
+	meta_values["right_foot_bone"] = parent.find_bone(right_foot_bone)
+	meta_values["spine_bone"] = parent.find_bone(spine_bone)
+	meta_values["hip_bone"] = parent.find_bone(hip_bone)
 	
 	parent.set_meta("IKMarker", meta_values)
 	

@@ -26,20 +26,29 @@ grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
 
-[node name="Button" type="Button" parent="HBoxContainer2"]
+[node name="Label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "warning: changes to scenes made while on this page may not be counted or may cause bugs / failed uploads. this will be fixed later
+warning: open scenes may show as combined with the selected scene in the preview. this is purely a visual bug."
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]
+visible = false
+layout_mode = 2
+
+[node name="Button" type="Button" parent="VBoxContainer/HBoxContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "upload"
 
-[node name="Button2" type="Button" parent="HBoxContainer2"]
+[node name="Button2" type="Button" parent="VBoxContainer/HBoxContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "manage uploads"
 
-[node name="Button3" type="Button" parent="HBoxContainer2"]
+[node name="Button3" type="Button" parent="VBoxContainer/HBoxContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "settings"
@@ -47,15 +56,16 @@ text = "settings"
 [node name="TabContainer" type="TabContainer" parent="." node_paths=PackedStringArray("button_section", "upload_handler", "account_handler")]
 layout_mode = 2
 size_flags_vertical = 3
-current_tab = 0
+current_tab = 4
 clip_tabs = false
 tabs_visible = false
 script = ExtResource("1_edmbh")
-button_section = NodePath("../HBoxContainer2")
+button_section = NodePath("../VBoxContainer/HBoxContainer2")
 upload_handler = NodePath("ObjectUpload/HBoxContainer/TabContainer")
 account_handler = NodePath("../AccountHandler")
 
 [node name="Upload" type="HBoxContainer" parent="TabContainer"]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -592,7 +602,6 @@ size_flags_horizontal = 3
 text = "Upload"
 
 [node name="EnterToken" type="VBoxContainer" parent="TabContainer" node_paths=PackedStringArray("email_entry", "password_entry", "account_handler", "api_handler", "page_selector")]
-visible = false
 layout_mode = 2
 script = ExtResource("9_wa4l3")
 email_entry = NodePath("LineEdit")
@@ -626,9 +635,9 @@ script = ExtResource("6_3y055")
 api_handler = NodePath("../APIHandler")
 persistance_handler = NodePath("../PersistanceHandler")
 
-[connection signal="pressed" from="HBoxContainer2/Button" to="TabContainer" method="_on_upload_button_pressed"]
-[connection signal="pressed" from="HBoxContainer2/Button2" to="TabContainer" method="_on_manage_button_pressed"]
-[connection signal="pressed" from="HBoxContainer2/Button3" to="TabContainer" method="_on_settings_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer2/Button" to="TabContainer" method="_on_upload_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer2/Button2" to="TabContainer" method="_on_manage_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer2/Button3" to="TabContainer" method="_on_settings_button_pressed"]
 [connection signal="visibility_changed" from="TabContainer/Upload/ObjectSelector" to="TabContainer/Upload/ObjectSelector" method="_on_visibility_changed"]
 [connection signal="pressed" from="TabContainer/Upload/ObjectSelector/HBoxContainer/Avatars" to="TabContainer/Upload/ObjectSelector" method="on_target_type_changed" binds= [0]]
 [connection signal="pressed" from="TabContainer/Upload/ObjectSelector/HBoxContainer/Worlds" to="TabContainer/Upload/ObjectSelector" method="on_target_type_changed" binds= [1]]

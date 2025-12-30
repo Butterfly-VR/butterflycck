@@ -49,10 +49,15 @@ func change_stage(idx:int) -> void:
 	current_tab = idx
 
 func setup(root:BaseRoot, default_image:Image) -> void:
+	
+	await get_tree().physics_frame
+	root.assign_uuid()
+	
 	var object:ObjectMeta = await get_object_info(root.attached_uuid, 
 			root.get_object_type())
 	
 	if !object:
+		print("couldnt get object 3:")
 		object = await make_object(root, default_image)
 	
 	object_file = await create_finialized_file(root, object.uuid)
@@ -164,6 +169,7 @@ func upload() -> void:
 			HTTPClient.METHOD_POST, object.image_bytes)
 	
 	response = await blob_uploader.request_completed
+	
 	# todo: error handling
 	print(response)
 	
@@ -180,6 +186,7 @@ func upload() -> void:
 	# todo: error handling
 	print(response)
 	
+	blob_uploader.queue_free()
 	print("upload completed!")
 
 func test_locally() -> void:
@@ -294,7 +301,7 @@ func make_object(root:BaseRoot, image:Image) -> ObjectMeta:
 	object.description = ""
 	object.tags = PackedStringArray()
 	
-	object.uuid = null
+	object.uuid = root.attached_uuid
 	object.owner = await account_handler.get_uuid()
 	
 	object.object_size_KB = 0
@@ -314,48 +321,67 @@ func get_object_info(uuid:UUID, object_type:BaseRoot.ObjectType) -> ObjectMeta:
 	if !uuid:
 		return null
 	
+	var object_type_string:String = "UNNAMED"
+	match object_type:
+		BaseRoot.ObjectType.world:
+			object_type_string = "World"
+		BaseRoot.ObjectType.avatar:
+			object_type_string = "Avatar"
+	
 	var response = await api_handler.make_request(
 			HTTPClient.METHOD_GET, 
-			OBJECT_INFO_ENDPOINT % [object_type, uuid], 
+			OBJECT_INFO_ENDPOINT % [object_type_string, uuid], 
 			PackedStringArray([account_handler.get_token_header()]))
 	var result = api_handler.handle_response(response[0], response[2], [200], 
-			["name", "object_type", "description", "tags", "uuid", 
-			"owner", "object_size_kb", "image_size_kb", "publicity", 
-			"license", "creation_time_utc", "modified_time_utc"])
+			["name", "object_type", "description", "tags", "id", 
+			"creator", "object_size", "image_size", "publicity", 
+			"license", "created_at", "updated_at"])
+	var values:Dictionary[String, Variant] = result[4]
 	
 	if !result[0]:
 		return null
-	if UUID.from_String(result[4][5]) != await account_handler.get_uuid():
+	
+	if !UUID.from_String(values["creator"]).equals(await account_handler.get_uuid()):
+		print("tried to upload object we are not owner of, no error handling here yet")
 		return null
 	
 	var object:ObjectMeta = ObjectMeta.new()
 	
-	object.name = result[4][0]
-	object.object_type = result[4][1]
+	object.name = values["name"]
+	object.object_type = values["object_type"]
 	
-	object.description = result[4][2]
-	object.tags = PackedStringArray(result[4][3])
+	object.description = values["description"]
+	object.tags = PackedStringArray(values["tags"])
 	
-	object.uuid = UUID.from_String(result[4][4])
-	object.owner = UUID.from_String(result[4][5])
+	object.uuid = UUID.from_String(values["id"])
+	object.owner = UUID.from_String(values["creator"])
 	
-	object.object_size_KB = result[4][6]
-	object.image_size_KB = result[4][7]
+	object.object_size_KB = values["object_size"] / 1024
+	object.image_size_KB = values["image_size"] / 1024
 	
-	object.publicity = result[4][8]
-	object.license = result[4][9]
+	object.publicity = values["publicity"]
+	object.license = values["license"] # todo: retrive license text if needed
 	
-	object.creation_time_utc = result[4][10]
-	object.modified_time_utc = result[4][11]
-	
-	if object.license == 3 and ("custom_license" in response[2]):
-		object.custom_license = response[2]["custom_license"]
+	object.creation_time_utc = values["created_at"]
+	object.modified_time_utc = values["updated_at"]
 	
 	object.image = Image.new()
 	
-	var bytes:PackedByteArray = (await api_handler.make_request(HTTPClient.METHOD_GET, 
-			OBJECT_IMAGE_ENDPOINT % [object_type, uuid], 
-			PackedStringArray([account_handler.get_token_header()])))[2] as PackedByteArray
+	var image_downloader:HTTPRequest = HTTPRequest.new()
+	add_child(image_downloader)
+	
+	image_downloader.request( "http://" +
+			api_handler.TARGET_HOST + ":" + str(api_handler.TARGET_PORT)
+			 + OBJECT_IMAGE_ENDPOINT % [object_type_string, uuid], 
+			PackedStringArray([account_handler.get_token_header()]), 
+			HTTPClient.METHOD_GET)
+	
+	var image_response:Array[Variant] = await image_downloader.request_completed
+	
+	# todo: error handling
+	
+	var bytes:PackedByteArray = image_response[3]
+	image_downloader.queue_free()
 	
 	if object.image.load_png_from_buffer(bytes) != OK:
 		if object.image.load_webp_from_buffer(bytes) != OK:
