@@ -9,7 +9,7 @@ const GIGABYTE:int = MEGABYTE * 1024
 const MEGABYTE:int = KILOBYTE * 1024
 const KILOBYTE:int = 1024
 const CUSTOM_LICENSE_TYPE:int = 3
-const PCK_INTERNAL_PATH:String = "res://_loaded_content/%s/%s"
+const PCK_INTERNAL_PATH:String = "res://_loaded_content/%s/%s.tscn"
 
 @export var api_handler:APIHandler
 @export var account_handler:AccountHandler
@@ -24,7 +24,6 @@ var object_owner:UUID
 
 var object_key:PackedByteArray
 var object_iv:PackedByteArray
-var object_padding:int
 
 class ObjectMeta:
 	var name:String
@@ -255,6 +254,9 @@ func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
 	var unencrypted:FileAccess = FileAccess.create_temp(
 			FileAccess.ModeFlags.WRITE_READ, "compressed_pck", ".tmp")
 	
+	print(pack_bytes.compress(
+			FileAccess.CompressionMode.COMPRESSION_ZSTD))
+	
 	unencrypted.store_buffer(pack_bytes.compress(
 			FileAccess.CompressionMode.COMPRESSION_ZSTD))
 	
@@ -277,12 +279,19 @@ func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
 	var final_segment = unencrypted.get_buffer(
 			unencrypted.get_length() - unencrypted.get_position())
 	
-	object_padding = 0
+	# padding start
+	if final_segment.size() == 16:
+		print(encrypted.store_buffer(aes.update(final_segment)))
+		final_segment = PackedByteArray([255])
+	else:
+		final_segment.push_back(255)
+	
 	while final_segment.size() < 16:
 		final_segment.push_back(0)
-		object_padding += 1
 	
-	encrypted.store_buffer(aes.update(final_segment))
+	print(encrypted.store_buffer(aes.update(final_segment)))
+	
+	aes.finish()
 	
 	encrypted.seek(0)
 	

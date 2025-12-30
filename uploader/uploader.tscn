@@ -35,7 +35,6 @@ text = "warning: changes to scenes made while on this page may not be counted or
 warning: open scenes may show as combined with the selected scene in the preview. this is purely a visual bug."
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]
-visible = false
 layout_mode = 2
 
 [node name="Button" type="Button" parent="VBoxContainer/HBoxContainer2"]
@@ -56,7 +55,7 @@ text = "settings"
 [node name="TabContainer" type="TabContainer" parent="." node_paths=PackedStringArray("button_section", "upload_handler", "account_handler")]
 layout_mode = 2
 size_flags_vertical = 3
-current_tab = 4
+current_tab = 0
 clip_tabs = false
 tabs_visible = false
 script = ExtResource("1_edmbh")
@@ -65,7 +64,6 @@ upload_handler = NodePath("ObjectUpload/HBoxContainer/TabContainer")
 account_handler = NodePath("../AccountHandler")
 
 [node name="Upload" type="HBoxContainer" parent="TabContainer"]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -602,6 +600,7 @@ size_flags_horizontal = 3
 text = "Upload"
 
 [node name="EnterToken" type="VBoxContainer" parent="TabContainer" node_paths=PackedStringArray("email_entry", "password_entry", "account_handler", "api_handler", "page_selector")]
+visible = false
 layout_mode = 2
 script = ExtResource("9_wa4l3")
 email_entry = NodePath("LineEdit")
