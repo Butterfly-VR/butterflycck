@@ -254,11 +254,11 @@ func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
 	var unencrypted:FileAccess = FileAccess.create_temp(
 			FileAccess.ModeFlags.WRITE_READ, "compressed_pck", ".tmp")
 	
-	print(pack_bytes.compress(
-			FileAccess.CompressionMode.COMPRESSION_ZSTD))
+	pack_bytes.compress(
+			FileAccess.CompressionMode.COMPRESSION_GZIP)
 	
 	unencrypted.store_buffer(pack_bytes.compress(
-			FileAccess.CompressionMode.COMPRESSION_ZSTD))
+			FileAccess.CompressionMode.COMPRESSION_GZIP))
 	
 	unencrypted.seek(0)
 	pack_bytes = PackedByteArray()
@@ -281,7 +281,7 @@ func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
 	
 	# padding start
 	if final_segment.size() == 16:
-		print(encrypted.store_buffer(aes.update(final_segment)))
+		encrypted.store_buffer(aes.update(final_segment))
 		final_segment = PackedByteArray([255])
 	else:
 		final_segment.push_back(255)
@@ -289,7 +289,7 @@ func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
 	while final_segment.size() < 16:
 		final_segment.push_back(0)
 	
-	print(encrypted.store_buffer(aes.update(final_segment)))
+	encrypted.store_buffer(aes.update(final_segment))
 	
 	aes.finish()
 	

@@ -14,12 +14,13 @@ func get_spawnpoint_transform(node:Node, transform:TransformWrapper):
 	if node is SpawnPoint:
 		if node.get_parent() is Node3D:
 			transform.transform = (node.get_parent() as Node3D).global_transform
+	return true
 
 # positions the preview camera so that it roughly shows the view of a newly spawned player
 func get_preview_camera_transform() -> Transform3D:
-	var spawn_tranform:TransformWrapper
+	var spawn_tranform:TransformWrapper = TransformWrapper.new()
 	SceneTreeHelper.call_children_recursive(self, get_spawnpoint_transform.bind(spawn_tranform))
-	if spawn_tranform:
+	if spawn_tranform.transform:
 		spawn_tranform.transform.origin.y += 1.0
 		return spawn_tranform.transform
 	else:
