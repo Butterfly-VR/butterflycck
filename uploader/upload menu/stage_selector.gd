@@ -246,16 +246,13 @@ func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
 	
 	pck.flush()
 	
-	# todo: this requires 2 copies of the object in memory
+	# todo: this requires 2 copies of the object in memory at the same time
 	# one in pack_bytes, the other created by compress
 	# dont think theres a streaming solution in godot so probably need a rust module
 	var pack_bytes:PackedByteArray = FileAccess.get_file_as_bytes(pck_path)
 	
 	var unencrypted:FileAccess = FileAccess.create_temp(
 			FileAccess.ModeFlags.WRITE_READ, "compressed_pck", ".tmp")
-	
-	pack_bytes.compress(
-			FileAccess.CompressionMode.COMPRESSION_GZIP)
 	
 	unencrypted.store_buffer(pack_bytes.compress(
 			FileAccess.CompressionMode.COMPRESSION_GZIP))
