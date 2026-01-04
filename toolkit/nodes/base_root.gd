@@ -75,8 +75,13 @@ func get_child_warnings(node:Node, warnings:Array[Warning]) -> bool:
 				"this object contains a node of type %s, which is not allowed" % (
 				node.get_class()), 
 				self))
-	elif node is CCKMarker:
+	if node is CCKMarker:
 		warnings.append_array((node as CCKMarker).get_uploader_warnings())
+	elif node.get_script() != null:
+		warnings.push_back(Warning.new(Warning.WarningLevel.Error, 
+				"Node with script", 
+				"Scripts are currently not allowed on uploaded objects, sandboxed scripting will be implemented in a future alpha build", 
+				self))
 	return true
 
 func get_upload_warnings() -> Array[Warning]:
@@ -85,11 +90,10 @@ func get_upload_warnings() -> Array[Warning]:
 		SceneTreeHelper.call_children_recursive(get_child(0), get_child_warnings.bind(warnings))
 	
 	# get config warnings from self
-	var self_warnings:Array[String] = _get_configuration_warnings()
-	for warning in self_warnings:
+	for warning in _get_configuration_warnings():
 		warnings.push_back(Warning.new(
 				Warning.WarningLevel.Warning, 
-				"Config Error", 
+				"Root Config Error", 
 				warning, 
 				self))
 	return warnings

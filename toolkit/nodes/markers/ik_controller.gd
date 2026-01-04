@@ -47,14 +47,16 @@ func check_bones_set() -> bool:
 			hip_bone == "")
 
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
-	var warnings:Array[BaseRoot.Warning] = []
 	
-	if get_parent() is not Skeleton3D:
-		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
-				"IKController must be child of Skeleton3D", 
-				"the IKController acts as a Skelleton3DModifier ingame, this means it also needs to be a child of a Skeleton3D", 
+	var warnings:Array[BaseRoot.Warning] = get_universal_warnings()
+	
+	for warning in _get_configuration_warnings():
+		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Warning, 
+				"Spawnpoint config issue", 
+				warning, 
 				self))
-	elif check_bones_set():
+	
+	if check_bones_set():
 		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
 				"IKController is missing bone targets", 
 				"all target bones in the IKController must be assigned", 

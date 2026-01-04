@@ -23,8 +23,13 @@ const OUTPUT_LENGTH:int = 64
 @export var account_handler:AccountHandler
 @export var api_handler:APIHandler
 @export var page_selector:PageSelector
+@export var button:Button
 
 func _on_token_entered() -> void:
+	button.disabled = true
+	
+	await get_tree().physics_frame
+	
 	var email:String = email_entry.text
 	var password:String = password_entry.text
 	
@@ -37,6 +42,8 @@ func _on_token_entered() -> void:
 	api_handler.make_request(HTTPClient.METHOD_POST, SIGNIN_ENDPOINT, PackedStringArray(), body).connect(on_login_response)
 
 func on_login_response(code:HTTPClient.ResponseCode, _headers:PackedStringArray, body:String) -> void:
+	button.disabled = false
+	
 	var result:Array = api_handler.handle_response(code, body, [HTTPClient.RESPONSE_OK], [
 			"token",
 			"token_expiry",
