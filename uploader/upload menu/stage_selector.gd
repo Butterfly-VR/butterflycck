@@ -48,7 +48,6 @@ func change_stage(idx:int) -> void:
 	current_tab = idx
 
 func setup(root:BaseRoot, default_image:Image) -> void:
-	
 	await get_tree().physics_frame
 	root.assign_uuid()
 	
@@ -56,10 +55,13 @@ func setup(root:BaseRoot, default_image:Image) -> void:
 			root.get_object_type())
 	
 	if !object:
-		print("couldnt get object 3:")
 		object = await make_object(root, default_image)
 	
 	object_file = await create_finialized_file(root, object.uuid)
+	
+	if !object_file:
+		push_error("upload failed")
+		return
 	
 	object_type = object.object_type
 	uuid = object.uuid
@@ -209,15 +211,30 @@ func test_locally() -> void:
 func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
 	var internal_path = PCK_INTERNAL_PATH % [root.get_object_type(), uuid]
 	
-	root.on_pre_upload()
+	if !root.on_pre_upload():
+		push_error("error on upload, this is a bug")
+		return null
+	
+	
 	
 	# post-prep, since the root isnt included in the file all nodes 
 	# need their owner set to the new root node
 	await get_tree().physics_frame
+	
 	SceneTreeHelper.call_children_recursive(
 			root.get_child(0), 
 			func(x:Node) -> bool: 
 				x.owner = root.get_child(0) 
+				return true)
+	
+	# debug check, all cckmarkers should free themselves before this point
+	SceneTreeHelper.call_children_recursive(
+			root.get_child(0), 
+			func(x:Node) -> bool: 
+				if x is CCKMarker:
+					push_error(
+							"node at %s was not cleaned up properly, this object cannot be uploaded" 
+							% x.owner.get_path_to(x))
 				return true)
 	
 	var pack:PackedScene = PackedScene.new()
