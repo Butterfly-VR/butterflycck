@@ -105,7 +105,7 @@ func collect_object_values() -> ObjectMeta:
 	object.uuid = uuid if uuid else UUID.new(true)
 	object.owner = object_owner
 	
-	object.object_size_KB = upload_menu.object_size_kb / 1000
+	object.object_size_KB = upload_menu.object_size / 1000
 	object.image_size_KB = info_menu.image_bytes.size() / 1000
 	
 	object.publicity = upload_menu.publicity_options.get_selected_id()

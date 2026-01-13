@@ -15,14 +15,14 @@ const KILOBYTE:int = 1024
 @export var confirmation1:CheckBox
 @export var confirmation2:CheckBox
 
-var object_size_kb:int
+var object_size:int
 
 func setup(uuid:UUID, root_pack:FileAccess, creation_time:String,
 		last_update_time:String, publicity:int, license:int, custom_license:String = "") -> void:
 	if uuid:
 		uuid_text.text = uuid.to_string()
 	
-	object_size_kb = root_pack.get_length()
+	object_size = root_pack.get_length()
 	size_text.text = get_size_string(root_pack.get_length())
 	
 	creation_text.text = creation_time
