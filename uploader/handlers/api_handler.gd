@@ -2,8 +2,8 @@
 extends Node
 class_name APIHandler
 
-const TARGET_HOST:String = "127.0.0.1"
-const TARGET_PORT:int = 23888
+const TARGET_HOST:String = "api.butterflyvr.net"
+const TARGET_PORT:int = 443
 const RECONNECT_DELAY_TIME:float = 3
 
 # contains the request information stored before processing a request
@@ -93,7 +93,7 @@ func handle_response(code:HTTPClient.ResponseCode, body:String, expected_codes:A
 # will call itself deferred to recreate the connection if it errors out
 func _ready() -> void:
 	client = HTTPClient.new()
-	var err:Error = client.connect_to_host(TARGET_HOST, TARGET_PORT)
+	var err:Error = client.connect_to_host(TARGET_HOST, TARGET_PORT, TLSOptions.client())
 	if err != OK:
 		push_error("error while connecting to api: ", str(err))
 		await tree.create_timer(RECONNECT_DELAY_TIME).timeout

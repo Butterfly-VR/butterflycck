@@ -79,7 +79,6 @@ func prep_for_upload() -> bool:
 	var target = get_parent()
 	
 	if target is not Skeleton3D or check_bone_config(target):
-		print("false?")
 		return false
 	
 	var parent:Skeleton3D = get_parent()
@@ -98,6 +97,5 @@ func prep_for_upload() -> bool:
 	parent.set_meta("IKMarker", meta_values)
 	
 	queue_free()
-	print("freed?")
 	
 	return true

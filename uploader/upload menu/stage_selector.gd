@@ -163,7 +163,7 @@ func upload() -> void:
 	
 	var blob_uploader:HTTPRequest = HTTPRequest.new()
 	add_child(blob_uploader)
-	blob_uploader.request_raw( "http://" +
+	blob_uploader.request_raw( "https://" +
 			api_handler.TARGET_HOST + ":" + str(api_handler.TARGET_PORT)
 			 + OBJECT_IMAGE_ENDPOINT % [type_string, object.uuid.to_string()], 
 			PackedStringArray([account_handler.get_token_header()]),
@@ -176,7 +176,7 @@ func upload() -> void:
 	
 	object_file.seek(0)
 	
-	blob_uploader.request_raw( "http://" +
+	blob_uploader.request_raw( "https://" +
 			api_handler.TARGET_HOST + ":" + str(api_handler.TARGET_PORT)
 			 + OBJECT_DOWNLOAD_ENDPOINT % [type_string, object.uuid.to_string()], 
 			PackedStringArray([account_handler.get_token_header()]),
@@ -393,7 +393,7 @@ func get_object_info(uuid:UUID, object_type:BaseRoot.ObjectType) -> ObjectMeta:
 	var image_downloader:HTTPRequest = HTTPRequest.new()
 	add_child(image_downloader)
 	
-	image_downloader.request( "http://" +
+	image_downloader.request( "https://" +
 			api_handler.TARGET_HOST + ":" + str(api_handler.TARGET_PORT)
 			 + OBJECT_IMAGE_ENDPOINT % [object_type_string, uuid], 
 			PackedStringArray([account_handler.get_token_header()]), 
