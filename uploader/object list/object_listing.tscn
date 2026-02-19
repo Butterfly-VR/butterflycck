@@ -1,0 +1,33 @@
+[gd_scene load_steps=3 format=3 uid="uid://yntpdf3md7t"]
+
+[ext_resource type="Script" uid="uid://ddkoim1l6ni0k" path="res://addons/butterflycck/uploader/object list/object_listing.gd" id="1_wk8oa"]
+[ext_resource type="Texture2D" uid="uid://cibhaukxqck2k" path="res://addons/butterflycck/uploader/object list/spacer_icon.png" id="2_yy21i"]
+
+[node name="Item" type="PanelContainer" node_paths=PackedStringArray("object_name", "uuid", "select_button")]
+script = ExtResource("1_wk8oa")
+object_name = NodePath("HBoxContainer/Label")
+uuid = NodePath("HBoxContainer/Label2")
+select_button = NodePath("HBoxContainer/Button")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("2_yy21i")
+stretch_mode = 4
+
+[node name="Label" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "name"
+
+[node name="Label2" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "attached id"
+
+[node name="Button" type="Button" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "select"

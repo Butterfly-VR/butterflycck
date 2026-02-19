@@ -1,0 +1,101 @@
+@tool
+extends CCKMarker
+class_name IKController
+
+@export_enum(" ") var head_bone: String
+@export_enum(" ") var left_hand_bone: String
+@export_enum(" ") var right_hand_bone: String
+@export_enum(" ") var left_foot_bone: String
+@export_enum(" ") var right_foot_bone: String
+@export_enum(" ") var spine_bone: String
+@export_enum(" ") var hip_bone: String
+
+@export var eye_placement:Node3D
+
+func _validate_property(property: Dictionary) -> void:
+	if property.name.contains("bone"):
+		var skeleton: Skeleton3D = get_parent() if get_parent() is Skeleton3D else null
+		if skeleton:
+			property.hint = PROPERTY_HINT_ENUM
+			property.hint_string = skeleton.get_concatenated_bone_names()
+
+func _process(delta: float) -> void:
+	update_configuration_warnings() # todo: this should be callled only when needed
+
+func _get_configuration_warnings():
+	var warnings:Array[String] = []
+	if get_parent() is not Skeleton3D:
+		warnings.append("IKController must be child of Skeleton3D.")
+	return warnings
+
+func check_bone_config(target:Skeleton3D) -> bool:
+	return (target.find_bone(head_bone) == -1 or 
+			target.find_bone(left_hand_bone) == -1 or 
+			target.find_bone(right_hand_bone) == -1 or 
+			target.find_bone(left_foot_bone) == -1 or 
+			target.find_bone(right_foot_bone) == -1 or 
+			target.find_bone(spine_bone) == -1 or 
+			target.find_bone(hip_bone) == -1)
+
+func check_bones_set() -> bool:
+	return (head_bone == "" or 
+			left_hand_bone == "" or 
+			right_hand_bone == "" or 
+			left_foot_bone == "" or 
+			right_foot_bone == "" or 
+			spine_bone == "" or 
+			hip_bone == "")
+
+func get_uploader_warnings() -> Array[BaseRoot.Warning]:
+	
+	var warnings:Array[BaseRoot.Warning] = get_universal_warnings()
+	
+	for warning in _get_configuration_warnings():
+		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Warning, 
+				"Spawnpoint config issue", 
+				warning, 
+				self))
+	
+	if check_bones_set():
+		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
+				"IKController is missing bone targets", 
+				"all target bones in the IKController must be assigned", 
+				self))
+	elif check_bone_config(get_parent()):
+		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
+				"IKController has invalid bone targets", 
+				"all target bones in the IKController must be valid bones in the Skeleton3D", 
+				self))
+	
+	if eye_placement == null:
+		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
+				"IKController does not have eye position", 
+				"the IKController needs a node that tell it where to place the player's camera relative to the head", 
+				self))
+	
+	return warnings
+
+func prep_for_upload() -> bool:
+	var target = get_parent()
+	
+	if target is not Skeleton3D or check_bone_config(target):
+		return false
+	
+	var parent:Skeleton3D = get_parent()
+	
+	var meta_values:Dictionary[String, int] = {}
+	
+	meta_values["head_bone"] = parent.find_bone(head_bone)
+	meta_values["head_view"] = eye_placement.get_index()
+	meta_values["left_hand_bone"] = parent.find_bone(left_hand_bone)
+	meta_values["right_hand_bone"] = parent.find_bone(right_hand_bone)
+	meta_values["left_foot_bone"] = parent.find_bone(left_foot_bone)
+	meta_values["right_foot_bone"] = parent.find_bone(right_foot_bone)
+	meta_values["spine_bone"] = parent.find_bone(spine_bone)
+	meta_values["hip_bone"] = parent.find_bone(hip_bone)
+	
+	parent.set_meta("IKMarker", meta_values)
+	
+	queue_free()
+	
+	return true
