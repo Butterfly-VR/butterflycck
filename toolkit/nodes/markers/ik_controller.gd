@@ -22,12 +22,6 @@ func _validate_property(property: Dictionary) -> void:
 func _process(delta: float) -> void:
 	update_configuration_warnings() # todo: this should be callled only when needed
 
-func _get_configuration_warnings():
-	var warnings:Array[String] = []
-	if get_parent() is not Skeleton3D:
-		warnings.append("IKController must be child of Skeleton3D.")
-	return warnings
-
 func check_bone_config(target:Skeleton3D) -> bool:
 	return (target.find_bone(head_bone) == -1 or 
 			target.find_bone(left_hand_bone) == -1 or 
@@ -49,12 +43,6 @@ func check_bones_set() -> bool:
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	
 	var warnings:Array[BaseRoot.Warning] = get_universal_warnings()
-	
-	for warning in _get_configuration_warnings():
-		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Warning, 
-				"Spawnpoint config issue", 
-				warning, 
-				self))
 	
 	if check_bones_set():
 		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 

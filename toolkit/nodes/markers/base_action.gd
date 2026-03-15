@@ -1,4 +1,5 @@
 @abstract
+@tool
 extends CCKMarker
 class_name CCKAction
 # base class for all actions
@@ -16,10 +17,7 @@ func prep_for_upload() -> bool:
 	if action_info.is_empty():
 		return false
 	
-	var parent:Node = get_parent()
-	
-	for key in action_info.keys():
-		parent.set_meta(key, action_info[key])
+	get_parent().set_meta("action", action_info)
 	
 	queue_free()
 	

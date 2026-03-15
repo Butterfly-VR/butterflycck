@@ -1,4 +1,5 @@
 @abstract
+@tool
 extends CCKMarker
 class_name CCKTrigger
 # base class for all triggers
@@ -21,13 +22,10 @@ func prep_for_upload() -> bool:
 	if trigger_info.is_empty():
 		return false
 	
-	var parent:Node = get_parent()
+	trigger_info["targets"] = targets
+	trigger_info["custom_parameters"] = custom_parameters
 	
-	for key in trigger_info.keys():
-		parent.set_meta(key, trigger_info[key])
-	
-	parent.set_meta("targets", targets)
-	parent.set_meta("custom_params", custom_parameters)
+	get_parent().set_meta("trigger", trigger_info)
 	
 	queue_free()
 	
