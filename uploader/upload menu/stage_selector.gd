@@ -251,7 +251,7 @@ func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
 	pck.pck_start(pck_path)
 	
 	var scene_file:FileAccess = FileAccess.open(path, FileAccess.READ)
-	for line in scene_file.get_as_text(true).split("\n"):
+	for line in scene_file.get_as_text().split("\n"):
 		if line.begins_with("load_path = \""):
 			var dependancy_path:String = line.trim_prefix(
 					"load_path = \"").trim_suffix("\"")
