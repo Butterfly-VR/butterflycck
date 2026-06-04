@@ -98,7 +98,6 @@ func is_token_valid(token:PackedByteArray, expiry_utc:int) -> bool:
 	if expiry_utc != -1 and Time.get_unix_time_from_system() > expiry_utc:
 		return false
 	var token_header:PackedStringArray = PackedStringArray(["token: %s" % token.hex_encode()])
-	# response = [response_code, response_headers, response_body]
 	var response:Array[Variant] = await api_handler.make_request(HTTPClient.METHOD_GET, TOKEN_VERIFY_ENDPOINT, token_header)
 	if response[0] == HTTPClient.RESPONSE_OK:
 		return true

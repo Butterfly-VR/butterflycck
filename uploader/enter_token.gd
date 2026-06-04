@@ -45,7 +45,7 @@ func on_login_response(code:HTTPClient.ResponseCode, _headers:PackedStringArray,
 	
 	var result:Array = api_handler.handle_response(code, body, [HTTPClient.RESPONSE_OK], [
 			"token",
-			"token_expiry",
+			"token_expires",
 			"renewable"
 			])
 	if result[0]:
@@ -54,7 +54,7 @@ func on_login_response(code:HTTPClient.ResponseCode, _headers:PackedStringArray,
 		token.assign(data["token"])
 		account_handler.set_token(
 				token,
-				data["token_expiry"],
+				data["token_expires"],
 				data["renewable"]
 				)
 		page_selector.leave_token_entry()

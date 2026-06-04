@@ -47,7 +47,6 @@ layout_mode = 2
 text = "warning: changes to scenes made while on this page may not be counted or may cause bugs / failed uploads. this will be fixed later"
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer" unique_id=1721660990]
-visible = false
 layout_mode = 2
 
 [node name="Button" type="Button" parent="VBoxContainer/HBoxContainer2" unique_id=1214213353]
@@ -68,7 +67,7 @@ text = "settings"
 [node name="TabContainer" type="TabContainer" parent="." unique_id=1772871626 node_paths=PackedStringArray("button_section", "upload_handler", "account_handler")]
 layout_mode = 2
 size_flags_vertical = 3
-current_tab = 4
+current_tab = 0
 clip_tabs = false
 tabs_visible = false
 script = ExtResource("1_edmbh")
@@ -77,7 +76,6 @@ upload_handler = NodePath("ObjectUpload/HBoxContainer/TabContainer")
 account_handler = NodePath("../AccountHandler")
 
 [node name="Upload" type="HBoxContainer" parent="TabContainer" unique_id=1980369662]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -148,6 +146,7 @@ page_selector = NodePath("../..")
 [node name="Preview" type="TextureRect" parent="TabContainer/Upload/ObjectInspector" unique_id=601212686]
 layout_mode = 2
 texture = SubResource("ViewportTexture_l8q2r")
+stretch_mode = 5
 
 [node name="ObjectPreview" type="SubViewport" parent="TabContainer/Upload/ObjectInspector/Preview" unique_id=1945059152]
 world_3d = SubResource("World3D_su35f")
@@ -614,6 +613,7 @@ size_flags_horizontal = 3
 text = "Upload"
 
 [node name="EnterToken" type="VBoxContainer" parent="TabContainer" unique_id=453171758 node_paths=PackedStringArray("email_entry", "password_entry", "account_handler", "api_handler", "page_selector", "button")]
+visible = false
 layout_mode = 2
 script = ExtResource("9_wa4l3")
 email_entry = NodePath("LineEdit")
@@ -661,6 +661,9 @@ persistance_handler = NodePath("../PersistanceHandler")
 [connection signal="file_selected" from="TabContainer/Settings/SettingsList/HBoxContainer2/FileDialog" to="TabContainer/Settings/SettingsList/HBoxContainer2" method="_on_file_dialog_file_selected"]
 [connection signal="pressed" from="TabContainer/Settings/SettingsList/HBoxContainer2/PathButton" to="TabContainer/Settings/SettingsList/HBoxContainer2" method="_on_path_button_pressed"]
 [connection signal="pressed" from="TabContainer/Settings/SettingsList/HBoxContainer/Button" to="TabContainer/Settings/SettingsList/HBoxContainer" method="_on_button_pressed"]
+[connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/VBoxContainer/MarginContainer/Button" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer" method="change_stage" binds= [0]]
+[connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/VBoxContainer/MarginContainer2/Button2" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer" method="change_stage" binds= [1]]
+[connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/VBoxContainer/MarginContainer3/Button2" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer" method="change_stage" binds= [2]]
 [connection signal="text_submitted" from="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/TagBox/Panel/LineEdit" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer" method="add_tag"]
 [connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/TagBox/Panel/Button" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer" method="add_tag"]
 [connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer2/VBoxContainer/Button" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info" method="_on_image_upload_start"]

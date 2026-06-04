@@ -263,7 +263,7 @@ func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
 	
 	pck.flush()
 	
-	var pack_bytes:PackedByteArray = FileAccess.get_file_as_bytes(pck_path)
+	var pack_file:FileAccess = FileAccess.open(pck_path, FileAccess.READ)
 	
 	var unencrypted_path:String = FileAccess.create_temp(
 			FileAccess.ModeFlags.WRITE_READ, "compressed_pck", ".tmp", true).get_path()
@@ -271,10 +271,14 @@ func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
 	var unencrypted:FileAccess = FileAccess.open_compressed(
 			unencrypted_path, FileAccess.WRITE, FileAccess.COMPRESSION_GZIP)
 	
-	unencrypted.store_buffer(pack_bytes)
+	while pack_file.get_length() != pack_file.get_position():
+		unencrypted.store_buffer(pack_file.get_buffer(mini(
+					1024 * 1024, 
+					pack_file.get_length() - pack_file.get_position())))
 	
-	unencrypted.seek(0)
-	pack_bytes = PackedByteArray()
+	unencrypted.close()
+	unencrypted = FileAccess.open_compressed(
+			unencrypted_path, FileAccess.READ, FileAccess.COMPRESSION_GZIP)
 	
 	var encrypted:FileAccess = FileAccess.create_temp(
 			FileAccess.ModeFlags.WRITE_READ, "final_tmp", ".epck")
@@ -286,20 +290,16 @@ func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
 	var aes:AESContext = AESContext.new()
 	aes.start(AESContext.MODE_CBC_ENCRYPT, object_key, object_iv)
 	
-	while unencrypted.get_position() + 16 < unencrypted.get_length():
-		encrypted.store_buffer(aes.update(unencrypted.get_buffer(16)))
+	while unencrypted.get_position() + 1024 * 1024 < unencrypted.get_length():
+		encrypted.store_buffer(aes.update(unencrypted.get_buffer(1024 * 1024)))
 	
 	var final_segment = unencrypted.get_buffer(
 			unencrypted.get_length() - unencrypted.get_position())
 	
 	# padding start
-	if final_segment.size() == 16:
-		encrypted.store_buffer(aes.update(final_segment))
-		final_segment = PackedByteArray([255])
-	else:
-		final_segment.push_back(255)
+	final_segment.push_back(255)
 	
-	while final_segment.size() < 16:
+	while final_segment.size() % 16 != 0:
 		final_segment.push_back(0)
 	
 	encrypted.store_buffer(aes.update(final_segment))
