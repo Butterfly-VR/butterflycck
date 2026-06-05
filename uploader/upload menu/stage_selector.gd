@@ -60,7 +60,7 @@ func setup(root:BaseRoot, default_image:Image) -> void:
 	object_file = await create_finialized_file(root, object.uuid)
 	
 	if !object_file:
-		push_error("upload failed")
+		push_error("upload failed: failed to create file")
 		return
 	
 	object_type = object.object_type
@@ -171,8 +171,9 @@ func upload() -> void:
 	
 	response = await blob_uploader.request_completed
 	
-	# todo: error handling
-	print(response)
+	if response[1] != 200:
+		print(response)
+		return # todo: error handling
 	
 	object_file.seek(0)
 	
@@ -184,10 +185,13 @@ func upload() -> void:
 			object_file.get_buffer(object_file.get_length()))
 	
 	response = await blob_uploader.request_completed
-	# todo: error handling
-	print(response)
+	
+	if response[1] != 200:
+		print(response)
+		return # todo: error handling
 	
 	blob_uploader.queue_free()
+	object_file.close()
 	print("upload completed!")
 
 func test_locally() -> void:
@@ -201,7 +205,7 @@ func test_locally() -> void:
 	test_file.store_line("key: %s" % object_key)
 	test_file.store_line("iv: %s" % object_iv)
 	
-	test_file.flush()
+	test_file.close()
 	
 	OS.create_instance(PackedStringArray(
 			["--object_override=%s" % test_file.get_path()]))
@@ -263,18 +267,22 @@ func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
 	
 	pck.flush()
 	
-	var pack_file:FileAccess = FileAccess.open(pck_path, FileAccess.READ)
-	
+	#var pack_file:FileAccess = FileAccess.open(pck_path, FileAccess.READ)
+	#
 	var unencrypted_path:String = FileAccess.create_temp(
-			FileAccess.ModeFlags.WRITE_READ, "compressed_pck", ".tmp", true).get_path()
+			FileAccess.ModeFlags.WRITE, "compressed_pck", ".tmp", true).get_path()
 	
 	var unencrypted:FileAccess = FileAccess.open_compressed(
 			unencrypted_path, FileAccess.WRITE, FileAccess.COMPRESSION_GZIP)
+	#
+	#while pack_file.get_length() != pack_file.get_position():
+		#unencrypted.store_buffer(pack_file.get_buffer(mini(
+					#1024 * 1024, 
+					#pack_file.get_length() - pack_file.get_position())))
+	#
+	#pack_file.close()
 	
-	while pack_file.get_length() != pack_file.get_position():
-		unencrypted.store_buffer(pack_file.get_buffer(mini(
-					1024 * 1024, 
-					pack_file.get_length() - pack_file.get_position())))
+	unencrypted.store_buffer(FileAccess.get_file_as_bytes(pck_path))
 	
 	unencrypted.close()
 	unencrypted = FileAccess.open_compressed(
@@ -290,11 +298,12 @@ func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
 	var aes:AESContext = AESContext.new()
 	aes.start(AESContext.MODE_CBC_ENCRYPT, object_key, object_iv)
 	
-	while unencrypted.get_position() + 1024 * 1024 < unencrypted.get_length():
+	while unencrypted.get_position() + (1024 * 1024) < unencrypted.get_length():
 		encrypted.store_buffer(aes.update(unencrypted.get_buffer(1024 * 1024)))
 	
 	var final_segment = unencrypted.get_buffer(
 			unencrypted.get_length() - unencrypted.get_position())
+	unencrypted.close()
 	
 	# padding start
 	final_segment.push_back(255)
@@ -311,6 +320,7 @@ func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
 	# cleanup temporary files we couldnt delete automatically
 	DirAccess.remove_absolute(path)
 	DirAccess.remove_absolute(pck_path)
+	DirAccess.remove_absolute(unencrypted_path)
 	
 	return encrypted
 
@@ -382,7 +392,7 @@ func get_object_info(uuid:UUID, object_type:BaseRoot.ObjectType) -> ObjectMeta:
 	object.image_size_KB = values["image_size"] / 1024
 	
 	object.publicity = values["publicity"]
-	object.license = values["license"] # todo: retrive license text if needed
+	object.license = 0
 	
 	object.creation_time_utc = values["created_at"]
 	object.modified_time_utc = values["updated_at"]

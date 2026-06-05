@@ -73,7 +73,8 @@ func check_node_is_object(node:Node, objects:Array[BaseRoot], type:GDScript) -> 
 	return true
 
 func _on_visibility_changed() -> void:
-	#EditorInterface.save_all_scenes()
+	if Engine.is_editor_hint():
+		EditorInterface.save_all_scenes()
 	on_target_type_changed(selected_type)
 
 
