@@ -14,6 +14,7 @@ const WARNING_LISTING:PackedScene = preload("res://addons/butterflycck/uploader/
 @export var page_selector:PageSelector
 
 var previewed_object_root:Node
+var preview_image:Image
 
 func hide_self() -> void:
 	modulate = Color.TRANSPARENT
@@ -37,6 +38,10 @@ func object_selected(original_root:BaseRoot) -> void:
 	
 	preview_camera.transform = root.get_preview_camera_transform()
 	preview.render_target_update_mode = SubViewport.UPDATE_ONCE
+	preview_texture.texture = null
+	await RenderingServer.frame_post_draw
+	preview_image = preview.get_texture().get_image()
+	preview_texture.texture = preview.get_texture()
 	
 	name_text.text = (
 			root.object_name if !root.object_name.is_empty() else root.name)
@@ -81,7 +86,7 @@ func object_selected(original_root:BaseRoot) -> void:
 
 
 func _on_upload_started() -> void:
-	page_selector.go_to_upload_tab(previewed_object_root.duplicate(), preview_texture.texture.get_image())
+	page_selector.go_to_upload_tab(previewed_object_root.duplicate(), preview_image)
 
 
 func _on_visibility_changed() -> void:

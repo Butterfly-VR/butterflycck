@@ -14,9 +14,6 @@
 [ext_resource type="Script" uid="uid://bqx1e2wx8thi7" path="res://addons/butterflycck/uploader/upload menu/upload.gd" id="9_su35f"]
 [ext_resource type="Script" uid="uid://5f73oeepgswp" path="res://addons/butterflycck/uploader/enter_token.gd" id="9_wa4l3"]
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_l8q2r"]
-viewport_path = NodePath("TabContainer/Upload/ObjectInspector/Preview/ObjectPreview")
-
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_su35f"]
 
 [sub_resource type="Sky" id="Sky_v8nud"]
@@ -26,6 +23,9 @@ sky_material = SubResource("ProceduralSkyMaterial_su35f")
 background_mode = 2
 background_energy_multiplier = 2.0
 sky = SubResource("Sky_v8nud")
+ssr_enabled = true
+ssao_enabled = true
+glow_enabled = true
 
 [sub_resource type="World3D" id="World3D_su35f"]
 environment = SubResource("Environment_3fyry")
@@ -146,12 +146,12 @@ page_selector = NodePath("../..")
 [node name="Preview" type="TextureRect" parent="TabContainer/Upload/ObjectInspector" unique_id=601212686]
 custom_minimum_size = Vector2(0, 256)
 layout_mode = 2
-texture = SubResource("ViewportTexture_l8q2r")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="ObjectPreview" type="SubViewport" parent="TabContainer/Upload/ObjectInspector/Preview" unique_id=1945059152]
 world_3d = SubResource("World3D_su35f")
+msaa_3d = 3
 size = Vector2i(1024, 1024)
 render_target_update_mode = 0
 

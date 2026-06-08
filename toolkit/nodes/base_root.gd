@@ -45,7 +45,13 @@ class Warning:
 @abstract func get_object_type() -> ObjectType
 
 func assign_uuid() -> void:
-	var new_uuid = UUID.from_String(_uuid)
+	var new_uuid:UUID
+	if _uuid.is_empty():
+		new_uuid = UUID.new(true)
+	else:
+		new_uuid = UUID.from_String(_uuid)
+		if !new_uuid:
+			new_uuid = UUID.new(true)
 	_uuid = new_uuid.to_string()
 	attached_uuid = new_uuid
 
@@ -123,16 +129,22 @@ func get_combined_aabb(node:Node, buffer:AABBRef) -> bool:
 # default camera position calculation
 # positions the camera such that it sees the entire object based on its bounding box
 func get_preview_camera_transform() -> Transform3D:
-	const FOV:float = 75.0
+	var camera:Camera3D = Camera3D.new()
+	add_child(camera)
 	var aabb_ref:AABBRef = AABBRef.new()
 	SceneTreeHelper.call_children_recursive(self, get_combined_aabb.bind(aabb_ref))
 	var aabb:AABB = aabb_ref.aabb
 	var pos:Vector3 = aabb.position + (aabb.size / 2)
-	# todo: something is broken here.
-	# this should place the camera as close as possible to the object,
-	# while leaving everything visible.
-	# right now it places the camers way too far away and i have no idea why
-	pos.z -= (maxf(aabb.size.x, aabb.size.y) / 2) / abs(tan(FOV / 2)) * 1.1
+	
+	var candidate1:float = (
+			(aabb.size.x / 2) / absf(tan(deg_to_rad(camera.get_camera_projection().get_fov() / 2)))) * 1.1
+	var fovy:float = Projection.get_fovy(
+			camera.get_camera_projection().get_fov() / 2, 
+			1 / camera.get_camera_projection().get_aspect())
+	var candidate2:float = ((aabb.size.y / 2) / absf(tan(deg_to_rad(fovy / 2)))) * 1.1
+	
+	pos.z -= maxf(candidate1, candidate2)
+	camera.queue_free()
 	return Transform3D(Basis.IDENTITY.rotated(Vector3.UP, deg_to_rad(180)), pos)
 
 func _get_configuration_warnings():
