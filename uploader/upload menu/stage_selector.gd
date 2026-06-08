@@ -267,26 +267,13 @@ func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
 	
 	pck.flush()
 	
-	#var pack_file:FileAccess = FileAccess.open(pck_path, FileAccess.READ)
-	#
 	var unencrypted_path:String = FileAccess.create_temp(
 			FileAccess.ModeFlags.WRITE, "compressed_pck", ".tmp", true).get_path()
 	
-	var unencrypted:FileAccess = FileAccess.open_compressed(
-			unencrypted_path, FileAccess.WRITE, FileAccess.COMPRESSION_GZIP)
-	#
-	#while pack_file.get_length() != pack_file.get_position():
-		#unencrypted.store_buffer(pack_file.get_buffer(mini(
-					#1024 * 1024, 
-					#pack_file.get_length() - pack_file.get_position())))
-	#
-	#pack_file.close()
+	ZSTDCompressor.compress_file_to_file(pck_path, unencrypted_path)
 	
-	unencrypted.store_buffer(FileAccess.get_file_as_bytes(pck_path))
-	
-	unencrypted.close()
-	unencrypted = FileAccess.open_compressed(
-			unencrypted_path, FileAccess.READ, FileAccess.COMPRESSION_GZIP)
+	var unencrypted:FileAccess = FileAccess.open(
+			unencrypted_path, FileAccess.READ)
 	
 	var encrypted:FileAccess = FileAccess.create_temp(
 			FileAccess.ModeFlags.WRITE_READ, "final_tmp", ".epck")
