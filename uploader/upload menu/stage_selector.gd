@@ -191,7 +191,6 @@ func upload() -> void:
 		return # todo: error handling
 	
 	blob_uploader.queue_free()
-	object_file.close()
 	print("upload completed!")
 
 func test_locally() -> void:
@@ -205,14 +204,17 @@ func test_locally() -> void:
 	test_file.store_line("key: %s" % object_key)
 	test_file.store_line("iv: %s" % object_iv)
 	
-	test_file.close()
-	
 	OS.create_instance(PackedStringArray(
 			["--object_override=%s" % test_file.get_path()]))
+	
+	test_file.close()
 	
 	print("starting game...")
 
 func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
+	if object_file:
+		object_file.close()
+	
 	var internal_path = PCK_INTERNAL_PATH % [root.get_object_type(), uuid]
 	
 	if !root.on_pre_upload():
