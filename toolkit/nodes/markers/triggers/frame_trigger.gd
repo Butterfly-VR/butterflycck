@@ -9,4 +9,6 @@ func get_trigger_version_string() -> String:
 	return "FrameTrigger:1"
 
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
-	return []
+	var warnings:Array[BaseRoot.Warning] = get_universal_warnings()
+	
+	return warnings

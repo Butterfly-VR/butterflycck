@@ -25,6 +25,9 @@ func get_universal_warnings() -> Array[BaseRoot.Warning]:
 	
 	return warnings
 
+func _process(delta: float) -> void:
+	update_configuration_warnings()
+
 func _get_configuration_warnings():
 	var warnings:Array[BaseRoot.Warning] = get_uploader_warnings()
 	var errors:Array[BaseRoot.Warning] = warnings.filter(

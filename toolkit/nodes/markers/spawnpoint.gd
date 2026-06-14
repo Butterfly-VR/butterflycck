@@ -2,9 +2,6 @@
 extends CCKMarker
 class_name SpawnPoint
 
-func _process(delta: float) -> void:
-	update_configuration_warnings() # todo: this should be callled only when needed
-
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	var warnings:Array[BaseRoot.Warning] = get_universal_warnings()
 	
