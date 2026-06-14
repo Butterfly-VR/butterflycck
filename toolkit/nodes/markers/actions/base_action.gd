@@ -17,7 +17,7 @@ func prep_for_upload() -> bool:
 	action_info["action_id"] = action_id.backing_storage
 	action_info["custom_parameters"] = custom_parameters
 	
-	get_parent().set_meta("Action", action_info)
+	get_parent().set_meta(get_action_name(), action_info)
 	
 	queue_free()
 	
@@ -38,3 +38,6 @@ func get_action_info() -> Dictionary[String, Variant]
 
 @abstract
 func get_action_version_string() -> String
+
+@abstract
+func get_action_name() -> String

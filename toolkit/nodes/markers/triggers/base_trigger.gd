@@ -18,7 +18,7 @@ func prep_for_upload() -> bool:
 	trigger_info["targets"] = targets
 	trigger_info["custom_parameters"] = custom_parameters
 	
-	get_parent().set_meta("Trigger", trigger_info)
+	get_parent().set_meta(get_trigger_name(), trigger_info)
 	
 	queue_free()
 	
@@ -39,3 +39,6 @@ func get_trigger_info() -> Dictionary[String, Variant]
 
 @abstract
 func get_trigger_version_string() -> String
+
+@abstract
+func get_trigger_name() -> String
