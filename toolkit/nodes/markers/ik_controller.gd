@@ -19,9 +19,6 @@ func _validate_property(property: Dictionary) -> void:
 			property.hint = PROPERTY_HINT_ENUM
 			property.hint_string = skeleton.get_concatenated_bone_names()
 
-func _process(delta: float) -> void:
-	update_configuration_warnings() # todo: this should be callled only when needed
-
 func check_bone_config(target:Skeleton3D) -> bool:
 	return (target.find_bone(head_bone) == -1 or 
 			target.find_bone(left_hand_bone) == -1 or 
@@ -59,7 +56,13 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
 				"IKController does not have eye position", 
 				"the IKController needs a node that tell it where to place the player's camera relative to the head", 
-				self))
+				get_parent()))
+	
+	if eye_placement.get_parent() != get_parent():
+		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Warning, 
+				"IKController eye position is not child of Skeleton3D", 
+				"the eye position node is used as an offset relative to the Skeleton3D for positioning the eyes. If it is not a child of the Skeleton3D the offset may not be correct", 
+				eye_placement))
 	
 	return warnings
 
@@ -71,10 +74,12 @@ func prep_for_upload() -> bool:
 	
 	var parent:Skeleton3D = get_parent()
 	
-	var meta_values:Dictionary[String, int] = {}
+	var meta_values:Dictionary[String, Variant] = {}
+	
+	meta_values["marker_version"] = get_marker_version_string()
 	
 	meta_values["head_bone"] = parent.find_bone(head_bone)
-	meta_values["head_view"] = eye_placement.get_index()
+	meta_values["head_view"] = eye_placement.position
 	meta_values["left_hand_bone"] = parent.find_bone(left_hand_bone)
 	meta_values["right_hand_bone"] = parent.find_bone(right_hand_bone)
 	meta_values["left_foot_bone"] = parent.find_bone(left_foot_bone)
@@ -87,3 +92,6 @@ func prep_for_upload() -> bool:
 	queue_free()
 	
 	return true
+
+func get_marker_version_string() -> String:
+	return "1"

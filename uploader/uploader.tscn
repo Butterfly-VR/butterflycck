@@ -76,6 +76,7 @@ upload_handler = NodePath("ObjectUpload/HBoxContainer/TabContainer")
 account_handler = NodePath("../AccountHandler")
 
 [node name="Upload" type="HBoxContainer" parent="TabContainer" unique_id=1980369662]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -608,6 +609,7 @@ layout_mode = 2
 [node name="Button" type="Button" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer2/HBoxContainer" unique_id=1028182212]
 layout_mode = 2
 size_flags_horizontal = 3
+disabled = true
 text = "Test Locally"
 
 [node name="Button2" type="Button" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer2/HBoxContainer" unique_id=88449816]
@@ -616,7 +618,6 @@ size_flags_horizontal = 3
 text = "Upload"
 
 [node name="EnterToken" type="VBoxContainer" parent="TabContainer" unique_id=453171758 node_paths=PackedStringArray("email_entry", "password_entry", "account_handler", "api_handler", "page_selector", "button")]
-visible = false
 layout_mode = 2
 script = ExtResource("9_wa4l3")
 email_entry = NodePath("LineEdit")

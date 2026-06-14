@@ -36,15 +36,18 @@ func _get_configuration_warnings():
 				return x.header))
 	return warning_strings
 
-# this function gets called before uploading the object, 
-# it should place the scene in the correct state for uploading.
-# if a node is incorrectly configured it can return false to prevent uploading.
-# generally you should always return true here and instead use get_uploader_warnings.
-# Error level warnings prevent uploading and are preferred over returning false here.
+## this function gets called before uploading the object, 
+## it should place the scene in the correct state for uploading.
+## if a node is incorrectly configured it can return false to prevent uploading.
+## generally you should always return true here and instead use get_uploader_warnings.
+## Error level warnings prevent uploading and are preferred over returning false here.
 @abstract
 func prep_for_upload() -> bool
 
-# this function is used to refresh the uploader warning list
-# it should return a list of any configuration issues with this marker
+## this function is used to refresh the uploader warning list
+## it should return a list of any configuration issues with this marker
 @abstract
 func get_uploader_warnings() -> Array[BaseRoot.Warning]
+
+@abstract
+func get_marker_version_string() -> String
