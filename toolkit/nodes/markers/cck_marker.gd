@@ -11,7 +11,7 @@ func get_universal_warnings() -> Array[BaseRoot.Warning]:
 		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Warning, 
 				"Marker has children", 
 				"Children of marker nodes will be deleted on upload, the node you want a marker to target should be the parent of the marker", 
-				self))
+				self, false))
 	
 	for sibling in get_parent().get_children():
 		if (sibling.get_script() != null 
@@ -21,7 +21,7 @@ func get_universal_warnings() -> Array[BaseRoot.Warning]:
 			warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
 				"Duplicate Markers on node", 
 				"A node currently cannot have more than one Marker of the same type attached", 
-				sibling))
+				sibling, false))
 	
 	return warnings
 

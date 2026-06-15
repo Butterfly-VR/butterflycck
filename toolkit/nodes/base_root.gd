@@ -7,11 +7,11 @@ class_name BaseRoot
 const blacklisted_types:Array[GDScript] = []
 
 @export var object_name:String
-@export var _uuid:String
+@export var _UUID:String
 
-@export_tool_button("assign UUID", "Callable") var assign_button = assign_uuid
+@export_tool_button("assign UUID", "Callable") var assign_button = assign_UUID
 
-var attached_uuid:UUID
+var attached_UUID:UUID
 
 enum ObjectType{
 	world,
@@ -36,24 +36,28 @@ class Warning:
 	var has_autofix:bool = false
 	var autofix:Callable
 	
-	func _init(level:WarningLevel, header:String, body:String, source:Node) -> void:
+	func _init(level:WarningLevel, header:String, body:String, source:Node, 
+			has_autofix:bool, autofix:Callable = Callable()) -> void:
 		self.level = level
 		self.header = header
 		self.body = body
 		self.source = source
+		if has_autofix:
+			self.has_autofix = true
+			self.autofix = autofix
 
 @abstract func get_object_type() -> ObjectType
 
-func assign_uuid() -> void:
-	var new_uuid:UUID
-	if _uuid.is_empty():
-		new_uuid = UUID.new(true)
+func assign_UUID() -> void:
+	var new_UUID:UUID
+	if _UUID.is_empty():
+		new_UUID = UUID.new(true)
 	else:
-		new_uuid = UUID.from_String(_uuid)
-		if !new_uuid:
-			new_uuid = UUID.new(true)
-	_uuid = new_uuid.to_string()
-	attached_uuid = new_uuid
+		new_UUID = UUID.from_String(_UUID)
+		if !new_UUID:
+			new_UUID = UUID.new(true)
+	_UUID = new_UUID.to_string()
+	attached_UUID = new_UUID
 
 # setup self and call prep on children, then return children
 func on_pre_upload() -> bool:
@@ -67,8 +71,8 @@ func on_pre_upload() -> bool:
 				return true)
 	
 	
-	if !attached_uuid:
-		attached_uuid = UUID.new(true)
+	if !attached_UUID:
+		attached_UUID = UUID.new(true)
 	
 	return success
 
@@ -80,14 +84,20 @@ func get_child_warnings(node:Node, warnings:Array[Warning]) -> bool:
 				"Blacklisted Type", 
 				"this object contains a node of type %s, which is not allowed" % (
 				node.get_class()), 
-				self))
+				self, true, 
+				func(): 
+					node.queue_free() 
+					return true))
 	if node is CCKMarker:
 		warnings.append_array((node as CCKMarker).get_uploader_warnings())
 	elif node.get_script() != null:
 		warnings.push_back(Warning.new(Warning.WarningLevel.Error, 
 				"Node with script", 
 				"Scripts are currently not allowed on uploaded objects, sandboxed scripting will be implemented in a future alpha build", 
-				self))
+				self, true, 
+				func(): 
+					node.queue_free() 
+					return true))
 	return true
 
 func get_upload_warnings() -> Array[Warning]:
@@ -101,7 +111,7 @@ func get_upload_warnings() -> Array[Warning]:
 				Warning.WarningLevel.Warning, 
 				"Root Config Error", 
 				warning, 
-				self))
+				self, false))
 	return warnings
 
 func _process(delta: float) -> void:
