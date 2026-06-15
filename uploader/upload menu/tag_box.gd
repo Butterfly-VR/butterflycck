@@ -1,6 +1,6 @@
 @tool
 extends PanelContainer
-class_name TagBox
+class_name EditorTagBox
 
 var tag_string:String
 

@@ -1,6 +1,6 @@
 @tool
 extends Node
-class_name APIHandler
+class_name EditorAPIHandler
 
 const TARGET_HOST:String = "api.butterflyvr.net"
 const TARGET_PORT:int = 443

@@ -1,6 +1,6 @@
 @tool
 extends Node
-class_name PersistanceHandler
+class_name EditorPersistanceHandler
 # provides a homogenous ConfigFile style interface over multiple files containing persistant data
 
 const CONFIG_PATH:String = "user://config/"

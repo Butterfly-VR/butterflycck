@@ -1,6 +1,6 @@
 @tool
 extends TabContainer
-class_name UploadHandler
+class_name EditorUploadHandler
 
 const OBJECT_INFO_ENDPOINT:String = "/api/v0/%s/%s"
 const OBJECT_DOWNLOAD_ENDPOINT:String = "/api/v0/%s/%s/epck"
@@ -11,10 +11,10 @@ const KILOBYTE:int = 1024
 const CUSTOM_LICENSE_TYPE:int = 3
 const PCK_INTERNAL_PATH:String = "res://_loaded_content/%s/%s.tscn"
 
-@export var api_handler:APIHandler
-@export var account_handler:AccountHandler
-@export var info_menu:InfoMenu
-@export var upload_menu:UploadMenu
+@export var api_handler:EditorAPIHandler
+@export var account_handler:EditorAccountHandler
+@export var info_menu:EditorInfoMenu
+@export var upload_menu:EditorUploadMenu
 
 var object_file:FileAccess
 
@@ -227,14 +227,14 @@ func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
 	# need their owner set to the new root node
 	await get_tree().physics_frame
 	
-	SceneTreeHelper.call_children_recursive(
+	EditorSceneTreeHelper.call_children_recursive(
 			root.get_child(0), 
 			func(x:Node) -> bool: 
 				x.owner = root.get_child(0) 
 				return true)
 	
 	# debug check, all cckmarkers should free themselves before this point
-	SceneTreeHelper.call_children_recursive(
+	EditorSceneTreeHelper.call_children_recursive(
 			root.get_child(0), 
 			func(x:Node) -> bool: 
 				if x is CCKMarker:

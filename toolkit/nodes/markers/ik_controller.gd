@@ -45,24 +45,24 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
 				"IKController is missing bone targets", 
 				"all target bones in the IKController must be assigned", 
-				self))
+				self, false))
 	elif check_bone_config(get_parent()):
 		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
 				"IKController has invalid bone targets", 
 				"all target bones in the IKController must be valid bones in the Skeleton3D", 
-				self))
+				self, false))
 	
 	if eye_placement == null:
 		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
 				"IKController does not have eye position", 
 				"the IKController needs a node that tell it where to place the player's camera relative to the head", 
-				get_parent()))
+				get_parent(), false))
 	
 	if eye_placement.get_parent() != get_parent():
 		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Warning, 
 				"IKController eye position is not child of Skeleton3D", 
 				"the eye position node is used as an offset relative to the Skeleton3D for positioning the eyes. If it is not a child of the Skeleton3D the offset may not be correct", 
-				eye_placement))
+				eye_placement, false))
 	
 	return warnings
 

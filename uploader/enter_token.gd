@@ -19,8 +19,8 @@ const OUTPUT_LENGTH:int = 64
 
 @export var email_entry:LineEdit
 @export var password_entry:LineEdit
-@export var account_handler:AccountHandler
-@export var api_handler:APIHandler
+@export var account_handler:EditorAccountHandler
+@export var api_handler:EditorAPIHandler
 @export var page_selector:PageSelector
 @export var button:Button
 

@@ -1,6 +1,6 @@
 @tool
 extends VBoxContainer
-class_name UploadMenu
+class_name EditorUploadMenu
 
 const GIGABYTE:int = MEGABYTE * 1024
 const MEGABYTE:int = KILOBYTE * 1024

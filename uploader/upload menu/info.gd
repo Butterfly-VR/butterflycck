@@ -1,6 +1,6 @@
 @tool
 extends VBoxContainer
-class_name InfoMenu
+class_name EditorInfoMenu
 
 const GIGABYTE:int = MEGABYTE * 1024
 const MEGABYTE:int = KILOBYTE * 1024

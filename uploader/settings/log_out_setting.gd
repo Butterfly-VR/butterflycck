@@ -3,8 +3,8 @@ extends HBoxContainer
 
 const USER_INFO_ENDPOINT:String = "/api/v0/user/%s"
 
-@export var account_handler:AccountHandler
-@export var api_handler:APIHandler
+@export var account_handler:EditorAccountHandler
+@export var api_handler:EditorAPIHandler
 @export var name_label:Label
 @export var page_selector:PageSelector
 

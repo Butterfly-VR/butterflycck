@@ -3,8 +3,8 @@ extends TabContainer
 class_name PageSelector
 
 @export var button_section:HBoxContainer
-@export var upload_handler:UploadHandler
-@export var account_handler:AccountHandler
+@export var upload_handler:EditorUploadHandler
+@export var account_handler:EditorAccountHandler
 
 func _ready() -> void:
 	if await account_handler.check_token_valid():

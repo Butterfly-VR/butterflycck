@@ -1,7 +1,7 @@
 @tool
 extends HBoxContainer
 
-@export var persistance_handler:PersistanceHandler
+@export var persistance_handler:EditorPersistanceHandler
 @export var path_button:Button
 @export var file_explorer:FileDialog
 

@@ -8,7 +8,7 @@ const TAG_BOX:PackedScene = preload("res://addons/butterflycck/uploader/upload m
 @export var tag_entry:LineEdit
 
 func add_tag(tag:String = "") -> void:
-	var tag_box:TagBox = TAG_BOX.instantiate()
+	var tag_box:EditorTagBox = TAG_BOX.instantiate()
 	if tag.is_empty():
 		tag_box.tag_string = tag_entry.text
 		tag_entry.text = ""
@@ -18,7 +18,7 @@ func add_tag(tag:String = "") -> void:
 
 func get_tags() -> PackedStringArray:
 	var result:PackedStringArray = PackedStringArray()
-	for child:TagBox in tag_container.get_children():
+	for child:EditorTagBox in tag_container.get_children():
 		result.push_back(child.tag_string)
 	return result
 

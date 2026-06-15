@@ -1,5 +1,5 @@
 extends Node
-class_name SceneTreeHelper
+class_name EditorSceneTreeHelper
 
 class NodeStackItem:
 	var node:Node

@@ -1,6 +1,6 @@
 @tool
 extends VBoxContainer
-class_name ObjectInspector
+class_name EditorObjectInspector
 
 const WARNING_LISTING:PackedScene = preload("res://addons/butterflycck/uploader/inspector/warning.tscn")
 
@@ -61,7 +61,7 @@ func object_selected(original_root:BaseRoot) -> void:
 		if warning.level == BaseRoot.Warning.WarningLevel.Error:
 			upload_button.disabled = true
 		
-		var listing:WarningListing = WARNING_LISTING.instantiate()
+		var listing:EditorWarningListing = WARNING_LISTING.instantiate()
 		
 		listing.warning_level.current_tab = warning.level
 		listing.heading.text = warning.header

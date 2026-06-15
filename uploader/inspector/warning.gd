@@ -1,5 +1,5 @@
 extends PanelContainer
-class_name WarningListing
+class_name EditorWarningListing
 
 @export var warning_level:TabContainer
 @export var heading:Label

@@ -4,7 +4,7 @@ extends VBoxContainer
 const OBJECT_LISTING:PackedScene = preload("res://addons/butterflycck/uploader/object list/object_listing.tscn")
 
 @export var object_list:VBoxContainer
-@export var inspector:ObjectInspector
+@export var inspector:EditorObjectInspector
 
 var selected_type:int = 0
 
@@ -50,10 +50,10 @@ func find_objects_recursive(type:GDScript, path:String) -> Array[String]:
 # todo: should probably hoist listing creation out to the outer function
 func find_objects_in_scene(type:GDScript, scene_root:Node) -> void:
 	var objects:Array[BaseRoot]
-	SceneTreeHelper.call_children_recursive(scene_root, check_node_is_object.bind(objects, type), true)
+	EditorSceneTreeHelper.call_children_recursive(scene_root, check_node_is_object.bind(objects, type), true)
 	# list the objects we found in the ui
 	for object:BaseRoot in objects:
-		var listing:ObjectListing = OBJECT_LISTING.instantiate()
+		var listing:EditorObjectListing = OBJECT_LISTING.instantiate()
 		
 		listing.object_name.text = (
 				object.object_name if !object.object_name.is_empty() else object.name)

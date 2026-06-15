@@ -1,6 +1,6 @@
 @tool
 extends Node
-class_name AccountHandler
+class_name EditorAccountHandler
 # handles token renewal and caches player info
 
 # in long running sessions we may need to renew our token while the game is running
@@ -22,8 +22,8 @@ var user_id:UUID = UUID.new()
 var renew_timer:Timer = Timer.new()
 var token_checkable:bool = false
 
-@export var api_handler:APIHandler
-@export var persistance_handler:PersistanceHandler
+@export var api_handler:EditorAPIHandler
+@export var persistance_handler:EditorPersistanceHandler
 
 func _enter_tree() -> void:
 	var saved_token:Array[int] = []

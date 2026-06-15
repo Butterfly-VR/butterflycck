@@ -7,11 +7,11 @@ class_name BaseRoot
 const blacklisted_types:Array[GDScript] = []
 
 @export var object_name:String
-@export var _UUID:String
+@export var _uuid:String
 
-@export_tool_button("assign UUID", "Callable") var assign_button = assign_UUID
+@export_tool_button("assign UUID", "Callable") var assign_button = assign_uuid
 
-var attached_UUID:UUID
+var attached_uuid:UUID
 
 enum ObjectType{
 	world,
@@ -48,21 +48,21 @@ class Warning:
 
 @abstract func get_object_type() -> ObjectType
 
-func assign_UUID() -> void:
-	var new_UUID:UUID
-	if _UUID.is_empty():
-		new_UUID = UUID.new(true)
+func assign_uuid() -> void:
+	var new_uuid:UUID
+	if _uuid.is_empty():
+		new_uuid = UUID.new(true)
 	else:
-		new_UUID = UUID.from_String(_UUID)
-		if !new_UUID:
-			new_UUID = UUID.new(true)
-	_UUID = new_UUID.to_string()
-	attached_UUID = new_UUID
+		new_uuid = UUID.from_String(_uuid)
+		if !new_uuid:
+			new_uuid = UUID.new(true)
+	_uuid = new_uuid.to_string()
+	attached_uuid = new_uuid
 
 # setup self and call prep on children, then return children
 func on_pre_upload() -> bool:
 	var success:bool = true
-	SceneTreeHelper.call_children_recursive(
+	EditorSceneTreeHelper.call_children_recursive(
 			self.get_child(0), 
 			func(x:Node) -> bool: 
 				if x is CCKMarker:
@@ -71,8 +71,8 @@ func on_pre_upload() -> bool:
 				return true)
 	
 	
-	if !attached_UUID:
-		attached_UUID = UUID.new(true)
+	if !attached_uuid:
+		attached_uuid = UUID.new(true)
 	
 	return success
 
@@ -103,7 +103,7 @@ func get_child_warnings(node:Node, warnings:Array[Warning]) -> bool:
 func get_upload_warnings() -> Array[Warning]:
 	var warnings:Array[Warning] = []
 	if get_children().size() > 0:
-		SceneTreeHelper.call_children_recursive(get_child(0), get_child_warnings.bind(warnings))
+		EditorSceneTreeHelper.call_children_recursive(get_child(0), get_child_warnings.bind(warnings))
 	
 	# get config warnings from self
 	for warning in _get_configuration_warnings():
@@ -142,7 +142,7 @@ func get_preview_camera_transform() -> Transform3D:
 	var camera:Camera3D = Camera3D.new()
 	add_child(camera)
 	var aabb_ref:AABBRef = AABBRef.new()
-	SceneTreeHelper.call_children_recursive(self, get_combined_aabb.bind(aabb_ref))
+	EditorSceneTreeHelper.call_children_recursive(self, get_combined_aabb.bind(aabb_ref))
 	var aabb:AABB = aabb_ref.aabb
 	var pos:Vector3 = aabb.position + (aabb.size / 2)
 	
