@@ -47,6 +47,7 @@ layout_mode = 2
 text = "warning: changes to scenes made while on this page may not be counted or may cause bugs / failed uploads. this will be fixed later"
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer" unique_id=1721660990]
+visible = false
 layout_mode = 2
 
 [node name="Button" type="Button" parent="VBoxContainer/HBoxContainer2" unique_id=1214213353]
@@ -67,7 +68,7 @@ text = "settings"
 [node name="TabContainer" type="TabContainer" parent="." unique_id=1772871626 node_paths=PackedStringArray("button_section", "upload_handler", "account_handler")]
 layout_mode = 2
 size_flags_vertical = 3
-current_tab = 0
+current_tab = 4
 clip_tabs = false
 tabs_visible = false
 script = ExtResource("1_edmbh")
@@ -130,7 +131,7 @@ horizontal_scroll_mode = 0
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ObjectInspector" type="VBoxContainer" parent="TabContainer/Upload" unique_id=2091262431 node_paths=PackedStringArray("preview", "preview_camera", "preview_texture", "name_text", "uuid_text", "warnings_list", "upload_button", "page_selector")]
+[node name="ObjectInspector" type="VBoxContainer" parent="TabContainer/Upload" unique_id=2091262431 node_paths=PackedStringArray("preview", "preview_camera", "preview_texture", "name_text", "warnings_list", "upload_button", "page_selector")]
 modulate = Color(1, 1, 1, 0)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -139,7 +140,6 @@ preview = NodePath("Preview/ObjectPreview")
 preview_camera = NodePath("Preview/ObjectPreview/Camera3D")
 preview_texture = NodePath("Preview")
 name_text = NodePath("Info/Label")
-uuid_text = NodePath("Info/Label2")
 warnings_list = NodePath("Info/ScrollContainer/VBoxContainer")
 upload_button = NodePath("Button")
 page_selector = NodePath("../..")
