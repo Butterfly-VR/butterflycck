@@ -129,22 +129,26 @@ horizontal_scroll_mode = 0
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ObjectInspector" type="VBoxContainer" parent="TabContainer/Upload" unique_id=2091262431 node_paths=PackedStringArray("preview", "preview_camera", "preview_texture", "name_text", "uuid_text", "warnings_list", "upload_button", "page_selector")]
+[node name="ObjectInspector" type="VBoxContainer" parent="TabContainer/Upload" unique_id=2091262431 node_paths=PackedStringArray("api_handler", "account_handler", "preview", "preview_camera", "preview_texture", "name_text", "uuid_text", "created_text", "modified_text", "warnings_list", "upload_button", "page_selector")]
 modulate = Color(1, 1, 1, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("3_vh56r")
+api_handler = NodePath("../../../APIHandler")
+account_handler = NodePath("../../../AccountHandler")
 preview = NodePath("Preview/ObjectPreview")
 preview_camera = NodePath("Preview/ObjectPreview/Camera3D")
 preview_texture = NodePath("Preview")
 name_text = NodePath("Info/Label")
 uuid_text = NodePath("Info/Label2")
+created_text = NodePath("Info/Label4")
+modified_text = NodePath("Info/Label5")
 warnings_list = NodePath("Info/ScrollContainer/VBoxContainer")
 upload_button = NodePath("Button")
 page_selector = NodePath("../..")
 
 [node name="Preview" type="TextureRect" parent="TabContainer/Upload/ObjectInspector" unique_id=601212686]
-custom_minimum_size = Vector2(0, 256)
+custom_minimum_size = Vector2(0, 196)
 layout_mode = 2
 expand_mode = 1
 stretch_mode = 5
@@ -163,12 +167,20 @@ size_flags_vertical = 3
 
 [node name="Label" type="Label" parent="TabContainer/Upload/ObjectInspector/Info" unique_id=934865828]
 layout_mode = 2
-text = "name"
+text = "UNNAMED"
 metadata/_edit_use_anchors_ = true
 
 [node name="Label2" type="Label" parent="TabContainer/Upload/ObjectInspector/Info" unique_id=1404759991]
 layout_mode = 2
-text = "attached id"
+text = "never uploaded"
+metadata/_edit_use_anchors_ = true
+
+[node name="Label4" type="Label" parent="TabContainer/Upload/ObjectInspector/Info" unique_id=106982120]
+layout_mode = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="Label5" type="Label" parent="TabContainer/Upload/ObjectInspector/Info" unique_id=2033302393]
+layout_mode = 2
 metadata/_edit_use_anchors_ = true
 
 [node name="HSeparator" type="HSeparator" parent="TabContainer/Upload/ObjectInspector/Info" unique_id=990836817]

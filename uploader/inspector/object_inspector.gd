@@ -3,12 +3,17 @@ extends VBoxContainer
 class_name EditorObjectInspector
 
 const WARNING_LISTING:PackedScene = preload("res://addons/butterflycck/uploader/inspector/warning.tscn")
+const OBJECT_INFO_ENDPOINT:String = "/api/v0/%s/%s"
 
+@export var api_handler:EditorAPIHandler
+@export var account_handler:EditorAccountHandler
 @export var preview:SubViewport
 @export var preview_camera:Camera3D
 @export var preview_texture:TextureRect
 @export var name_text:Label
 @export var uuid_text:Label
+@export var created_text:Label
+@export var modified_text:Label
 @export var warnings_list:VBoxContainer
 @export var upload_button:Button
 @export var page_selector:PageSelector
@@ -43,10 +48,39 @@ func object_selected(original_root:BaseRoot) -> void:
 	preview_image = preview.get_texture().get_image()
 	preview_texture.texture = preview.get_texture()
 	
-	name_text.text = (
-			root.object_name if !root.object_name.is_empty() else root.name)
-	uuid_text.text = (
-			root.attached_uuid.to_string() if root.attached_uuid else "never uploaded")
+	var object_type_string:String = "UNNAMED"
+	match original_root.get_object_type():
+		BaseRoot.ObjectType.world:
+			object_type_string = "World"
+		BaseRoot.ObjectType.avatar:
+			object_type_string = "Avatar"
+	
+	root.assign_uuid()
+	if root.attached_uuid:
+		var response = await api_handler.make_request(
+				HTTPClient.METHOD_GET, 
+				OBJECT_INFO_ENDPOINT % [object_type_string, root.attached_uuid], 
+				PackedStringArray([account_handler.get_token_header()]))
+		var result = api_handler.handle_response(response[0], response[2], [200], 
+				["name", "id", "created_at", "updated_at"])
+		var values:Dictionary[String, Variant] = result[4]
+		if result[0]:
+			name_text.text = values["name"] as String
+			uuid_text.text = "UUID: " + values["id"] as String
+			created_text.text = "Created at: " + Time.get_date_string_from_unix_time(values["created_at"] as int)
+			modified_text.text = "Last modified: " + Time.get_date_string_from_unix_time(values["updated_at"] as int)
+		else:
+			name_text.text = (
+					root.object_name if !root.object_name.is_empty() else root.name)
+			uuid_text.text = "never uploaded"
+			created_text.text = ""
+			modified_text.text = ""
+	else:
+		name_text.text = (
+				root.object_name if !root.object_name.is_empty() else root.name)
+		uuid_text.text = "never uploaded"
+		created_text.text = ""
+		modified_text.text = ""
 	
 	for child:Node in warnings_list.get_children():
 		child.queue_free()
