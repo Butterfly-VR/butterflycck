@@ -7,21 +7,13 @@ class_name CCKMarker
 func get_universal_warnings() -> Array[BaseRoot.Warning]:
 	var warnings:Array[BaseRoot.Warning] = []
 	
-	if get_child_count() != 0:
-		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Warning, 
-				"Marker has children", 
-				"Children of marker nodes will be deleted on upload, the node you want a marker to target should be the parent of the marker", 
-				self, false))
-	
-	for sibling in get_parent().get_children():
-		if (sibling.get_script() != null 
-				and sibling.get_class() == get_class() 
-				and sibling.get_script().source_code == get_script().source_code 
-				and sibling != self):
-			warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
-				"Duplicate Markers on node", 
-				"A node currently cannot have more than one Marker of the same type attached", 
-				sibling, false))
+	for child in get_children():
+		if child is not CCKMarker:
+			warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Warning, 
+					"Marker has non-Extender children", 
+					"Children of marker nodes will be deleted on upload, unless that node is a CCKExtender, the node you want a marker to target should be the parent of the marker", 
+					child, false))
+			break
 	
 	return warnings
 

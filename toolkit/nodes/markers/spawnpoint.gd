@@ -5,13 +5,23 @@ class_name SpawnPoint
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	var warnings:Array[BaseRoot.Warning] = get_universal_warnings()
 	
+	for sibling in get_parent().get_children():
+		if (sibling.get_script() != null 
+				and sibling.get_class() == get_class() 
+				and sibling.get_script().source_code == get_script().source_code 
+				and sibling != self):
+			warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
+				"Duplicate Spawnpoints on node", 
+				"A node cannot have more than one Spawnpoint attached", 
+				sibling, false))
+	
 	return warnings
 
 func prep_for_upload() -> bool:
 	if get_parent() is not Node3D:
 		return false
 	
-	get_parent().set_meta("Spawnpoint", {"marker_type": get_marker_version_string()})
+	get_parent().set_meta("Spawnpoint", {"marker_version": get_marker_version_string()})
 	
 	queue_free()
 	

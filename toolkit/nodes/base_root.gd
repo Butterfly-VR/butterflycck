@@ -84,7 +84,7 @@ func get_child_warnings(node:Node, warnings:Array[Warning]) -> bool:
 				"Blacklisted Type", 
 				"this object contains a node of type %s, which is not allowed" % (
 				node.get_class()), 
-				self, true, 
+				node, true, 
 				func(): 
 					node.queue_free() 
 					return true))
@@ -94,7 +94,7 @@ func get_child_warnings(node:Node, warnings:Array[Warning]) -> bool:
 		warnings.push_back(Warning.new(Warning.WarningLevel.Error, 
 				"Node with script", 
 				"Scripts are currently not allowed on uploaded objects, sandboxed scripting will be implemented in a future alpha build", 
-				self, true, 
+				node, true, 
 				func(): 
 					node.queue_free() 
 					return true))

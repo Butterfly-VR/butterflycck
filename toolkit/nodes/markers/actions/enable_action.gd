@@ -21,7 +21,7 @@ func get_action_version_string() -> String:
 	return "1"
 
 func get_action_name() -> String:
-	return "EnableAction"
+	return "EnableAction:%s" % name
 
 func check_parent_properties() -> bool:
 	var properties:Array[Dictionary] = get_parent().get_property_list()
@@ -38,6 +38,6 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Warning, 
 				"EnableAction parent missing property", 
 				"The parent of an EnableAction marker has no \"enabled\" or \"active\" property for the marker to toggle.", 
-				self, false))
+				get_parent(), false))
 	
 	return warnings

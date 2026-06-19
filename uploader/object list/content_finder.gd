@@ -26,8 +26,6 @@ func on_target_type_changed(selected_type:int) -> void:
 
 # searches the file system for scenes, then searches those scenes for objects
 func find_objects(type:GDScript) -> void:
-	var found_scenes:Array[FileAccess]
-	
 	# file system tree traversal
 	# todo: make not recursive
 	var root_dir:String = "res://"
@@ -35,7 +33,7 @@ func find_objects(type:GDScript) -> void:
 	
 	for file:String in scene_files:
 		var scene:Node = (load(file) as PackedScene).instantiate()
-		find_objects_in_scene(type, scene)
+		find_objects_in_scene(type, scene, file)
 
 func find_objects_recursive(type:GDScript, path:String) -> Array[String]:
 	var files:Array[String] = []
@@ -48,7 +46,7 @@ func find_objects_recursive(type:GDScript, path:String) -> Array[String]:
 
 # called by find_objects, searches for objects in a scene
 # todo: should probably hoist listing creation out to the outer function
-func find_objects_in_scene(type:GDScript, scene_root:Node) -> void:
+func find_objects_in_scene(type:GDScript, scene_root:Node, origin_file_path:String) -> void:
 	var objects:Array[BaseRoot]
 	EditorSceneTreeHelper.call_children_recursive(scene_root, check_node_is_object.bind(objects, type), true)
 	# list the objects we found in the ui
@@ -60,7 +58,7 @@ func find_objects_in_scene(type:GDScript, scene_root:Node) -> void:
 		listing.uuid.text = (
 				object.attached_uuid.to_string() if object.attached_uuid else "never uploaded")
 		
-		listing.select_button.pressed.connect(inspector.object_selected.bind(object))
+		listing.select_button.pressed.connect(inspector.object_selected.bind(object, origin_file_path))
 		
 		object_list.add_child(listing)
 

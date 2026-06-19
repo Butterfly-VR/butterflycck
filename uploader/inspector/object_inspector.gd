@@ -26,7 +26,43 @@ func hide_self() -> void:
 	if previewed_object_root:
 		previewed_object_root.queue_free()
 
-func object_selected(original_root:BaseRoot) -> void:
+func object_selected(original_root:BaseRoot, original_file_path:String) -> void:
+	for child:Node in warnings_list.get_children():
+		child.queue_free()
+	
+	await get_tree().physics_frame
+	
+	var warnings:Array[BaseRoot.Warning] = original_root.get_upload_warnings()
+	
+	upload_button.disabled = false
+	
+	for warning:BaseRoot.Warning in warnings:
+		if warning.level == BaseRoot.Warning.WarningLevel.Error:
+			upload_button.disabled = true
+		
+		var listing:EditorWarningListing = WARNING_LISTING.instantiate()
+		
+		listing.warning_level.current_tab = warning.level
+		listing.heading.text = warning.header
+		listing.message.text = warning.body
+		
+		listing.find_button.pressed.connect(func(): 
+			var path:NodePath = warning.source.owner.get_path_to(warning.source)
+			EditorInterface.open_scene_from_path(original_file_path)
+			EditorInterface.set_main_screen_editor("3D")
+			EditorInterface.edit_node(
+					EditorInterface.get_edited_scene_root().get_node(path))
+			EditorInterface.get_selection().clear()
+			EditorInterface.get_selection().add_node(
+					EditorInterface.get_edited_scene_root().get_node(path)))
+		
+		# todo: this needs to edit and save the scene file, then reload the object listings
+		#if warning.has_autofix:
+			#listing.fix_button.visible = true
+			#listing.find_button.pressed.connect(func(): if warning.autofix.call(): listing.queue_free())
+		
+		warnings_list.add_child(listing)
+	
 	var root:BaseRoot = original_root.duplicate()
 	if previewed_object_root:
 		previewed_object_root.queue_free()
@@ -81,38 +117,6 @@ func object_selected(original_root:BaseRoot) -> void:
 		uuid_text.text = "never uploaded"
 		created_text.text = ""
 		modified_text.text = ""
-	
-	for child:Node in warnings_list.get_children():
-		child.queue_free()
-	
-	await get_tree().physics_frame
-	
-	var warnings:Array[BaseRoot.Warning] = root.get_upload_warnings()
-	
-	upload_button.disabled = false
-	
-	for warning:BaseRoot.Warning in warnings:
-		if warning.level == BaseRoot.Warning.WarningLevel.Error:
-			upload_button.disabled = true
-		
-		var listing:EditorWarningListing = WARNING_LISTING.instantiate()
-		
-		listing.warning_level.current_tab = warning.level
-		listing.heading.text = warning.header
-		listing.message.text = warning.body
-		
-		# todo: this dosent do what we want, 
-		# we need to open the scene and select the node in there instead
-		# would require passing the scene path and node path into the Warning
-		#listing.find_button.pressed.connect(func(): EditorInterface.edit_node(warning.source))
-		
-		if warning.has_autofix:
-			listing.fix_button.visible = true
-			# autofix function should return a bool to indicate success
-			# todo: this should probably just refresh the entire object inspector on success
-			listing.find_button.pressed.connect(func(): if warning.autofix.call(): listing.queue_free())
-		
-		warnings_list.add_child(listing)
 	
 	await get_tree().physics_frame
 	

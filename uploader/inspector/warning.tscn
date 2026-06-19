@@ -87,7 +87,6 @@ layout_mode = 2
 [node name="Find" type="Button" parent="VBoxContainer/HBoxContainer2/VBoxContainer/HBoxContainer2" unique_id=978905971]
 layout_mode = 2
 size_flags_horizontal = 3
-disabled = true
 text = "Find"
 
 [node name="AutoFix" type="Button" parent="VBoxContainer/HBoxContainer2/VBoxContainer/HBoxContainer2" unique_id=967281770]

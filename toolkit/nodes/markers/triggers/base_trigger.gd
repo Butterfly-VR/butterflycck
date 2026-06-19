@@ -9,11 +9,11 @@ class_name CCKTrigger
 @export var triggered_actions:Array[CCKAction]
 
 func prep_for_upload() -> bool:
-	var targets:Array[PackedByteArray] = triggered_actions.map(func(action:CCKAction): return action.get_path())
+	var targets:Array[PackedByteArray] = triggered_actions.map(func(action:CCKAction): return action.action_id.backing_storage)
 	var trigger_info:Dictionary[String, Variant] = {}
 	trigger_info.assign(get_trigger_info())
 	
-	trigger_info["trigger_type"] = get_trigger_version_string()
+	trigger_info["trigger_version"] = get_trigger_version_string()
 	
 	trigger_info["targets"] = targets
 	trigger_info["custom_parameters"] = custom_parameters

@@ -13,7 +13,7 @@ func prep_for_upload() -> bool:
 	var action_info:Dictionary[String, Variant] = {}
 	action_info.assign(get_action_info())
 	
-	action_info["action_type"] = get_action_version_string()
+	action_info["action_version"] = get_action_version_string()
 	action_info["action_id"] = action_id.backing_storage
 	action_info["custom_parameters"] = custom_parameters
 	
