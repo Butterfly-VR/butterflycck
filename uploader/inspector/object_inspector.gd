@@ -49,6 +49,8 @@ func object_selected(original_root:BaseRoot, original_file_path:String) -> void:
 		listing.find_button.pressed.connect(func(): 
 			var path:NodePath = warning.source.owner.get_path_to(warning.source)
 			EditorInterface.open_scene_from_path(original_file_path)
+			await get_tree().physics_frame
+			await get_tree().physics_frame
 			EditorInterface.set_main_screen_editor("3D")
 			EditorInterface.edit_node(
 					EditorInterface.get_edited_scene_root().get_node(path))
