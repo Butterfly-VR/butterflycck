@@ -151,6 +151,8 @@ func upload() -> void:
 		1:
 			type_string = "Avatar"
 	
+	upload_menu.upload_button.disabled = true
+	
 	var response = await api_handler.make_request(
 			HTTPClient.METHOD_POST, 
 			OBJECT_INFO_ENDPOINT % [type_string, object.uuid.to_string()],
@@ -159,6 +161,7 @@ func upload() -> void:
 	
 	if response[0] != 200:
 		print(response)
+		upload_menu.upload_button.disabled = false
 		return # todo: error handling
 	
 	var blob_uploader:HTTPRequest = HTTPRequest.new()
@@ -173,6 +176,7 @@ func upload() -> void:
 	
 	if response[1] != 200:
 		print(response)
+		upload_menu.upload_button.disabled = false
 		return # todo: error handling
 	
 	object_file.seek(0)
@@ -191,6 +195,7 @@ func upload() -> void:
 		return # todo: error handling
 	
 	blob_uploader.queue_free()
+	upload_menu.upload_button.disabled = false
 	print("upload completed!")
 
 func test_locally() -> void:

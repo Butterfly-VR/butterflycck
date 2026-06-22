@@ -480,7 +480,7 @@ layout_mode = 2
 text = "Sorry, flags are not implemented yet. When complete they are intended to be a set of moderated tags for certain types of content that some users may not want to see."
 autowrap_mode = 2
 
-[node name="Upload" type="VBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer" unique_id=2103645011 node_paths=PackedStringArray("uuid_text", "size_text", "creation_text", "last_update_text", "publicity_options", "license_options", "confirmation1", "confirmation2")]
+[node name="Upload" type="VBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer" unique_id=2103645011 node_paths=PackedStringArray("uuid_text", "size_text", "creation_text", "last_update_text", "publicity_options", "license_options", "confirmation1", "confirmation2", "upload_button")]
 visible = false
 layout_mode = 2
 script = ExtResource("9_su35f")
@@ -492,6 +492,7 @@ publicity_options = NodePath("VBoxContainer/HBoxContainer/OptionButton")
 license_options = NodePath("VBoxContainer/HBoxContainer4/OptionButton")
 confirmation1 = NodePath("VBoxContainer/CheckBox")
 confirmation2 = NodePath("VBoxContainer/CheckBox2")
+upload_button = NodePath("VBoxContainer2/HBoxContainer/Button2")
 metadata/_tab_index = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload" unique_id=2129527756]

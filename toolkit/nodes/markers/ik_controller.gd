@@ -9,6 +9,7 @@ class_name IKController
 @export_enum(" ") var right_foot_bone: String
 @export_enum(" ") var spine_bone: String
 @export_enum(" ") var hip_bone: String
+@export_enum(" ") var chest_bone: String
 
 @export var eye_placement:Node3D
 
@@ -26,7 +27,8 @@ func check_bone_config(target:Skeleton3D) -> bool:
 			target.find_bone(left_foot_bone) == -1 or 
 			target.find_bone(right_foot_bone) == -1 or 
 			target.find_bone(spine_bone) == -1 or 
-			target.find_bone(hip_bone) == -1)
+			target.find_bone(hip_bone) == -1 or 
+			target.find_bone(chest_bone) == -1)
 
 func check_bones_set() -> bool:
 	return (head_bone == "" or 
@@ -35,7 +37,8 @@ func check_bones_set() -> bool:
 			left_foot_bone == "" or 
 			right_foot_bone == "" or 
 			spine_bone == "" or 
-			hip_bone == "")
+			hip_bone == "" or 
+			chest_bone == "")
 
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	
@@ -96,6 +99,7 @@ func prep_for_upload() -> bool:
 	meta_values["right_foot_bone"] = parent.find_bone(right_foot_bone)
 	meta_values["spine_bone"] = parent.find_bone(spine_bone)
 	meta_values["hip_bone"] = parent.find_bone(hip_bone)
+	meta_values["chest_bone"] = parent.find_bone(chest_bone)
 	
 	parent.set_meta("IKMarker", meta_values)
 	

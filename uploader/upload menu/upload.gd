@@ -14,6 +14,7 @@ const KILOBYTE:int = 1024
 @export var license_options:OptionButton
 @export var confirmation1:CheckBox
 @export var confirmation2:CheckBox
+@export var upload_button:Button
 
 var object_size:int
 
