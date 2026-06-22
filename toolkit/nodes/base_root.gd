@@ -4,7 +4,7 @@ extends Node
 class_name BaseRoot
 
 # creates an error if any types or subtypes in this list are in the object
-const blacklisted_types:Array[GDScript] = []
+var blacklisted_types:Array = [Window, EditorPlugin, HTTPRequest, MultiplayerSpawner, MultiplayerSynchronizer, StatusIndicator]
 
 @export var object_name:String
 @export var _uuid:String
@@ -78,7 +78,6 @@ func on_pre_upload() -> bool:
 
 # bindings are applied in reverse order so we need the second binding argument to be first
 func get_child_warnings(node:Node, warnings:Array[Warning]) -> bool:
-	print(node.get_groups())
 	if node.get_groups().any(func(group:StringName) -> bool:
 		return !(group.begins_with("_") or group.begins_with("cck_"))):
 			warnings.push_back(Warning.new(Warning.WarningLevel.Error, 
@@ -86,7 +85,7 @@ func get_child_warnings(node:Node, warnings:Array[Warning]) -> bool:
 				"group names used in an uploaded object must start with 'cck_' to prevent conflicts", 
 				node, false))
 	if blacklisted_types.any(
-			func(blacklist_type:GDScript) -> bool: return is_instance_of(node, blacklist_type)):
+			func(blacklist_type) -> bool: return is_instance_of(node, blacklist_type)):
 		warnings.push_back(Warning.new(Warning.WarningLevel.Error, 
 				"Blacklisted Type", 
 				"this object contains a node of type %s, which is not allowed" % (
