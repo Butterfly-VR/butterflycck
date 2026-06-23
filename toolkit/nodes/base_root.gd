@@ -70,6 +70,8 @@ func on_pre_upload() -> bool:
 						success = false
 				return true)
 	
+	if get_child(0) is Node3D:
+		(get_child(0) as Node3D).position = Vector3.ZERO
 	
 	if !attached_uuid:
 		attached_uuid = UUID.new(true)
