@@ -2,9 +2,12 @@
 extends Node
 class_name EditorAPIHandler
 
-const TARGET_HOST:String = "api.butterflyvr.net"
-const TARGET_PORT:int = 443
-const RECONNECT_DELAY_TIME:float = 3
+const MAX_RECONNECT_DELAY:float = 15.0
+const BASE_RECONNECT_DELAY:float = 0.1
+const RECONNECT_DELAY_RECOVERY_SECONDS:float = 5
+const REQUEST_TIMEOUT_SECONDS:float = 5
+# todo: make readonly once its available
+var headers:PackedStringArray = PackedStringArray(["User-Agent: Pirulo/1.0 (Godot)", "Accept: */*"])
 
 # contains the request information stored before processing a request
 class Request:
@@ -32,25 +35,27 @@ class Request:
 		on_complete = Signal(self, singal_name)
 
 var is_ready:bool = false
+var target_port:int = 443
+var target_host:String = "api.butterflyvr.net"
+var restart_requested:bool = false
 var client:HTTPClient
 var waiting_requests:Array[Request]
+var reconnect_delay:float = BASE_RECONNECT_DELAY
+var timeout_progress:float = 0
 @onready var tree:SceneTree = get_tree()
 
-# todo: make readonly once its available
-var headers:PackedStringArray = PackedStringArray(["User-Agent: Pirulo/1.0 (Godot)", "Accept: */*"])
-
 # makes a request for the handler to process, requests are handled sequentially.
-# returns a signal that can be awaited to get the response.
+# returns a signal that can be awaited to get the response (if it is received).
 # user-agent, accept, content-type, and content-length headers are managed automatically.
 func make_request(method:HTTPClient.Method, target:String, 
-		request_headers:PackedStringArray = PackedStringArray(), body:String = "") -> Signal:
+		request_headers:PackedStringArray, body:String = "") -> Signal:
 	var request:Request = Request.new(method, target, body, request_headers)
 	waiting_requests.push_back(request)
 	return request.on_complete
 
 # generic handler for api responses, 
 # can check that specific response codes are sent or that specific values are in the response body
-# returns a bool indicating sucess, the response code, an error code or message,
+# returns a bool indicating sucess, the response code, an error code and/or message,
 # if one was sent by the server and an dictionary of the requested values
 func handle_response(code:HTTPClient.ResponseCode, body:String, expected_codes:Array[int], 
 		expected_body_keys:Array[String]) -> Array[Variant]:
@@ -69,10 +74,11 @@ func handle_response(code:HTTPClient.ResponseCode, body:String, expected_codes:A
 	if err != OK and !body.is_empty():
 		push_error("response parse error: %s" % err)
 	
-	if decoder.data is not Dictionary:
+	if decoder.data == null:
 		if !expected_body_keys.is_empty():
 			success = false
 		return [success, response_code, error_code, error_message, response_values]
+	@warning_ignore("unsafe_cast")
 	var data:Dictionary = decoder.data as Dictionary
 	
 	if "error_code" in data:
@@ -93,10 +99,16 @@ func handle_response(code:HTTPClient.ResponseCode, body:String, expected_codes:A
 # will call itself deferred to recreate the connection if it errors out
 func _ready() -> void:
 	client = HTTPClient.new()
-	var err:Error = client.connect_to_host(TARGET_HOST, TARGET_PORT, TLSOptions.client())
+	var err:Error
+	if target_port == 443:
+		err = client.connect_to_host(target_host, target_port, TLSOptions.client())
+	else:
+		err = client.connect_to_host(target_host, target_port)
 	if err != OK:
 		push_error("error while connecting to api: ", str(err))
-		await tree.create_timer(RECONNECT_DELAY_TIME).timeout
+		await tree.create_timer(reconnect_delay).timeout
+		# randomize delay to stagger reconnection attempts after a server outage
+		reconnect_delay = minf(reconnect_delay * randf_range(1.5, 2.5), MAX_RECONNECT_DELAY)
 		push_warning("retrying connection...")
 		_ready.call_deferred()
 		return
@@ -108,23 +120,48 @@ func _ready() -> void:
 		if client.get_status() != HTTPClient.STATUS_CONNECTED:
 			if client.get_status() == 4:
 				push_error("couldnt connect: server unavailable?")
+			elif client.get_status() == 2:
+				push_error("couldnt resolve server address: are you connected to the internet?")
 			else:
 				push_error("error in api connection: client state should be connected but was ", client.get_status())
-			await tree.create_timer(RECONNECT_DELAY_TIME).timeout
+			await tree.create_timer(reconnect_delay).timeout
+			# randomize delay to stagger reconnection attempts after a server outage
+			reconnect_delay = minf(reconnect_delay * randf_range(1.5, 2.5), MAX_RECONNECT_DELAY)
 			push_warning("retrying connection...")
 			_ready.call_deferred()
 			return
 		while waiting_requests.is_empty():
+			if restart_requested:
+				restart_requested = false
+				print("restarting client with new connection parameters")
+				_ready.call_deferred()
+				return
 			await tree.physics_frame
+			reconnect_delay -= (
+					(reconnect_delay - BASE_RECONNECT_DELAY) * 
+					( 1.0 / Engine.physics_ticks_per_second)) / RECONNECT_DELAY_RECOVERY_SECONDS
+		timeout_progress = 0
 		var request:Request = waiting_requests.pop_back()
 		client.request(request.method, request.target, headers + request.additional_headers, request.body)
 		while client.get_status() == HTTPClient.STATUS_REQUESTING:
 			client.poll()
 			await tree.process_frame
+			timeout_progress += ( 1.0 / Engine.physics_ticks_per_second)
+			if timeout_progress > REQUEST_TIMEOUT_SECONDS:
+				push_error("timeout during request")
+				await tree.create_timer(reconnect_delay).timeout
+				# randomize delay to stagger reconnection attempts after a server outage
+				reconnect_delay = minf(reconnect_delay * randf_range(1.5, 2.5), MAX_RECONNECT_DELAY)
+				push_warning("retrying connection...")
+				_ready.call_deferred()
+				return
 		if client.get_status() != HTTPClient.STATUS_BODY and client.get_status() != HTTPClient.STATUS_CONNECTED:
 			push_error("error in api connection: expected body or ready connection, got: ", client.get_status())
-			await tree.create_timer(RECONNECT_DELAY_TIME).timeout
+			await tree.create_timer(reconnect_delay).timeout
+			# randomize delay to stagger reconnection attempts after a server outage
+			reconnect_delay = minf(reconnect_delay * randf_range(1.5, 2.5), MAX_RECONNECT_DELAY)
 			push_warning("retrying connection...")
+			waiting_requests.push_back(request)
 			_ready.call_deferred()
 			return
 		if !client.has_response():
@@ -137,7 +174,16 @@ func _ready() -> void:
 				var chunk:PackedByteArray = client.read_response_body_chunk()
 				client.poll()
 				if chunk.size() == 0:
-					await get_tree().process_frame
+					await tree.process_frame
+					timeout_progress += ( 1.0 / Engine.physics_ticks_per_second)
+					if timeout_progress > REQUEST_TIMEOUT_SECONDS:
+						push_error("timeout while retriving body")
+						await tree.create_timer(reconnect_delay).timeout
+						# randomize delay to stagger reconnection attempts after a server outage
+						reconnect_delay = minf(reconnect_delay * randf_range(1.5, 2.5), MAX_RECONNECT_DELAY)
+						push_warning("retrying connection...")
+						_ready.call_deferred()
+						return
 				else:
 					raw_body = raw_body + chunk
 			if raw_body.is_empty():
