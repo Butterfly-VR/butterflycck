@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://bitwhj1em7l5f"]
+
+[node name="ObjectListing" type="HBoxContainer" unique_id=1570567570]
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="." unique_id=1849184503]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="HBoxContainer2" unique_id=1401841217]
+layout_mode = 2
+text = "UNNAMED"
+
+[node name="Label2" type="Label" parent="HBoxContainer2" unique_id=416604909]
+layout_mode = 2
+text = "UNNAMED"
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="." unique_id=447605711]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 2
+
+[node name="Label2" type="Label" parent="HBoxContainer3" unique_id=191722436]
+layout_mode = 2
+text = "UNNAMED"
+
+[node name="Button" type="Button" parent="HBoxContainer3" unique_id=107577168]
+layout_mode = 2
+text = "delete"
