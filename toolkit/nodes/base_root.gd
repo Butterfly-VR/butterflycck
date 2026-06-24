@@ -4,7 +4,7 @@ extends Node
 class_name BaseRoot
 
 # creates an error if any types or subtypes in this list are in the object
-var blacklisted_types:Array = [Window, EditorPlugin, HTTPRequest, MultiplayerSpawner, MultiplayerSynchronizer, StatusIndicator]
+var blacklisted_types:Array = [Window, EditorPlugin, HTTPRequest, MultiplayerSpawner, MultiplayerSynchronizer, StatusIndicator, AnimationTree]
 
 @export var object_name:String
 @export var _uuid:String
