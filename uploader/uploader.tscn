@@ -68,7 +68,7 @@ text = "settings"
 [node name="TabContainer" type="TabContainer" parent="." unique_id=1772871626 node_paths=PackedStringArray("button_section", "upload_handler", "account_handler")]
 layout_mode = 2
 size_flags_vertical = 3
-current_tab = 1
+current_tab = 0
 clip_tabs = false
 tabs_visible = false
 script = ExtResource("1_edmbh")
@@ -77,7 +77,6 @@ upload_handler = NodePath("ObjectUpload/HBoxContainer/TabContainer")
 account_handler = NodePath("../AccountHandler")
 
 [node name="Upload" type="HBoxContainer" parent="TabContainer" unique_id=1980369662]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -207,10 +206,11 @@ theme_override_font_sizes/font_size = 28
 text = "Continue"
 
 [node name="Manage" type="Control" parent="TabContainer" unique_id=1922870978]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/Manage" unique_id=1326989162]
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Manage" unique_id=291340027]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -218,17 +218,55 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ScrollContainer" type="ScrollContainer" parent="TabContainer/Manage/HBoxContainer" unique_id=330323012]
+[node name="HBoxContainer2" type="HBoxContainer" parent="TabContainer/Manage/VBoxContainer" unique_id=1527287537]
+layout_mode = 2
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="TabContainer/Manage/VBoxContainer/HBoxContainer2" unique_id=1048001706]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="LineEdit" type="LineEdit" parent="TabContainer/Manage/VBoxContainer/HBoxContainer2/HBoxContainer3" unique_id=124221414]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "search... (currently unavailable)"
+editable = false
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="TabContainer/Manage/VBoxContainer/HBoxContainer2" unique_id=1167725194]
+layout_mode = 2
+alignment = 2
+
+[node name="Button" type="Button" parent="TabContainer/Manage/VBoxContainer/HBoxContainer2/HBoxContainer2" unique_id=1069973567]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+disabled = true
+text = "filters"
+
+[node name="HSeparator" type="HSeparator" parent="TabContainer/Manage/VBoxContainer" unique_id=1854764801]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/Manage/VBoxContainer" unique_id=1326989162]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ScrollContainer" type="ScrollContainer" parent="TabContainer/Manage/VBoxContainer/HBoxContainer" unique_id=330323012]
 layout_mode = 2
 size_flags_horizontal = 3
 horizontal_scroll_mode = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Manage/HBoxContainer/ScrollContainer" unique_id=751208055]
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Manage/VBoxContainer/HBoxContainer/ScrollContainer" unique_id=751208055 node_paths=PackedStringArray("api_handler", "account_handler", "popup", "popup_object_name_label", "confirm_button", "cancel_button")]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 3
 script = ExtResource("4_v8nud")
+api_handler = NodePath("../../../../../../APIHandler")
+account_handler = NodePath("../../../../../../AccountHandler")
+popup = NodePath("../../../../Popup")
+popup_object_name_label = NodePath("../../../../Popup/Panel/HBoxContainer/Label2")
+confirm_button = NodePath("../../../../Popup/Panel/HBoxContainer2/Button2")
+cancel_button = NodePath("../../../../Popup/Panel/HBoxContainer2/Button")
 
 [node name="Popup" type="Control" parent="TabContainer/Manage" unique_id=80563476]
+visible = false
 layout_mode = 1
 anchor_left = 0.2890625
 anchor_top = 0.14334472
@@ -745,7 +783,8 @@ persistance_handler = NodePath("../PersistanceHandler")
 [connection signal="pressed" from="TabContainer/Upload/ObjectSelector/HBoxContainer/Props" to="TabContainer/Upload/ObjectSelector" method="on_target_type_changed" binds= [3]]
 [connection signal="visibility_changed" from="TabContainer/Upload/ObjectInspector" to="TabContainer/Upload/ObjectInspector" method="_on_visibility_changed"]
 [connection signal="pressed" from="TabContainer/Upload/ObjectInspector/Button" to="TabContainer/Upload/ObjectInspector" method="_on_upload_started"]
-[connection signal="visibility_changed" from="TabContainer/Manage/HBoxContainer/ScrollContainer/VBoxContainer" to="TabContainer/Manage/HBoxContainer/ScrollContainer/VBoxContainer" method="_on_visibility_changed"]
+[connection signal="visibility_changed" from="TabContainer/Manage/VBoxContainer/HBoxContainer/ScrollContainer/VBoxContainer" to="TabContainer/Manage/VBoxContainer/HBoxContainer/ScrollContainer/VBoxContainer" method="_on_visibility_changed"]
+[connection signal="pressed" from="TabContainer/Manage/Popup/Panel/HBoxContainer2/Button" to="TabContainer/Manage/VBoxContainer/HBoxContainer/ScrollContainer/VBoxContainer" method="_on_cancel"]
 [connection signal="file_selected" from="TabContainer/Settings/SettingsList/HBoxContainer2/FileDialog" to="TabContainer/Settings/SettingsList/HBoxContainer2" method="_on_file_dialog_file_selected"]
 [connection signal="pressed" from="TabContainer/Settings/SettingsList/HBoxContainer2/PathButton" to="TabContainer/Settings/SettingsList/HBoxContainer2" method="_on_path_button_pressed"]
 [connection signal="pressed" from="TabContainer/Settings/SettingsList/HBoxContainer/Button" to="TabContainer/Settings/SettingsList/HBoxContainer" method="_on_button_pressed"]

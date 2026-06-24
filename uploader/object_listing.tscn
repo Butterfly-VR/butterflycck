@@ -1,6 +1,14 @@
 [gd_scene format=3 uid="uid://bitwhj1em7l5f"]
 
-[node name="ObjectListing" type="HBoxContainer" unique_id=1570567570]
+[ext_resource type="Script" uid="uid://dwey28cbdlv0l" path="res://addons/butterflycck/uploader/object_listing.gd" id="1_wk8oa"]
+
+[node name="ObjectListing" type="HBoxContainer" unique_id=1570567570 node_paths=PackedStringArray("name_label", "publicity_label", "creation_time_label", "uuid_label", "delete_button")]
+script = ExtResource("1_wk8oa")
+name_label = NodePath("HBoxContainer2/Label")
+publicity_label = NodePath("HBoxContainer2/Label2")
+creation_time_label = NodePath("HBoxContainer2/Label3")
+uuid_label = NodePath("HBoxContainer3/Label2")
+delete_button = NodePath("HBoxContainer3/Button")
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="." unique_id=1849184503]
 layout_mode = 2
@@ -11,6 +19,10 @@ layout_mode = 2
 text = "UNNAMED"
 
 [node name="Label2" type="Label" parent="HBoxContainer2" unique_id=416604909]
+layout_mode = 2
+text = "UNNAMED"
+
+[node name="Label3" type="Label" parent="HBoxContainer2" unique_id=1740098249]
 layout_mode = 2
 text = "UNNAMED"
 
