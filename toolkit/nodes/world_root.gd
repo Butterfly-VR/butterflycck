@@ -25,3 +25,6 @@ func get_preview_camera_transform() -> Transform3D:
 		return spawn_tranform.transform
 	else:
 		return Transform3D(Basis.IDENTITY, Vector3(0.0, 1.0, 0.0))
+
+func get_base_class_warnings() -> Array[Warning]:
+	return []

@@ -1,10 +1,11 @@
+@tool
 extends CCKMarker
 class_name Grabbable
 
 ## used to detect a player attempting to grab this object
 ## should be monitorable and added to layer 2
 @export var hitbox:Area3D
-@export var max_grab_distance:float
+@export var max_grab_distance:float = -1.0
 ## if this is not null, when grabbed, the grabbable will snap to the players hand. 
 ## this node is the position of the players hand on the grabbale
 @export var snap_target:Node3D
@@ -29,7 +30,7 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 				self, false))
 	else:
 		if hitbox.collision_layer != 0 and hitbox.collision_layer != 2:
-			warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Warning, 
+			warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Info, 
 					"Grabbable hitbox exists in other layers", 
 					"the hitbox for the grabbale exists in layers other than the grabbables physics layer, this is probably not intentional", 
 					hitbox, true, 

@@ -4,7 +4,7 @@ extends Node
 class_name BaseRoot
 
 # creates an error if any types or subtypes in this list are in the object
-var blacklisted_types:Array = [Window, EditorPlugin, HTTPRequest, MultiplayerSpawner, MultiplayerSynchronizer, StatusIndicator, AnimationTree]
+var blacklisted_types:Array = [Window, EditorPlugin, HTTPRequest, MultiplayerSpawner, MultiplayerSynchronizer, StatusIndicator, AnimationMixer]
 
 @export var object_name:String
 @export var _uuid:String
@@ -46,7 +46,7 @@ class Warning:
 			self.has_autofix = true
 			self.autofix = autofix
 
-@abstract func get_object_type() -> ObjectType
+@abstract func get_object_type() -> ObjectType;
 
 func assign_uuid() -> void:
 	var new_uuid:UUID
@@ -72,6 +72,7 @@ func on_pre_upload() -> bool:
 	
 	if get_child(0) is Node3D:
 		(get_child(0) as Node3D).position = Vector3.ZERO
+		(get_child(0) as Node3D).rotation = Vector3.ZERO
 	
 	if !attached_uuid:
 		attached_uuid = UUID.new(true)
@@ -80,36 +81,39 @@ func on_pre_upload() -> bool:
 
 # bindings are applied in reverse order so we need the second binding argument to be first
 func get_child_warnings(node:Node, warnings:Array[Warning]) -> bool:
-	if node.get_groups().any(func(group:StringName) -> bool:
-		return !(group.begins_with("_") or group.begins_with("cck_"))):
+	if node is CCKMarker:
+		warnings.append_array((node as CCKMarker).get_uploader_warnings())
+		return false
+	else:
+		if node.get_groups().any(
+				func(group:StringName) -> bool:
+					return !(group.begins_with("_") or group.begins_with("cck_"))):
 			warnings.push_back(Warning.new(Warning.WarningLevel.Error, 
 				"invalid group", 
 				"group names used in an uploaded object must start with 'cck_' to prevent conflicts", 
 				node, false))
-	if blacklisted_types.any(
-			func(blacklist_type) -> bool: return is_instance_of(node, blacklist_type)):
-		warnings.push_back(Warning.new(Warning.WarningLevel.Error, 
-				"Blacklisted Type", 
-				"this object contains a node of type %s, which is not allowed" % (
-				node.get_class()), 
-				node, true, 
-				func(): 
-					node.queue_free() 
-					return true))
-	if node is CCKMarker:
-		warnings.append_array((node as CCKMarker).get_uploader_warnings())
-	elif node.get_script() != null:
-		warnings.push_back(Warning.new(Warning.WarningLevel.Error, 
-				"Node with script", 
-				"Scripts are currently not allowed on uploaded objects, sandboxed scripting will be implemented in a future alpha build", 
-				node, true, 
-				func(): 
-					node.queue_free() 
-					return true))
+		if blacklisted_types.any(
+				func(blacklist_type) -> bool: return is_instance_of(node, blacklist_type)):
+			warnings.push_back(Warning.new(Warning.WarningLevel.Error, 
+					"Blacklisted Type", 
+					"this object contains a node of type %s, which is not allowed" % (
+					node.get_class()), 
+					node, true, 
+					func(): 
+						node.queue_free() 
+						return true))
+		if node.get_script() != null:
+			warnings.push_back(Warning.new(Warning.WarningLevel.Error, 
+					"Node with script", 
+					"Scripts are currently not allowed on uploaded objects, sandboxed scripting will be implemented in a future alpha build", 
+					node, true, 
+					func(): 
+						node.queue_free() 
+						return true))
 	return true
 
 func get_upload_warnings() -> Array[Warning]:
-	var warnings:Array[Warning] = []
+	var warnings:Array[Warning] = get_base_class_warnings()
 	if get_children().size() > 0:
 		EditorSceneTreeHelper.call_children_recursive(get_child(0), get_child_warnings.bind(warnings))
 	
@@ -174,3 +178,6 @@ func _get_configuration_warnings():
 		warnings.append("multiple children are not allowed on an object root, children beyond the first child will be ignored")
 	
 	return warnings
+
+@abstract
+func get_base_class_warnings() -> Array[Warning]

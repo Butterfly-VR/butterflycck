@@ -37,12 +37,12 @@ func _get_configuration_warnings():
 ## generally you should always return true here and instead use get_uploader_warnings.
 ## Error level warnings prevent uploading and are preferred over returning false here.
 @abstract
-func prep_for_upload() -> bool
+func prep_for_upload() -> bool;
 
 ## this function is used to refresh the uploader warning list
 ## it should return a list of any configuration issues with this marker
 @abstract
-func get_uploader_warnings() -> Array[BaseRoot.Warning]
+func get_uploader_warnings() -> Array[BaseRoot.Warning];
 
 @abstract
-func get_marker_version_string() -> String
+func get_marker_version_string() -> String;

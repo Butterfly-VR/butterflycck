@@ -34,10 +34,10 @@ func get_marker_version_string() -> String:
 ## the usual rule about prefering to raise upload warnings applies
 ## if ["action_type"], ["action_id"], or ["custom_parameters"] are present they will be overwritten
 @abstract
-func get_action_info() -> Dictionary[String, Variant]
+func get_action_info() -> Dictionary[String, Variant];
 
 @abstract
-func get_action_version_string() -> String
+func get_action_version_string() -> String;
 
 @abstract
-func get_action_name() -> String
+func get_action_name() -> String;

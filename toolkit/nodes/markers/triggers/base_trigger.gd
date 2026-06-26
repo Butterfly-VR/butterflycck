@@ -35,10 +35,10 @@ func get_marker_version_string() -> String:
 ## the usual rule about prefering to raise upload warnings applies
 ## if ["trigger_type"], ["targets"], or ["custom_parameters"] are present they will be overwritten
 @abstract
-func get_trigger_info() -> Dictionary[String, Variant]
+func get_trigger_info() -> Dictionary[String, Variant];
 
 @abstract
-func get_trigger_version_string() -> String
+func get_trigger_version_string() -> String;
 
 @abstract
-func get_trigger_name() -> String
+func get_trigger_name() -> String;

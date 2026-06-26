@@ -1,4 +1,5 @@
 ## triggers any attached actions every physics tick. has no parameters
+@tool
 extends CCKTrigger
 class_name AlwaysTrigger
 

@@ -1,11 +1,16 @@
 ## Toggles or sets the "enabled" or "active" property of the parent node if it exists
+##
+## if behavior is set to [enum BehaviorMode].TakeParam this action will use 
+## the first parameter as a boolean to decide toggle behavior
+@tool
 extends CCKAction
 class_name EnableAction
 
 enum BehaviorMode{
 	Toggle,
 	SetOn,
-	SetOff
+	SetOff,
+	TakeParam
 }
 
 @export var behavior:BehaviorMode
