@@ -42,7 +42,8 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	if !check_parent_properties():
 		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Warning, 
 				"EnableAction parent missing property", 
-				"The parent of an EnableAction marker has no \"enabled\" or \"active\" property for the marker to toggle.", 
+				"The parent of an EnableAction marker has no \"enabled\" or \
+						\"active\" property for the marker to toggle.", 
 				get_parent(), false))
 	
 	return warnings

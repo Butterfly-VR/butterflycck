@@ -105,7 +105,8 @@ func get_child_warnings(node:Node, warnings:Array[Warning]) -> bool:
 		if node.get_script() != null:
 			warnings.push_back(Warning.new(Warning.WarningLevel.Error, 
 					"Node with script", 
-					"Scripts are currently not allowed on uploaded objects, sandboxed scripting will be implemented in a future alpha build", 
+					"Scripts are currently not allowed on uploaded objects, \
+							sandboxed scripting will be implemented in a future alpha build", 
 					node, true, 
 					func(): 
 						node.queue_free() 
@@ -175,7 +176,8 @@ func _get_configuration_warnings():
 	if get_children().size() == 0:
 		warnings.append("object root requires a child")
 	if get_children().size() > 1:
-		warnings.append("multiple children are not allowed on an object root, children beyond the first child will be ignored")
+		warnings.append("multiple children are not allowed on an object root, \
+				children beyond the first child will be ignored")
 	
 	return warnings
 

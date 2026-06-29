@@ -24,7 +24,8 @@ func prep_for_upload() -> bool:
 	return true
 
 func get_marker_version_string() -> String:
-	push_error("tried to get CCKMarker version of a CCKaction. (did you mean get_action_version_string()?)")
+	push_error("tried to get CCKMarker version of a CCKaction. \
+			(did you mean get_action_version_string()?)")
 	return "UNNAMED"
 
 ## gets the required info for this Action's effect

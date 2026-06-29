@@ -7,10 +7,15 @@ class_name AvatarColliderConfig
 
 func _process(delta: float) -> void:
 	var target:Node = get_parent()
-	while target is not Node3D:
-		if get_parent() == null:
+	for i in range(0, 16):
+		if target is Node3D:
+			break
+		if target.get_parent() == null:
 			return
-		target = get_parent()
+		target = target.get_parent()
+	
+	if target is not Node3D:
+		return
 	
 	var position:Vector3 = (target as Node3D).global_position
 	position.y += height / 2

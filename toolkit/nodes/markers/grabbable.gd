@@ -32,7 +32,8 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 		if hitbox.collision_layer != 0 and hitbox.collision_layer != 2:
 			warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Info, 
 					"Grabbable hitbox exists in other layers", 
-					"the hitbox for the grabbale exists in layers other than the grabbables physics layer, this is probably not intentional", 
+					"the hitbox for the grabbable exists in layers other than the grabbables \
+							physics layer, this is probably not intentional", 
 					hitbox, true, 
 					func():
 						hitbox.collision_layer = 2
@@ -50,7 +51,9 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	if snap_target and snap_target.get_parent() != get_parent():
 		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Warning, 
 				"grabbable snap target is not child of grabbable", 
-				"the snap target is used as an offset relative to the grabbable for positioning the player's hand. If it is not a child of the grabbale the offset may not be correct", 
+				"the snap target is used as an offset relative to the grabbable for \
+						positioning the player's hand. If it is not a child of the \
+						grabbale the offset may not be correct", 
 				snap_target, false))
 		
 	return warnings

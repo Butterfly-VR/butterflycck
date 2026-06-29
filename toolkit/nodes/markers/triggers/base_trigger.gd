@@ -25,7 +25,8 @@ func prep_for_upload() -> bool:
 	return true
 
 func get_marker_version_string() -> String:
-	push_error("tried to get CCKMarker version of a CCKTrigger. (did you mean get_trigger_version_string()?)")
+	push_error("tried to get CCKMarker version of a CCKTrigger. \
+			(did you mean get_trigger_version_string()?)")
 	return "UNNAMED"
 
 ## gets the required info for this Trigger's cause

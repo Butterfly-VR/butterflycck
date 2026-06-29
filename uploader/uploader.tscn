@@ -685,19 +685,19 @@ text = "License:"
 [node name="OptionButton" type="OptionButton" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer/HBoxContainer4" unique_id=1325860467]
 layout_mode = 2
 size_flags_vertical = 0
-selected = 0
-item_count = 4
-popup/item_0/text = "Source Available"
-popup/item_0/id = 2
+selected = 2
+item_count = 5
+popup/item_0/text = "GPL V3"
+popup/item_0/id = 0
 popup/item_1/text = "MIT"
 popup/item_1/id = 1
-popup/item_1/disabled = true
-popup/item_2/text = "GPL V3"
-popup/item_2/id = 0
-popup/item_2/disabled = true
-popup/item_3/text = "Custom"
+popup/item_2/text = "CC BY-NC-ND"
+popup/item_2/id = 2
+popup/item_3/text = "CC BY-NC-SA"
 popup/item_3/id = 3
-popup/item_3/disabled = true
+popup/item_4/text = "Custom"
+popup/item_4/id = 4
+popup/item_4/disabled = true
 
 [node name="Label2" type="Label" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer/HBoxContainer4" unique_id=1873295046]
 layout_mode = 2

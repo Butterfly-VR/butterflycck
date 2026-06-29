@@ -8,10 +8,12 @@ func get_universal_warnings() -> Array[BaseRoot.Warning]:
 	var warnings:Array[BaseRoot.Warning] = []
 	
 	for child in get_children():
-		if child is not CCKMarker:
+		if child is not CCKExtender:
 			warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Warning, 
 					"Marker has non-Extender children", 
-					"Children of marker nodes will be deleted on upload, unless that node is a CCKExtender, the node you want a marker to target should be the parent of the marker", 
+					"Children of marker nodes will be deleted on upload, unless that \
+							node is a CCKExtender, the node you want a marker to target \
+							should be the parent of the marker", 
 					child, false))
 			break
 	

@@ -10,6 +10,20 @@ const MEGABYTE:int = KILOBYTE * 1024
 const KILOBYTE:int = 1024
 const CUSTOM_LICENSE_TYPE:int = 3
 const PCK_INTERNAL_PATH:String = "res://_loaded_content/%s/%s.tscn"
+#region Licenses
+#region cc-nd
+const LICENSE_TEXT_CC_ND:String = "CC BY-NC-ND License Placeholder"
+#endregion
+#region cc-sa
+const LICENSE_TEXT_CC_SA:String = "CC BY-NC-SA License Placeholder"
+#endregion
+#region mit
+const LICENSE_TEXT_MIT:String = "MIT License Placeholder"
+#endregion
+#region gpl
+const LICENSE_TEXT_GPL:String = "GPL V3 License Placeholder"
+#endregion
+#endregion
 
 @export var api_handler:EditorAPIHandler
 @export var account_handler:EditorAccountHandler
@@ -136,13 +150,17 @@ func upload() -> void:
 	
 	match object.license:
 		0:
-			upload_values["license"] = "GPL License"
+			upload_values["license"] = LICENSE_TEXT_GPL
 		1:
-			upload_values["license"] = "MIT License"
+			upload_values["license"] = LICENSE_TEXT_MIT
 		2:
-			upload_values["license"] = "Source Available License"
+			upload_values["license"] = LICENSE_TEXT_CC_ND
 		3:
+			upload_values["license"] = LICENSE_TEXT_CC_SA
+		4:
 			upload_values["license"] = object.custom_license
+		_:
+			push_warning("unhandled license type!")
 	
 	var type_string:String
 	match object.object_type:
@@ -386,7 +404,20 @@ func get_object_info(uuid:UUID, object_type:BaseRoot.ObjectType) -> ObjectMeta:
 	object.image_size_KB = values["image_size"] / 1024
 	
 	object.publicity = values["publicity"]
+	
 	object.license = 0
+	match values["license"]:
+		LICENSE_TEXT_GPL:
+			object.license = 0
+		LICENSE_TEXT_MIT:
+			object.license = 1
+		LICENSE_TEXT_CC_ND:
+			object.license = 2
+		LICENSE_TEXT_CC_SA:
+			object.license = 3
+		_:
+			object.license = 4
+			object.custom_license = values["license"]
 	
 	object.creation_time_utc = values["created_at"]
 	object.modified_time_utc = values["updated_at"]
