@@ -7,8 +7,9 @@ class_name Grabbable
 @export var hitbox:Area3D
 @export var max_grab_distance:float = -1.0
 ## if this is not null, when grabbed, the grabbable will snap to the players hand. 
-## this node is the position of the players hand on the grabbale
+## this node is the position of the players hand on the grabbable
 @export var snap_target:Node3D
+@export var highlight_target:MeshInstance3D
 
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	var warnings:Array[BaseRoot.Warning] = get_universal_warnings()
@@ -36,16 +37,7 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 							physics layer, this is probably not intentional", 
 					hitbox, true, 
 					func():
-						hitbox.collision_layer = 2
-						return true))
-		
-		if !hitbox.monitorable:
-			warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Warning, 
-					"Grabbable hitbox will not detect grabs", 
-					"the hitbox must be monitorable for the object to be grabbable", 
-					hitbox, true, 
-					func():
-						hitbox.monitorable = true
+						hitbox.collision_layer = hitbox.collision_layer | 2
 						return true))
 	
 	if snap_target and snap_target.get_parent() != get_parent():
@@ -60,11 +52,14 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 
 func prep_for_upload() -> bool:
 	var values:Dictionary[String, Variant] = {}
+	var parent:Node = get_parent()
+	parent.remove_child(self)
 	
 	values["marker_version"] = get_marker_version_string()
 	
-	values["hitbox"] = get_parent().get_path_to(hitbox)
+	values["hitbox"] = hitbox.get_index()
 	values["max_grab_distance"] = max_grab_distance
+	values["highlight_mesh"] = hitbox.get_path_to(highlight_target) if highlight_target else ""
 	if snap_target:
 		values["snap_on_grab"] = true
 		values["snap_offset_position"] = snap_target.position
@@ -72,7 +67,7 @@ func prep_for_upload() -> bool:
 	else:
 		values["snap_on_grab"] = false
 	
-	get_parent().set_meta("Grabbable", values)
+	parent.set_meta("Grabbable", values)
 	
 	queue_free()
 	
