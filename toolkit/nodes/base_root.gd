@@ -20,6 +20,9 @@ enum ObjectType{
 	component
 }
 
+class WarningState:
+	var state:Array[Warning]
+
 # warning to be displayed in the upload panel
 # Error level warnings prevent uploading
 class Warning:
@@ -80,21 +83,21 @@ func on_pre_upload() -> bool:
 	return success
 
 # bindings are applied in reverse order so we need the second binding argument to be first
-func get_child_warnings(node:Node, warnings:Array[Warning]) -> bool:
+func get_child_warnings(node:Node, warnings:WarningState) -> bool:
 	if node is CCKMarker:
-		warnings.append_array((node as CCKMarker).get_uploader_warnings())
+		warnings.state.append_array((node as CCKMarker).get_uploader_warnings())
 		return false
 	else:
 		if node.get_groups().any(
 				func(group:StringName) -> bool:
 					return !(group.begins_with("_") or group.begins_with("cck_"))):
-			warnings.push_back(Warning.new(Warning.WarningLevel.Error, 
+			warnings.state.push_back(Warning.new(Warning.WarningLevel.Error, 
 				"invalid group", 
 				"group names used in an uploaded object must start with 'cck_' to prevent conflicts", 
 				node, false))
 		if blacklisted_types.any(
 				func(blacklist_type) -> bool: return is_instance_of(node, blacklist_type)):
-			warnings.push_back(Warning.new(Warning.WarningLevel.Error, 
+			warnings.state.push_back(Warning.new(Warning.WarningLevel.Error, 
 					"Blacklisted Type", 
 					"this object contains a node of type %s, which is not allowed" % (
 					node.get_class()), 
@@ -103,7 +106,7 @@ func get_child_warnings(node:Node, warnings:Array[Warning]) -> bool:
 						node.queue_free() 
 						return true))
 		if node.get_script() != null:
-			warnings.push_back(Warning.new(Warning.WarningLevel.Error, 
+			warnings.state.push_back(Warning.new(Warning.WarningLevel.Error, 
 					"Node with script", 
 					"Scripts are currently not allowed on uploaded objects, \
 							sandboxed scripting will be implemented in a future alpha build", 
@@ -114,18 +117,19 @@ func get_child_warnings(node:Node, warnings:Array[Warning]) -> bool:
 	return true
 
 func get_upload_warnings() -> Array[Warning]:
-	var warnings:Array[Warning] = get_base_class_warnings()
+	var warnings:WarningState = WarningState.new()
+	warnings.state = get_base_class_warnings()
 	if get_children().size() > 0:
 		EditorSceneTreeHelper.call_children_recursive(get_child(0), get_child_warnings.bind(warnings))
 	
 	# get config warnings from self
 	for warning in _get_configuration_warnings():
-		warnings.push_back(Warning.new(
+		warnings.state.push_back(Warning.new(
 				Warning.WarningLevel.Warning, 
 				"Root Config Error", 
 				warning, 
 				self, false))
-	return warnings
+	return warnings.state
 
 func _process(delta: float) -> void:
 	update_configuration_warnings() # todo: this should be callled only when needed
