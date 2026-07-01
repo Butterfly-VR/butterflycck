@@ -1,6 +1,10 @@
 @tool
 extends CCKMarker
-class_name SpawnPoint
+## Determines where players spawn in a world.
+##
+## The parent of this marker is the position and rotation a player will 
+## start in upon joining a world. the parent must be a [Node3D] or derived from it.
+class_name Spawnpoint
 
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	var warnings:Array[BaseRoot.Warning] = get_universal_warnings()

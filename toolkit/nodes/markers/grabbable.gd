@@ -1,14 +1,27 @@
 @tool
 extends CCKMarker
+## This node allows a player to grab the parent node of this marker by right clicking.
+##
+## This node requires an Area3D set as monitorable to detect when a player targets it.
+## [br]
+## It can also optionaly snap to the player's hand when grabbed.
+## [br]
+## It can also add a highlight effect to a mesh when grabbed.
 class_name Grabbable
 
-## used to detect a player attempting to grab this object
-## should be monitorable and added to layer 2
+## Used to detect a player attempting to grab this object.
+## Should be monitorable and in no collision layers other than layer 2.
 @export var hitbox:Area3D
+## The maximum distance this can be grabbed from, calculated from the grabber's
+## origin to the point on the hitbox surface where the raycast collided.
 @export var max_grab_distance:float = -1.0
-## if this is not null, when grabbed, the grabbable will snap to the players hand. 
-## this node is the position of the players hand on the grabbable
+## If this is not null, when grabbed, the grabbable will snap to the players hand. 
+## This node is the position of the players hand on the grabbable
 @export var snap_target:Node3D
+## The mesh that gets highlighted when the hitbox is hovered over.
+## generally this should either be the mesh of the grabbed object or a mesh
+## in the shape of the hitbox. If this is not set it may be hard for players
+## to realise this object is grabbable.
 @export var highlight_target:MeshInstance3D
 
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
@@ -47,7 +60,14 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 						positioning the player's hand. If it is not a child of the \
 						grabbale the offset may not be correct", 
 				snap_target, false))
-		
+	
+	if !highlight_target:
+		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Info, 
+				"grabbable has no highlight mesh", 
+				"a highlight mesh is important to indicate that an object is grabbable,\
+				you should strongly consider adding a highlight target.", 
+				snap_target, false))
+	
 	return warnings
 
 func prep_for_upload() -> bool:

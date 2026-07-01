@@ -1,7 +1,11 @@
 @tool
 extends BaseRoot
+## The root node for a world.
+##
+## A world should usually contain at least one [Spawnpoint] marker.
 class_name WorldRoot
 
+## Returns [enum BaseRoot.ObjectType].world.
 func get_object_type() -> ObjectType:
 	return ObjectType.world
 
@@ -10,13 +14,15 @@ func get_object_type() -> ObjectType:
 class TransformWrapper:
 	var transform:Transform3D
 
+## Used internally when generating the world preview.
 func get_spawnpoint_transform(node:Node, transform:TransformWrapper):
-	if node is SpawnPoint:
+	if node is Spawnpoint:
 		if node.get_parent() is Node3D:
 			transform.transform = (node.get_parent() as Node3D).global_transform
 	return true
 
-# positions the preview camera so that it roughly shows the view of a newly spawned player
+## Positions the preview camera so that it roughly shows the view
+## of a newly spawned player.
 func get_preview_camera_transform() -> Transform3D:
 	var spawn_tranform:TransformWrapper = TransformWrapper.new()
 	EditorSceneTreeHelper.call_children_recursive(self, get_spawnpoint_transform.bind(spawn_tranform))
@@ -26,5 +32,6 @@ func get_preview_camera_transform() -> Transform3D:
 	else:
 		return Transform3D(Basis.IDENTITY, Vector3(0.0, 1.0, 0.0))
 
+## Returns warnings specific to a world.
 func get_base_class_warnings() -> Array[Warning]:
 	return []

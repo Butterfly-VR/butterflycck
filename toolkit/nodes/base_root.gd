@@ -1,22 +1,44 @@
 @tool
 @abstract
 extends Node
+## Base class for uploadable objects. contains a UUID corrosponding to
+## the uploaded object, and a default name for it
+##
+## To upload an object; you must create a node with one of the derived classes
+## of this node and then create a single root node that is a child of that node.
+## That root node should contain everything you want to upload.
+## [br]
+## Scripts are not allowed on any uploaded objects.
+## [br][br]
+## Tip: An [UploadSkipMarker] can contain nodes in the object you 
+## dont want uploaded, and will silence warning related to them.
 class_name BaseRoot
 
-# creates an error if any types or subtypes in this list are in the object
+## List of types that are not allowed in any object.
+## These classes either provide unwanted capabilities or 
+## allow potential code execution by an attacker.
 var blacklisted_types:Array = [Window, EditorPlugin, HTTPRequest, MultiplayerSpawner, MultiplayerSynchronizer, StatusIndicator, AnimationMixer]
 
+## The default name for this object, will be replaced with the 
+## uploaded object's name if the UUID is for an existing object.
 @export var object_name:String
+## The UUID of the object. If you edit this, you must click the
+## assign UUID button for your changes to be saved.
 @export var _uuid:String
 
+## Parses the entered uuid
 @export_tool_button("assign UUID", "Callable") var assign_button = assign_uuid
 
+## The actual UUID of the object, is set by assign UUID.
 var attached_uuid:UUID
 
+## The possible types of objects.
 enum ObjectType{
 	world,
 	avatar,
+	## not yet implemented
 	prop,
+	## not yet implemented
 	component
 }
 
@@ -49,8 +71,11 @@ class Warning:
 			self.has_autofix = true
 			self.autofix = autofix
 
+## retrieves the type of an object, will usually be a constant value
 @abstract func get_object_type() -> ObjectType;
 
+## called by the assign UUID button, sets [attached_uuid] to the parsed
+## value of [_uuid]
 func assign_uuid() -> void:
 	var new_uuid:UUID
 	if _uuid.is_empty():
@@ -62,7 +87,8 @@ func assign_uuid() -> void:
 	_uuid = new_uuid.to_string()
 	attached_uuid = new_uuid
 
-# setup self and call prep on children, then return children
+## Prepares the object and any [CCKMarker]s within it for uploading.
+## Returns false if an error occured during preparation.
 func on_pre_upload() -> bool:
 	var success:bool = true
 	EditorSceneTreeHelper.call_children_recursive(
@@ -82,7 +108,7 @@ func on_pre_upload() -> bool:
 	
 	return success
 
-# bindings are applied in reverse order so we need the second binding argument to be first
+## Helper function for getting warnings accossiated with a child node.
 func get_child_warnings(node:Node, warnings:WarningState) -> bool:
 	if node is CCKMarker:
 		warnings.state.append_array((node as CCKMarker).get_uploader_warnings())
@@ -116,6 +142,7 @@ func get_child_warnings(node:Node, warnings:WarningState) -> bool:
 						return true))
 	return true
 
+## Retrives the list of warning and errors for this object.
 func get_upload_warnings() -> Array[Warning]:
 	var warnings:WarningState = WarningState.new()
 	warnings.state = get_base_class_warnings()
@@ -140,7 +167,7 @@ class AABBRef:
 	var is_init:bool = false
 	var aabb:AABB
 
-# bindings are applied in reverse order so we need the second binding argument to be first
+## Helper function for genering the preview image.
 func get_combined_aabb(node:Node, buffer:AABBRef) -> bool:
 	if node is VisualInstance3D:
 		var aabb:AABB = (node as VisualInstance3D).get_aabb()
@@ -153,8 +180,9 @@ func get_combined_aabb(node:Node, buffer:AABBRef) -> bool:
 	
 	return true
 
-# default camera position calculation
-# positions the camera such that it sees the entire object based on its bounding box
+## Positions the camera for generating the preview image for an object.
+## This default implementation positions the camera such that the entire AABB
+## of the object is visible, facing -z.
 func get_preview_camera_transform() -> Transform3D:
 	var camera:Camera3D = Camera3D.new()
 	add_child(camera)
@@ -185,5 +213,6 @@ func _get_configuration_warnings():
 	
 	return warnings
 
+## Retrieves the list of warnings for a specific object type.
 @abstract
 func get_base_class_warnings() -> Array[Warning]

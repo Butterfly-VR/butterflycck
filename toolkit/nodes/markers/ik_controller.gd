@@ -1,5 +1,12 @@
 @tool
 extends CCKMarker
+## Provides IK targets from a [Skeleton3D]'s bones for avatars.
+##
+## When attached to a [Skeleton3D] on an avatar, this marker configures
+## the avatar IK to do stuff like move the avatar's head when the player
+## looks around or move their arms or legs if they are in VR.
+## [br]
+## Also configures the positioning of the camera relative to the avatar's head.
 class_name IKController
 
 @export_enum(" ") var head_bone: String
@@ -11,6 +18,8 @@ class_name IKController
 @export_enum(" ") var hip_bone: String
 @export_enum(" ") var chest_bone: String
 
+## Controls the position of the player's 'eyes' relative to the avatar's head.
+## Should generally be placed between the avatar's eyes near skin level.
 @export var eye_placement:Node3D
 
 func _validate_property(property: Dictionary) -> void:

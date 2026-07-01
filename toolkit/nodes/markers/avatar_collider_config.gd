@@ -1,8 +1,22 @@
 @tool
 extends CCKMarker
+## This marker tells the client how large the avatar's CapsuleCollider should be.
+##
+## If this node is missing from an avatar the collider will be sized to the 
+## Avatar's AABB. 
+## [br]
+## in the client, the collider size is clamped between two values
+## relative to the AABB of the avatar. This clamping behavior is currently not
+## shown in the cck.
 class_name AvatarColliderConfig
 
+## The radius of the collider. If this is greater than half the height, either
+## the radius or the height will be clamped so that it is equal to half the height.
+## Which value gets clamped is not specified.
 @export var radius:float = 0.5
+## The height of the collider. If this is less than double the radius, either
+## the radius or the height will be clamped so that it is equal to half the height.
+## Which value gets clamped is not specified.
 @export var height:float = 1.0
 
 func _process(delta: float) -> void:

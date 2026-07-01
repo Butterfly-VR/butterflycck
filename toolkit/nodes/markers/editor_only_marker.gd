@@ -1,6 +1,14 @@
-## prevents child nodes from appearing in the uploaded object
 @tool
 extends CCKMarker
+## prevents child nodes from appearing in the uploaded object
+##
+## This is a marker node that applies no metadata to the uplaoded object.
+## Children of this marker will not be uploaded, and this node will not
+## generate warnings if it contains blacklisted children.
+## [br][br]
+## This allows for example a [WorldEnvironment] to be attached to an avatar,
+## allowing you to adjust the preview camera environment, or add lighting with
+## a [DirectionalLight3D].
 class_name UploadSkipMarker
 
 func get_universal_warnings() -> Array[BaseRoot.Warning]:

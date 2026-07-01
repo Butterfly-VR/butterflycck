@@ -1,9 +1,21 @@
 @abstract
 @tool
 extends Node
+## Base class for all cck marker nodes.
+##
+## Marker nodes are not uploaded themselves, instead they include extra
+## information for the client, telling it how to modify the object.
+## [br]
+## This is done for three main reasons: it allows predefined scripts to run
+## on an object without giving an attacker the abillity to execute arbritary
+## code on the client, they can replace certain "dangerous" nodes like the 
+## AnimationMixers that can also execute arbitary code, and it allows 
+## the implementation of a marker to change without needing to modify 
+## or reupload all previous uploads.
 class_name CCKMarker
-# base class for all cck nodes
 
+## Gets a list of warnings that apply to any marker node, for example 
+## a child node that is not a [CCKExtender].
 func get_universal_warnings() -> Array[BaseRoot.Warning]:
 	var warnings:Array[BaseRoot.Warning] = []
 	
@@ -33,18 +45,26 @@ func _get_configuration_warnings():
 				return x.header))
 	return warning_strings
 
-## this function gets called before uploading the object, 
+## This function gets called before uploading the object, 
 ## it should place the scene in the correct state for uploading.
-## if a node is incorrectly configured it can return false to prevent uploading.
-## generally you should always return true here and instead use get_uploader_warnings.
+## If a node is incorrectly configured it can return false to prevent uploading.
+## Generally you should always return true here and instead use get_uploader_warnings.
 ## Error level warnings prevent uploading and are preferred over returning false here.
 @abstract
 func prep_for_upload() -> bool;
 
-## this function is used to refresh the uploader warning list
-## it should return a list of any configuration issues with this marker
+## This function is used to refresh the uploader warning list.
+## It should return a list of any configuration issues with this marker.
+## Error level warning indicate that uploading cannot continue, Warning level
+## indicate valid data that will likely result in unintended behavior, and
+## Info level indicates unusual configurations that most users should avoid.
 @abstract
 func get_uploader_warnings() -> Array[BaseRoot.Warning];
 
+## This function returns a string indicating the compatability version for this marker.
+## This should be incremented whenever a change is made to the uploaded metadata
+## that is not backwards compatible with older metadata versions (as in, a parser,
+## for the current version could parse the old metadata into the same results as
+## the old parser).
 @abstract
 func get_marker_version_string() -> String;

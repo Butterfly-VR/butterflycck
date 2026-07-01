@@ -2,7 +2,6 @@
 @tool
 extends CCKMarker
 class_name CCKAction
-# base class for all actions
 
 # custom parameters here always get passed last after custom parameters from the trigger
 @export var custom_parameters:Array[Variant]

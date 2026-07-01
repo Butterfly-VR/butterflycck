@@ -1,14 +1,20 @@
 @tool
 extends BaseRoot
+## Root node for avatars.
+##
+## An avatar should generally contain an IKController marker as well
+## as an AvatarColliderConfig marker.
 class_name AvatarRoot
 
 class WarningCallState:
 	var collider_settings_found:int = 0
 	var last_collider_setting:AvatarColliderConfig = null
 
+## Returns [enum BaseRoot.ObjectType].avatar.
 func get_object_type() -> ObjectType:
 	return ObjectType.avatar
 
+## Returns warnings specific to an avatar.
 func get_base_class_warnings() -> Array[BaseRoot.Warning]:
 	var state:WarningCallState = WarningCallState.new()
 	
