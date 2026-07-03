@@ -73,6 +73,8 @@ func setup(root:BaseRoot, default_image:Image) -> void:
 	
 	object_file = await create_finialized_file(root, object.uuid)
 	
+	root.queue_free()
+	
 	if !object_file:
 		push_error("upload failed: failed to create file")
 		return

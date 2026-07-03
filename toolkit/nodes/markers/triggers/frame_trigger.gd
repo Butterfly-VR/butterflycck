@@ -1,7 +1,9 @@
-## triggers any attached actions every physics tick. has no parameters
+## triggers any attached actions every physics tick. can optionally include a parameter counting the number of ticks it has triggered for.
 @tool
 extends CCKTrigger
 class_name AlwaysTrigger
+
+@export var include_tick_count:bool = false
 
 func get_trigger_info() -> Dictionary[String, Variant]:
 	return {}

@@ -51,6 +51,7 @@ func find_objects_in_scene(type:GDScript, scene_root:Node, origin_file_path:Stri
 	EditorSceneTreeHelper.call_children_recursive(scene_root, check_node_is_object.bind(objects, type), true)
 	# list the objects we found in the ui
 	for object:BaseRoot in objects:
+		object.assign_uuid()
 		var listing:EditorObjectListing = OBJECT_LISTING.instantiate()
 		
 		listing.object_name.text = (
