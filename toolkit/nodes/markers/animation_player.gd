@@ -26,9 +26,9 @@ func prep_for_upload() -> bool:
 	
 	values["animation"] = get_child(0).get_animation(animation)
 	values["active"] = get_child(0).active
-	values["playerback_speed"] = get_child(0).speed_scale
+	values["playback_speed"] = get_child(0).speed_scale
 	var target:Node = get_child(0).get_node(get_child(0).root_node)
-	values["root_node"] = get_path_to(target)
+	values["root_node"] = get_parent().get_path_to(target)
 	
 	get_parent().set_meta("CCKAnimationPlayer_%s" % name, values)
 	
