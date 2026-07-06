@@ -26,7 +26,7 @@ func get_action_version_string() -> String:
 	return "1"
 
 func get_action_name() -> String:
-	return "EnableAction:%s" % name
+	return "EnableAction_%s" % name
 
 func check_parent_properties() -> bool:
 	var properties:Array[Dictionary] = get_parent().get_property_list()

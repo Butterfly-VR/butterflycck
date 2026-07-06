@@ -3,14 +3,19 @@ extends CCKMarker
 class_name CCKAnimationPlayer
 
 @export_enum(" ") var animation:String
-@export var active:bool = true
-@export_range(-5, 5, 0.1) var playback_speed:float = 1.0
 
 func _validate_property(property: Dictionary) -> void:
 	if property.name == "animation":
 		if get_child(0) is AnimationPlayer:
 			property.hint = PROPERTY_HINT_ENUM
-			property.hint_string = get_child(0).get_animation_list()
+			
+			var hint_string:String = ""
+			for x in get_child(0).get_animation_list():
+				hint_string += x
+				hint_string += ","
+			hint_string.trim_suffix(",")
+			
+			property.hint_string = hint_string
 
 func prep_for_upload() -> bool:
 	if get_child(0) is not AnimationPlayer:
@@ -20,10 +25,12 @@ func prep_for_upload() -> bool:
 	values["marker_version"] = get_marker_version_string()
 	
 	values["animation"] = get_child(0).get_animation(animation)
-	values["active"] = active
-	values["playerback_speed"] = playback_speed
+	values["active"] = get_child(0).active
+	values["playerback_speed"] = get_child(0).speed_scale
+	var target:Node = get_child(0).get_node(get_child(0).root_node)
+	values["root_node"] = get_path_to(target)
 	
-	get_parent().set_meta("CCKAnimationPlayer:%s" % name, values)
+	get_parent().set_meta("CCKAnimationPlayer_%s" % name, values)
 	
 	queue_free()
 	
@@ -33,7 +40,7 @@ func get_marker_version_string() -> String:
 	return "1"
 
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
-	var warnings:Array[BaseRoot.Warning] = get_universal_warnings()
+	var warnings:Array[BaseRoot.Warning] = []
 	
 	if get_child(0) is not AnimationPlayer:
 		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Warning, 
@@ -43,6 +50,12 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 		return warnings
 	
 	var animation:Animation = get_child(0).get_animation(animation)
+	
+	if !animation:
+		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Warning, 
+				"CCKAnimationPlayer has no animation", 
+				"This animation player will not have an effect", 
+				self, false))
 	
 	for i in range(0, animation.get_track_count()):
 		if animation.track_get_type(i) == Animation.TrackType.TYPE_METHOD:
