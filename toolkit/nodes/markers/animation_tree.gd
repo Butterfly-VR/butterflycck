@@ -102,6 +102,10 @@ func get_anim_node_data(untyped_node:AnimationRootNode) -> Dictionary[String, Va
 			node_positions[node_name] = node.get_node_position(node_name)
 			var sub_node:AnimationNode = node.get_node(node_name)
 			sub_nodes[node_name] = get_blend_tree_node_data(sub_node)
+	elif untyped_node is AnimationNodeStateMachine:
+		pass
+	else:
+		push_error("unhandled AnimationTree node: %s" % untyped_node.get_class())
 	# state machine:
 	# 	startstate
 	# 	endstate
@@ -124,15 +128,48 @@ func get_blend_tree_node_data(untyped_node:AnimationNode) -> Dictionary[String, 
 		var node:AnimationNodeTimeSeek = untyped_node
 		values["type"] = "AnimationNodeTimeSeek"
 		values["explicit_elapse"] = node.explicit_elapse
-	# blend tree:
-	# 	sync:
-	# 		add2
-	# 		add3
-	# 		blend2
-	# 		blend3
-	# 		oneshot
-	# 		sub2
-	# 		transition
+	elif untyped_node is AnimationNodeAdd2:
+		values["type"] = "AnimationNodeAdd2"
+	elif untyped_node is AnimationNodeAdd3:
+		values["type"] = "AnimationNodeAdd3"
+	elif untyped_node is AnimationNodeBlend2:
+		values["type"] = "AnimationNodeBlend2"
+	elif untyped_node is AnimationNodeBlend3:
+		values["type"] = "AnimationNodeBlend3"
+	elif untyped_node is AnimationNodeOneShot:
+		values["type"] = "AnimationNodeOneShot"
+		var node:AnimationNodeOneShot = untyped_node
+		values["abort_on_reset"] = node.abort_on_reset
+		values["autorestart"] = node.autorestart
+		values["autorestart_delay"] = node.autorestart_delay
+		values["autorestart_random_delay"] = node.autorestart_random_delay
+		values["break_loop_at_end"] = node.break_loop_at_end
+		values["fadein_curve"] = node.fadein_curve
+		values["fadein_time"] = node.fadein_time
+		values["fadeout_curve"] = node.fadeout_curve
+		values["fadeout_time"] = node.fadeout_time
+		values["mix_mode"] = node.mix_mode as int
+	elif untyped_node is AnimationNodeSub2:
+		values["type"] = "AnimationNodeSub2"
+	elif untyped_node is AnimationNodeTransition:
+		values["type"] = "AnimationNodeTransition"
+		var node:AnimationNodeTransition = untyped_node
+		values["allow_transition_to_self"] = node.allow_transition_to_self
+		values["input_count"] = node.input_count
+		values["xfade_curve"] = node.xfade_curve
+		values["xfade_time"] = node.xfade_time
+		var auto_advance_input_toggles:Array[bool] = []
+		var reset_input_toggles:Array[bool] = []
+		var loop_broken_at_end_input_toggles:Array[bool] = []
+		for index in range(0, node.input_count):
+			auto_advance_input_toggles.push_back(node.is_input_set_as_auto_advance(index))
+			reset_input_toggles.push_back(node.is_input_reset(index))
+			loop_broken_at_end_input_toggles.push_back(node.is_input_loop_broken_at_end(index))
+		values["auto_advance_input_toggles"] = auto_advance_input_toggles
+		values["reset_input_toggles"] = reset_input_toggles
+		values["loop_broken_at_end_input_toggles"] = loop_broken_at_end_input_toggles
+	else:
+		push_error("unhandled blendtree node: %s" % untyped_node.get_class())
 	return values
 
 func get_marker_version_string() -> String:
