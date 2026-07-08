@@ -16,7 +16,6 @@ func prep_for_upload() -> bool:
 	values["marker_version"] = get_marker_version_string()
 	
 	values["active"] = tree.active
-	values["playback_speed"] = tree.speed_scale
 	
 	var target:Node = tree.get_node(tree.root_node)
 	values["root_node"] = get_parent().get_path_to(target)
@@ -27,8 +26,9 @@ func prep_for_upload() -> bool:
 	var anim_tree_data:String = JSON.stringify(get_anim_node_data(root))
 	if tree_parse_failed:
 		return false
+	values["tree_data"] = anim_tree_data
 	
-	# add animationplayer
+	# add animationplayer animations
 	# add info for parameters
 	# make parameters overridable if extensions exist
 	
@@ -62,7 +62,7 @@ func get_anim_node_data(untyped_node:AnimationRootNode) -> Dictionary[String, Va
 		values["sync"] = node.sync
 		values["value_label"] = node.value_label
 		var blend_point_positions:Array[float] = []
-		var blend_points_data:Array[String] = []
+		var blend_points_data:Array[Dictionary] = []
 		for index:int in range(0, node.get_blend_point_count()):
 			blend_point_positions.push_back(node.get_blend_point_position(index))
 			blend_points_data.push_back(get_anim_node_data(node.get_blend_point_node(index)))
@@ -80,7 +80,7 @@ func get_anim_node_data(untyped_node:AnimationRootNode) -> Dictionary[String, Va
 		values["x_label"] = node.x_label
 		values["y_label"] = node.y_label
 		var blend_point_positions:Array[Vector2] = []
-		var blend_points_data:Array[String] = []
+		var blend_points_data:Array[Dictionary] = []
 		var triangles_point_indexes:Array[Array] = []
 		for index:int in range(0, node.get_blend_point_count()):
 			blend_point_positions.push_back(node.get_blend_point_position(index))
@@ -103,13 +103,48 @@ func get_anim_node_data(untyped_node:AnimationRootNode) -> Dictionary[String, Va
 			var sub_node:AnimationNode = node.get_node(node_name)
 			sub_nodes[node_name] = get_blend_tree_node_data(sub_node)
 	elif untyped_node is AnimationNodeStateMachine:
-		pass
+		var node:AnimationNodeStateMachine = untyped_node
+		values["type"] = "AnimationNodeStateMachine"
+		values["allow_transition_to_self"] = node.allow_transition_to_self
+		values["reset_ends"] = node.reset_ends
+		values["state_machine_type"] = node.state_machine_type as int
+		var nodes:Dictionary[String, Dictionary] = {}
+		var node_positions:Dictionary[String, Vector2]
+		var transitions:Array[Dictionary] = []
+		for node_name in node.get_node_list():
+			var sub_node:AnimationRootNode = node.get_node(node_name) as AnimationRootNode
+			nodes[node_name] = get_anim_node_data(sub_node)
+			node_positions[node_name] = node.get_node_position(node_name)
+		for index:int in range(0, node.get_transition_count()):
+			var data:Dictionary[String, Variant] = {}
+			var transition:AnimationNodeStateMachineTransition = node.get_transition(index)
+			
+			if transition.advance_mode == 0:
+				continue
+			
+			data["break_loop_at_end"] = transition.break_loop_at_end
+			data["priority"] = transition.priority
+			data["reset"] = transition.reset
+			data["switch_mode"] = transition.switch_mode as int
+			data["xfade_curve"] = transition.xfade_curve
+			data["xfade_time"] = transition.xfade_time
+			data["auto_transition"] = transition.advance_mode == 2
+			data["source"] = node.get_transition_from(index)
+			data["target"] = node.get_transition_to(index)
+			
+			transitions.push_back(data)
+		
+		values["nodes"] = nodes
+		values["node_positions"] = node_positions
+		values["transitions"] = transitions
+	# for some reason these classes arnt available as types in the editor
+	# so we match on the class name instead
+	elif untyped_node.get_class() == "AnimationNodeEndState":
+		values["type"] = "AnimationNodeEndState"
+	elif untyped_node.get_class() == "AnimationNodeStartState":
+		values["type"] = "AnimationNodeStartState"
 	else:
 		push_error("unhandled AnimationTree node: %s" % untyped_node.get_class())
-	# state machine:
-	# 	startstate
-	# 	endstate
-	# 	transitions
 	return values
 
 func get_blend_tree_node_data(untyped_node:AnimationNode) -> Dictionary[String, Variant]:
@@ -168,6 +203,8 @@ func get_blend_tree_node_data(untyped_node:AnimationNode) -> Dictionary[String, 
 		values["auto_advance_input_toggles"] = auto_advance_input_toggles
 		values["reset_input_toggles"] = reset_input_toggles
 		values["loop_broken_at_end_input_toggles"] = loop_broken_at_end_input_toggles
+	elif is_instance_of(untyped_node, AnimationRootNode):
+		values = get_anim_node_data(untyped_node as AnimationRootNode)
 	else:
 		push_error("unhandled blendtree node: %s" % untyped_node.get_class())
 	return values
