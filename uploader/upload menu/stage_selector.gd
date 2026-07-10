@@ -246,12 +246,10 @@ func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
 		push_error("error on upload, this is a bug")
 		return null
 	
-	
+	await get_tree().physics_frame
 	
 	# post-prep, since the root isnt included in the file all nodes 
 	# need their owner set to the new root node
-	await get_tree().physics_frame
-	
 	EditorSceneTreeHelper.call_children_recursive(
 			root.get_child(0), 
 			func(x:Node) -> bool: 
