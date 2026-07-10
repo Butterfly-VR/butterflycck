@@ -28,12 +28,27 @@ func prep_for_upload() -> bool:
 		return false
 	values["tree_data"] = anim_tree_data
 	
-	# add animationplayer animations
-	# add info for parameters
+	var animations:Dictionary[String, Animation] = {}
+	for animation in player.get_animation_list():
+		animations[animation] = player.get_animation(animation)
+	values["animations"] = animations
+	
+	var parameters:Dictionary[String, Variant] = {}
+	for property in tree.get_property_list():
+		var property_name:String = property["name"]
+		if !property_name.begins_with("parameters"):
+			continue
+		if property_name.ends_with("playback"):
+			continue
+		parameters[property_name] = tree.get(property_name)
+	values["parameters"] = parameters
+	
+	# extensions
 	# make parameters overridable if extensions exist
 	
 	get_parent().set_meta("CCKAnimationTree_%s" % name, values)
 	
+	player.queue_free()
 	queue_free()
 	
 	return true
