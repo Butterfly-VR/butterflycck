@@ -15,21 +15,7 @@
 [ext_resource type="Script" uid="uid://bqx1e2wx8thi7" path="res://addons/butterflycck/uploader/upload menu/upload.gd" id="9_su35f"]
 [ext_resource type="Script" uid="uid://5f73oeepgswp" path="res://addons/butterflycck/uploader/enter_token.gd" id="9_wa4l3"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_su35f"]
-
-[sub_resource type="Sky" id="Sky_v8nud"]
-sky_material = SubResource("ProceduralSkyMaterial_su35f")
-
-[sub_resource type="Environment" id="Environment_3fyry"]
-background_mode = 2
-background_energy_multiplier = 2.0
-sky = SubResource("Sky_v8nud")
-ssr_enabled = true
-ssao_enabled = true
-glow_enabled = true
-
 [sub_resource type="World3D" id="World3D_su35f"]
-environment = SubResource("Environment_3fyry")
 
 [node name="Uploader" type="VBoxContainer" unique_id=81482491]
 anchors_preset = 15
@@ -68,7 +54,7 @@ text = "settings"
 [node name="TabContainer" type="TabContainer" parent="." unique_id=1772871626 node_paths=PackedStringArray("button_section", "upload_handler", "account_handler")]
 layout_mode = 2
 size_flags_vertical = 3
-current_tab = 0
+current_tab = 4
 clip_tabs = false
 tabs_visible = false
 script = ExtResource("1_edmbh")
@@ -77,6 +63,7 @@ upload_handler = NodePath("ObjectUpload/HBoxContainer/TabContainer")
 account_handler = NodePath("../AccountHandler")
 
 [node name="Upload" type="HBoxContainer" parent="TabContainer" unique_id=1980369662]
+visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
@@ -447,124 +434,122 @@ upload_menu = NodePath("Upload")
 [node name="Info" type="VBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer" unique_id=499023057 node_paths=PackedStringArray("object_name", "image_display", "image_size", "image_select", "description_box", "tag_manager")]
 layout_mode = 2
 script = ExtResource("7_tippu")
-object_name = NodePath("HBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer/LineEdit")
-image_display = NodePath("HBoxContainer/HBoxContainer2/VBoxContainer/ImagePreview")
-image_size = NodePath("HBoxContainer/HBoxContainer2/VBoxContainer/HBoxContainer2/Label4")
+object_name = NodePath("HBoxContainer/VBoxContainer/HBoxContainer/LineEdit")
+image_display = NodePath("HBoxContainer/ScrollContainer/VBoxContainer/ImagePreview")
+image_size = NodePath("HBoxContainer/ScrollContainer/VBoxContainer/HBoxContainer2/Label4")
 image_select = NodePath("FileDialog")
-description_box = NodePath("HBoxContainer/HBoxContainer/VBoxContainer/TextEdit")
-tag_manager = NodePath("HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer")
+description_box = NodePath("HBoxContainer/VBoxContainer/TextEdit")
+tag_manager = NodePath("HBoxContainer/VBoxContainer/PanelContainer")
 metadata/_tab_index = 0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info" unique_id=1334178]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer" unique_id=2033904707]
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer" unique_id=1663145844]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer" unique_id=1663145844]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer" unique_id=1679432043]
+[node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/VBoxContainer" unique_id=1679432043]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer" unique_id=592461671]
+[node name="Label" type="Label" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/VBoxContainer/HBoxContainer" unique_id=592461671]
 layout_mode = 2
 text = "Object Name:"
 
-[node name="LineEdit" type="LineEdit" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/HBoxContainer" unique_id=1231440971]
+[node name="LineEdit" type="LineEdit" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/VBoxContainer/HBoxContainer" unique_id=1231440971]
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "MyUpload"
 
-[node name="HSeparator2" type="HSeparator" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer" unique_id=1858151591]
+[node name="HSeparator2" type="HSeparator" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/VBoxContainer" unique_id=1858151591]
 layout_mode = 2
 
-[node name="TextEdit" type="TextEdit" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer" unique_id=1311195645]
+[node name="TextEdit" type="TextEdit" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/VBoxContainer" unique_id=1311195645]
 layout_mode = 2
 size_flags_vertical = 3
 placeholder_text = "Description..."
 wrap_mode = 1
 
-[node name="HSeparator3" type="HSeparator" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer" unique_id=1634680462]
+[node name="HSeparator3" type="HSeparator" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/VBoxContainer" unique_id=1634680462]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer" unique_id=216105873]
+[node name="Label" type="Label" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/VBoxContainer" unique_id=216105873]
 layout_mode = 2
 text = "tags:"
 
-[node name="PanelContainer" type="PanelContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer" unique_id=708902611 node_paths=PackedStringArray("tag_container", "tag_entry")]
+[node name="PanelContainer" type="PanelContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/VBoxContainer" unique_id=708902611 node_paths=PackedStringArray("tag_container", "tag_entry")]
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("8_fv5sc")
 tag_container = NodePath("VBoxContainer/FlowContainer")
 tag_entry = NodePath("VBoxContainer/TagBox/Panel/LineEdit")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer" unique_id=1530329960]
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/VBoxContainer/PanelContainer" unique_id=1530329960]
 layout_mode = 2
 
-[node name="FlowContainer" type="FlowContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer" unique_id=181227253]
+[node name="FlowContainer" type="FlowContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer" unique_id=181227253]
 custom_minimum_size = Vector2(0, 96)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/h_separation = 1
 theme_override_constants/v_separation = 1
 
-[node name="HSeparator4" type="HSeparator" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer" unique_id=2087982681]
+[node name="HSeparator4" type="HSeparator" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer" unique_id=2087982681]
 layout_mode = 2
 
-[node name="TagBox" type="PanelContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer" unique_id=21579741]
+[node name="TagBox" type="PanelContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer" unique_id=21579741]
 layout_mode = 2
 
-[node name="Panel" type="HBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/TagBox" unique_id=810722217]
+[node name="Panel" type="HBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/TagBox" unique_id=810722217]
 layout_mode = 2
 
-[node name="LineEdit" type="LineEdit" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/TagBox/Panel" unique_id=823001096]
+[node name="LineEdit" type="LineEdit" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/TagBox/Panel" unique_id=823001096]
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Enter Tag..."
 max_length = 16
 expand_to_text_length = true
 
-[node name="VSeparator" type="VSeparator" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/TagBox/Panel" unique_id=1170004118]
+[node name="VSeparator" type="VSeparator" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/TagBox/Panel" unique_id=1170004118]
 layout_mode = 2
 
-[node name="Button" type="Button" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/TagBox/Panel" unique_id=1841265341]
+[node name="Button" type="Button" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/TagBox/Panel" unique_id=1841265341]
 layout_mode = 2
 text = "Add Tag"
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer" unique_id=326088315]
+[node name="ScrollContainer" type="ScrollContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer" unique_id=905913696]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer2" unique_id=539770472]
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/ScrollContainer" unique_id=539770472]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="ImagePreview" type="TextureRect" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer2/VBoxContainer" unique_id=1936257523]
-custom_minimum_size = Vector2(0, 512)
+[node name="ImagePreview" type="TextureRect" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/ScrollContainer/VBoxContainer" unique_id=1936257523]
+custom_minimum_size = Vector2(0, 256)
 layout_mode = 2
+size_flags_vertical = 3
 expand_mode = 1
 stretch_mode = 5
 
-[node name="HSeparator" type="HSeparator" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer2/VBoxContainer" unique_id=2058634410]
+[node name="HSeparator" type="HSeparator" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/ScrollContainer/VBoxContainer" unique_id=2058634410]
 layout_mode = 2
 
-[node name="Button" type="Button" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer2/VBoxContainer" unique_id=840043625]
+[node name="Button" type="Button" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/ScrollContainer/VBoxContainer" unique_id=840043625]
 layout_mode = 2
 text = "Upload Image (max 2MB)"
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer2/VBoxContainer" unique_id=2092128693]
+[node name="HBoxContainer2" type="HBoxContainer" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/ScrollContainer/VBoxContainer" unique_id=2092128693]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Label3" type="Label" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer2/VBoxContainer/HBoxContainer2" unique_id=727891329]
+[node name="Label3" type="Label" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/ScrollContainer/VBoxContainer/HBoxContainer2" unique_id=727891329]
 layout_mode = 2
 text = "Image Size:"
 
-[node name="Label4" type="Label" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer2/VBoxContainer/HBoxContainer2" unique_id=1001147814]
+[node name="Label4" type="Label" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/ScrollContainer/VBoxContainer/HBoxContainer2" unique_id=1001147814]
 layout_mode = 2
 text = "0KB"
 
@@ -738,7 +723,6 @@ size_flags_horizontal = 3
 text = "Upload"
 
 [node name="EnterToken" type="VBoxContainer" parent="TabContainer" unique_id=453171758 node_paths=PackedStringArray("email_entry", "password_entry", "account_handler", "api_handler", "page_selector", "button")]
-visible = false
 layout_mode = 2
 script = ExtResource("9_wa4l3")
 email_entry = NodePath("LineEdit")
@@ -791,9 +775,9 @@ persistance_handler = NodePath("../PersistanceHandler")
 [connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/VBoxContainer/MarginContainer/Button" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer" method="change_stage" binds= [0]]
 [connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/VBoxContainer/MarginContainer2/Button2" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer" method="change_stage" binds= [1]]
 [connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/VBoxContainer/MarginContainer3/Button2" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer" method="change_stage" binds= [2]]
-[connection signal="text_submitted" from="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/TagBox/Panel/LineEdit" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer" method="add_tag"]
-[connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/TagBox/Panel/Button" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer/VBoxContainer/PanelContainer" method="add_tag"]
-[connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/HBoxContainer2/VBoxContainer/Button" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info" method="_on_image_upload_start"]
+[connection signal="text_submitted" from="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/TagBox/Panel/LineEdit" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/VBoxContainer/PanelContainer" method="add_tag"]
+[connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/VBoxContainer/PanelContainer/VBoxContainer/TagBox/Panel/Button" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/VBoxContainer/PanelContainer" method="add_tag"]
+[connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/HBoxContainer/ScrollContainer/VBoxContainer/Button" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info" method="_on_image_upload_start"]
 [connection signal="file_selected" from="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info/FileDialog" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Info" method="_on_image_selected"]
 [connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer2/HBoxContainer/Button" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer" method="test_locally"]
 [connection signal="pressed" from="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer2/HBoxContainer/Button2" to="TabContainer/ObjectUpload/HBoxContainer/TabContainer" method="upload"]
