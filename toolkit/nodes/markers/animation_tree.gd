@@ -23,7 +23,7 @@ func prep_for_upload() -> bool:
 	var root:AnimationRootNode = tree.tree_root
 	
 	tree_parse_failed = false
-	var anim_tree_data:String = JSON.stringify(get_anim_node_data(root))
+	var anim_tree_data:Dictionary[String, Variant] = get_anim_node_data(root)
 	if tree_parse_failed:
 		return false
 	values["tree_data"] = anim_tree_data
@@ -126,7 +126,7 @@ func get_anim_node_data(untyped_node:AnimationRootNode) -> Dictionary[String, Va
 			data["priority"] = transition.priority
 			data["reset"] = transition.reset
 			data["switch_mode"] = transition.switch_mode as int
-			data["xfade_curve"] = transition.xfade_curve
+			data["xfade_curve"] = parse_curve(transition.xfade_curve)
 			data["xfade_time"] = transition.xfade_time
 			data["auto_transition"] = transition.advance_mode == 2
 			data["source"] = node.get_transition_from(index)
@@ -179,9 +179,9 @@ func get_blend_tree_node_data(untyped_node:AnimationNode) -> Dictionary[String, 
 		values["autorestart_delay"] = node.autorestart_delay
 		values["autorestart_random_delay"] = node.autorestart_random_delay
 		values["break_loop_at_end"] = node.break_loop_at_end
-		values["fadein_curve"] = node.fadein_curve
+		values["fadein_curve"] = parse_curve(node.fadein_curve)
 		values["fadein_time"] = node.fadein_time
-		values["fadeout_curve"] = node.fadeout_curve
+		values["fadeout_curve"] = parse_curve(node.fadeout_curve)
 		values["fadeout_time"] = node.fadeout_time
 		values["mix_mode"] = node.mix_mode as int
 	elif untyped_node is AnimationNodeSub2:
@@ -191,7 +191,7 @@ func get_blend_tree_node_data(untyped_node:AnimationNode) -> Dictionary[String, 
 		var node:AnimationNodeTransition = untyped_node
 		values["allow_transition_to_self"] = node.allow_transition_to_self
 		values["input_count"] = node.input_count
-		values["xfade_curve"] = node.xfade_curve
+		values["xfade_curve"] = parse_curve(node.xfade_curve)
 		values["xfade_time"] = node.xfade_time
 		var auto_advance_input_toggles:Array[bool] = []
 		var reset_input_toggles:Array[bool] = []
@@ -207,6 +207,27 @@ func get_blend_tree_node_data(untyped_node:AnimationNode) -> Dictionary[String, 
 		values = get_anim_node_data(untyped_node as AnimationRootNode)
 	else:
 		push_error("unhandled blendtree node: %s" % untyped_node.get_class())
+	return values
+
+func parse_curve(curve:Curve) -> Dictionary[String, Variant]:
+	if !curve:
+		return {}
+	var values:Dictionary[String, Variant] = {}
+	values["bake_resolution"] = curve.bake_resolution
+	values["max_domain"] = curve.max_domain
+	values["max_value"] = curve.max_value
+	values["min_domain"] = curve.min_domain
+	values["min_value"] = curve.min_value
+	var points:Array[Dictionary] = []
+	for index:int in range(0, curve.point_count):
+		var point:Dictionary[String, Variant] = {}
+		point["position"] = curve.get_point_position(index)
+		point["left_mode"] = curve.get_point_left_mode(index) as int
+		point["left_tangent"] = curve.get_point_left_tangent(index)
+		point["right_mode"] = curve.get_point_right_mode(index) as int
+		point["right_tangent"] = curve.get_point_right_tangent(index)
+		points.push_back(point)
+	values["points"] = points
 	return values
 
 func get_marker_version_string() -> String:
