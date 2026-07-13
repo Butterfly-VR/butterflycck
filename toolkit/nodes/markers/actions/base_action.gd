@@ -3,7 +3,8 @@
 extends CCKMarker
 class_name CCKAction
 
-# custom parameters here always get passed last after custom parameters from the trigger
+@export var active:bool = true
+# custom parameters here always get pushed behind all other parameters
 @export var custom_parameters:Array[Variant]
 
 var action_id = UUID.new(true)

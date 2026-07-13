@@ -4,7 +4,8 @@ extends CCKMarker
 class_name CCKTrigger
 # base class for all triggers
 
-# custom parameters always get passed after parameters from the trigger
+@export var active:bool = true
+# custom parameters always get pushed in front of parameters from the trigger
 @export var custom_parameters:Array[Variant]
 @export var triggered_actions:Array[CCKAction]
 

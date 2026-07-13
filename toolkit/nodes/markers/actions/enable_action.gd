@@ -1,24 +1,16 @@
 ## Toggles or sets the "enabled" or "active" property of the parent node if it exists
 ##
-## if behavior is set to [enum BehaviorMode].TakeParam this action will use 
-## the first parameter as a boolean to decide toggle behavior
+## can either toggle the value or take a single bool parameter to set it
 @tool
 extends CCKAction
 class_name EnableAction
 
-enum BehaviorMode{
-	Toggle,
-	SetOn,
-	SetOff,
-	TakeParam
-}
-
-@export var behavior:BehaviorMode
+@export var take_parameter:bool
 
 func get_action_info() -> Dictionary[String, Variant]:
 	var values:Dictionary[String, Variant] = {}
 	
-	values["mode"] = int(behavior)
+	values["take_parameter"] = take_parameter
 	
 	return values
 
