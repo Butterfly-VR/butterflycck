@@ -142,20 +142,28 @@ func get_child_warnings(node:Node, warnings:WarningState) -> bool:
 						return true))
 	return true
 
+func get_root_warnings() -> Array[Warning]:
+	var warnings:Array[Warning] = get_base_class_warnings()
+	
+	if get_children().size() == 0:
+		warnings.append(Warning.new(Warning.WarningLevel.Error, "object root requires a child", 
+				"the object you wish to upload must be the child of the BaseRoot node", self, false))
+	if get_children().size() > 1:
+		warnings.append(Warning.new(Warning.WarningLevel.Error, "multiple children on root", 
+				"multiple children are not allowed on an object root, \
+				consider adding another node and reparenting the children to it", get_child(1), false))
+	
+	return warnings
+
 ## Retrives the list of warning and errors for this object.
 func get_upload_warnings() -> Array[Warning]:
 	var warnings:WarningState = WarningState.new()
+	
 	warnings.state = get_base_class_warnings()
+	
 	if get_children().size() > 0:
 		EditorSceneTreeHelper.call_children_recursive(get_child(0), get_child_warnings.bind(warnings))
 	
-	# get config warnings from self
-	for warning in _get_configuration_warnings():
-		warnings.state.push_back(Warning.new(
-				Warning.WarningLevel.Warning, 
-				"Root Config Error", 
-				warning, 
-				self, false))
 	return warnings.state
 
 func _process(delta: float) -> void:
@@ -203,15 +211,11 @@ func get_preview_camera_transform() -> Transform3D:
 	return Transform3D(Basis.IDENTITY.rotated(Vector3.UP, deg_to_rad(180)), pos)
 
 func _get_configuration_warnings():
-	var warnings:Array[String] = []
+	var warnings:Array = get_root_warnings().map(
+			func(x:Warning) -> String:
+				return x.header)
 	
-	if get_children().size() == 0:
-		warnings.append("object root requires a child")
-	if get_children().size() > 1:
-		warnings.append("multiple children are not allowed on an object root, \
-				children beyond the first child will be ignored")
-	
-	return warnings
+	return PackedStringArray(warnings)
 
 ## Retrieves the list of warnings for a specific object type.
 @abstract

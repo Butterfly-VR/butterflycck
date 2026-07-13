@@ -38,7 +38,7 @@ func _get_configuration_warnings():
 	var warnings:Array[BaseRoot.Warning] = get_uploader_warnings()
 	var errors:Array[BaseRoot.Warning] = warnings.filter(
 			func(x:BaseRoot.Warning) -> bool:
-				return x.level == BaseRoot.Warning.WarningLevel.Error)
+				return x.level >= BaseRoot.Warning.WarningLevel.Warning)
 	var warning_strings:Array[String] = []
 	warning_strings.assign(errors.map(
 			func(x:BaseRoot.Warning) -> String:

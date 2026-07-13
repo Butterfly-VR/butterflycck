@@ -33,6 +33,9 @@ func object_selected(original_root:BaseRoot, original_file_path:String) -> void:
 	await get_tree().physics_frame
 	
 	var warnings:Array[BaseRoot.Warning] = original_root.get_upload_warnings()
+	warnings.sort_custom(
+			func(a:BaseRoot.Warning, b:BaseRoot.Warning) -> bool:
+				return a.level < b.level)
 	
 	upload_button.disabled = false
 	
