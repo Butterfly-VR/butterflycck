@@ -14,6 +14,7 @@ func prep_for_upload() -> bool:
 	action_info.assign(get_action_info())
 	
 	action_info["action_version"] = get_action_version_string()
+	action_info["active"] = active
 	action_info["action_id"] = action_id.backing_storage
 	action_info["custom_parameters"] = custom_parameters
 	
@@ -33,7 +34,7 @@ func get_marker_version_string() -> String:
 ## if this cannot be done (for example the action has a parent of the wrong type)
 ## then an empty dict should be returned
 ## the usual rule about prefering to raise upload warnings applies
-## if ["action_type"], ["action_id"], or ["custom_parameters"] are present they will be overwritten
+## if ["action_version"], ["active"], ["action_id"], or ["custom_parameters"] are present they will be overwritten
 @abstract
 func get_action_info() -> Dictionary[String, Variant];
 

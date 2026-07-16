@@ -10,12 +10,15 @@ class_name CCKTrigger
 @export var triggered_actions:Array[CCKAction]
 
 func prep_for_upload() -> bool:
-	var targets:Array[PackedByteArray] = triggered_actions.map(func(action:CCKAction): return action.action_id.backing_storage)
+	var targets:Array[PackedByteArray] = []
+	targets.assign(triggered_actions.map(
+			func(action:CCKAction): 
+				return action.action_id.backing_storage))
 	var trigger_info:Dictionary[String, Variant] = {}
 	trigger_info.assign(get_trigger_info())
 	
 	trigger_info["trigger_version"] = get_trigger_version_string()
-	
+	trigger_info["active"] = active
 	trigger_info["targets"] = targets
 	trigger_info["custom_parameters"] = custom_parameters
 	
@@ -35,7 +38,7 @@ func get_marker_version_string() -> String:
 ## if this cannot be done (for example the trigger has a parent of the wrong type)
 ## then an empty dict should be returned
 ## the usual rule about prefering to raise upload warnings applies
-## if ["trigger_type"], ["targets"], or ["custom_parameters"] are present they will be overwritten
+## if ["trigger_version"], ["active"], ["targets"], or ["custom_parameters"] are present they will be overwritten
 @abstract
 func get_trigger_info() -> Dictionary[String, Variant];
 

@@ -5,12 +5,19 @@
 extends CCKAction
 class_name EnableAction
 
+enum TargetProperties{
+	Enable,
+	Active
+}
+
 @export var take_parameter:bool
+@export var target_property:TargetProperties
 
 func get_action_info() -> Dictionary[String, Variant]:
 	var values:Dictionary[String, Variant] = {}
 	
 	values["take_parameter"] = take_parameter
+	values["target_property"] = target_property as int
 	
 	return values
 

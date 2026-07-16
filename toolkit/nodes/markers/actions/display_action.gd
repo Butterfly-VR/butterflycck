@@ -3,13 +3,11 @@ extends CCKAction
 class_name DisplayAction
 
 @export_multiline var text:String = "%s"
-@export var show_all_parameters:bool = false
 
 func get_action_info() -> Dictionary[String, Variant]:
 	var values:Dictionary[String, Variant] = {}
 	
 	values["text"] = text
-	values["show_all_parameters"] = show_all_parameters
 	
 	return values
 
