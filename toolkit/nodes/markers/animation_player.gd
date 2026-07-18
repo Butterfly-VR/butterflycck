@@ -56,6 +56,7 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 				"CCKAnimationPlayer has no animation", 
 				"This animation player will not have an effect", 
 				self, false))
+		return warnings
 	
 	for i in range(0, animation.get_track_count()):
 		if animation.track_get_type(i) == Animation.TrackType.TYPE_METHOD:

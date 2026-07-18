@@ -245,6 +245,16 @@ func parse_curve(curve:Curve) -> Dictionary[String, Variant]:
 	values["points"] = points
 	return values
 
+func get_concatenated_sate_machine_paths() -> String:
+	if get_child(0) is not AnimationTree:
+		return " "
+	
+	var root:AnimationRootNode = (get_child(0) as AnimationTree).tree_root
+	return get_concatenated_sate_machine_paths_recursive("", root).trim_suffix(",")
+
+func get_concatenated_sate_machine_paths_recursive(path:String, result:String, root:AnimationRootNode) -> String:
+	
+
 func get_marker_version_string() -> String:
 	return "1"
 
