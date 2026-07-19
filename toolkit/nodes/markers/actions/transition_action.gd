@@ -4,7 +4,9 @@ class_name TransitionAction
 
 @export var target:CCKAnimationTree
 @export_enum(" ") var state_machine:String
-@export_enum(" ") var transition:String
+@export_enum(" ") var target_node:String
+# optional
+@export_enum(" ") var source_node:String
 @export var transition_type:TransitionTypes
 @export var teleport_if_unreachable:bool = false
 
