@@ -2,15 +2,21 @@
 extends CCKAction
 class_name TransitionAction
 
-@export var target:CCKAnimationTree
-@export_enum(" ") var state_machine:String
+@export var target:CCKAnimationTree:
+	set(x):
+		target = x
+		notify_property_list_changed()
+@export_enum(" ") var state_machine:String:
+	set(x):
+		state_machine = x
+		notify_property_list_changed()
 @export_enum(" ") var target_node:String
-# optional
-@export_enum(" ") var source_node:String
+@export_enum("None") var source_node:String = "None"
 @export var transition_type:TransitionTypes
 @export var teleport_if_unreachable:bool = false
 
 var path_lookup:Dictionary[String, String]
+var node_list_string:String = ""
 
 enum TransitionTypes{
 	single_transition,
@@ -89,11 +95,51 @@ func _validate_property(property: Dictionary) -> void:
 		
 		result = result.trim_suffix(",")
 		property.hint_string = result
+	
+	if property.name == "target_node":
+		if target and !state_machine.is_empty() and (!path_lookup.is_empty() or state_machine == "ROOT"):
+			property.hint = PropertyHint.PROPERTY_HINT_ENUM
+			
+			var current_node:AnimationRootNode = target.get_child(0).tree_root
+			if state_machine != "ROOT":
+				for chunk in path_lookup[state_machine].trim_prefix("ROOT/").split("/", false):
+					var prefix:String = chunk[0]
+					match prefix:
+						"I":
+							current_node = current_node.get_blend_point_node(int(chunk.substr(1)))
+						"N":
+							current_node = current_node.get_node(chunk.substr(1))
+						_:
+							push_error("invalid prefix %s in path segment" % prefix)
+			var state_machine_node:AnimationNodeStateMachine = current_node
+			
+			var result:String = ""
+			for node_name in state_machine_node.get_node_list():
+				result += node_name + ","
+			result = result.trim_suffix(",")
+			
+			property.hint_string = result
+			node_list_string = result
+		else:
+			node_list_string = ""
+	
+	if property.name == "source_node":
+		property.hint = PropertyHint.PROPERTY_HINT_ENUM
+		if !node_list_string.is_empty():
+			property.hint_string = "None," + node_list_string
+		else:
+			property.hint_string = "None"
 
 func get_action_info() -> Dictionary[String, Variant]:
 	var values:Dictionary[String, Variant] = {}
 	
-	
+	values["target"] = get_parent().get_path_to(target)
+	values["state_machine"] = path_lookup[state_machine] if state_machine != "ROOT" else "ROOT"
+	values["target_node"] = target_node
+	if source_node != "None":
+		values["source_node"] = source_node
+	values["transition_type"] = transition_type as int
+	values["teleport_if_unreachable"] = teleport_if_unreachable
 	
 	return values
 
@@ -106,6 +152,6 @@ func get_action_name() -> String:
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	var warnings:Array[BaseRoot.Warning] = get_universal_warnings()
 	
-	
+	push_warning("todo: uploader warnings TransitionAction")
 	
 	return warnings
