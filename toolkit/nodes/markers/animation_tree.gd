@@ -14,12 +14,15 @@ func prep_for_upload() -> bool:
 	var player:AnimationPlayer = tree.get_node(tree.anim_player)
 	
 	values["marker_version"] = get_marker_version_string()
+	values["name"] = name
 	
 	values["active"] = tree.active
 	
 	var target:Node = tree.get_node(tree.root_node)
 	values["root_node"] = get_parent().get_path_to(target)
 	
+	if !tree.tree_root:
+		return false
 	var root:AnimationRootNode = tree.tree_root
 	
 	tree_parse_failed = false
@@ -291,5 +294,47 @@ func get_marker_version_string() -> String:
 
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	var warnings:Array[BaseRoot.Warning] = []
+	
+	
+	if (!get_child(0)) or get_child(0) is not AnimationTree:
+		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
+			"CCKAnimationTree must contain AnimationTree", 
+			"This node is only meant as a safe wrapper around the AnimationTree for uploading. \
+					The tree must also be the first child of this node.", 
+			self, false))
+		return warnings
+	
+	var tree:AnimationTree = get_child(0)
+	if !tree.tree_root:
+		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
+			"CCKAnimationTree has no root node", 
+			"The inner AnimationTree must contain a tree of AnimationNodes to function.", 
+			tree, false))
+	
+	if !tree.get_node_or_null(tree.anim_player):
+		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
+			"CCKAnimationTree has no AnimationPlayer", 
+			"An AnimationPlayer is required to provide a library of animations to the tree.", 
+			tree, false))
+		return warnings
+	
+	for animation_name in tree.get_node(tree.anim_player).get_animation_list():
+		var animation:Animation = tree.get_node(tree.anim_player).get_animation(animation_name)
+		for i in range(0, animation.get_track_count()):
+			if animation.track_get_type(i) == Animation.TrackType.TYPE_METHOD:
+				warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
+						"Method call animations not supported", 
+						"Animations are not allowed to call methods but %s has a method call track" % animation_name, 
+						tree.get_node(tree.anim_player), false))
+			if animation.track_get_type(i) == Animation.TrackType.TYPE_VALUE:
+				warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
+						"Property animations not supported", 
+						"This may be supported in the future. offending animation: %s" % animation_name, 
+						tree.get_node(tree.anim_player), false))
+			if animation.track_get_type(i) == Animation.TrackType.TYPE_ANIMATION:
+				warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
+						"Sub animations not supported", 
+						"This may be supported in the future. offending animation: %s" % animation_name, 
+						tree.get_node(tree.anim_player), false))
 	
 	return warnings

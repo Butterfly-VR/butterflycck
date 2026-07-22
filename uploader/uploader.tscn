@@ -34,6 +34,7 @@ layout_mode = 2
 text = "warning: changes to scenes made while on this page may not be counted or may cause bugs / failed uploads. this will be fixed later"
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer" unique_id=1721660990]
+visible = false
 layout_mode = 2
 
 [node name="Button" type="Button" parent="VBoxContainer/HBoxContainer2" unique_id=1214213353]
@@ -54,7 +55,7 @@ text = "settings"
 [node name="TabContainer" type="TabContainer" parent="." unique_id=1772871626 node_paths=PackedStringArray("button_section", "upload_handler", "account_handler")]
 layout_mode = 2
 size_flags_vertical = 3
-current_tab = 4
+current_tab = 0
 clip_tabs = false
 tabs_visible = false
 script = ExtResource("1_edmbh")
@@ -63,17 +64,17 @@ upload_handler = NodePath("ObjectUpload/HBoxContainer/TabContainer")
 account_handler = NodePath("../AccountHandler")
 
 [node name="Upload" type="HBoxContainer" parent="TabContainer" unique_id=1980369662]
-visible = false
 layout_mode = 2
 metadata/_tab_index = 0
 
-[node name="ObjectSelector" type="VBoxContainer" parent="TabContainer/Upload" unique_id=425922237 node_paths=PackedStringArray("object_list", "inspector")]
+[node name="ObjectSelector" type="VBoxContainer" parent="TabContainer/Upload" unique_id=425922237 node_paths=PackedStringArray("object_list", "inspector", "page_selector")]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 2.0
 script = ExtResource("1_l8q2r")
 object_list = NodePath("ScrollContainer/VBoxContainer")
 inspector = NodePath("../ObjectInspector")
+page_selector = NodePath("../..")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="TabContainer/Upload/ObjectSelector" unique_id=958389148]
 layout_mode = 2
@@ -723,6 +724,7 @@ size_flags_horizontal = 3
 text = "Upload"
 
 [node name="EnterToken" type="VBoxContainer" parent="TabContainer" unique_id=453171758 node_paths=PackedStringArray("email_entry", "password_entry", "account_handler", "api_handler", "page_selector", "button")]
+visible = false
 layout_mode = 2
 script = ExtResource("9_wa4l3")
 email_entry = NodePath("LineEdit")

@@ -20,14 +20,25 @@ func _validate_property(property: Dictionary) -> void:
 func prep_for_upload() -> bool:
 	if get_child(0) is not AnimationPlayer:
 		return false
+	var player:AnimationPlayer = get_child(0)
+	
 	var values:Dictionary[String, Variant] = {}
 	
 	values["marker_version"] = get_marker_version_string()
 	
-	values["animation"] = get_child(0).get_animation(animation)
-	values["active"] = get_child(0).active
-	values["playback_speed"] = get_child(0).speed_scale
-	var target:Node = get_child(0).get_node(get_child(0).root_node)
+	var libraries:Dictionary[String, Dictionary] = {}
+	for library in player.get_animation_library_list():
+		libraries[library] = {}
+	for library_animation in player.get_animation_list():
+		for library in libraries.keys():
+			if library_animation.split("/")[0] == library:
+				libraries[library][library_animation] = player.get_animation(library_animation)
+	values["libraries"] = libraries
+	
+	values["animation"] = animation
+	values["active"] = player.active
+	values["playback_speed"] = player.speed_scale
+	var target:Node = player.get_node(player.root_node)
 	values["root_node"] = get_parent().get_path_to(target)
 	
 	get_parent().set_meta("CCKAnimationPlayer_%s" % name, values)
@@ -42,37 +53,32 @@ func get_marker_version_string() -> String:
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	var warnings:Array[BaseRoot.Warning] = []
 	
-	if get_child(0) is not AnimationPlayer:
+	if (!get_child(0)) or get_child(0) is not AnimationPlayer:
 		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Warning, 
 				"CCKAnimationPlayer needs AnimationPlayer child", 
 				"the player must be the first child of the CCKAnimationPlayer.", 
 				self, false))
 		return warnings
 	
-	var animation:Animation = get_child(0).get_animation(animation)
+	var player:AnimationPlayer = get_child(0)
 	
-	if !animation:
-		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Warning, 
-				"CCKAnimationPlayer has no animation", 
-				"This animation player will not have an effect", 
-				self, false))
-		return warnings
-	
-	for i in range(0, animation.get_track_count()):
-		if animation.track_get_type(i) == Animation.TrackType.TYPE_METHOD:
-			warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
-					"Method call animations not supported", 
-					"animations are not allowed to call methods", 
-					self, false))
-		if animation.track_get_type(i) == Animation.TrackType.TYPE_VALUE:
-			warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
-					"Property animations not supported", 
-					"this may be supported in the future", 
-					self, false))
-		if animation.track_get_type(i) == Animation.TrackType.TYPE_ANIMATION:
-			warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
-					"Sub animations not supported", 
-					"this may be supported in the future", 
-					self, false))
-	
+	for animation_name in player.get_animation_list():
+		var animation = player.get_animation(animation_name)
+		for i in range(0, animation.get_track_count()):
+			if animation.track_get_type(i) == Animation.TrackType.TYPE_METHOD:
+				warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
+						"Method call animations not supported", 
+						"Animations are not allowed to call methods but %s has a method call track" % animation_name, 
+						player, false))
+			if animation.track_get_type(i) == Animation.TrackType.TYPE_VALUE:
+				warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
+						"Property animations not supported", 
+						"This may be supported in the future. offending animation: %s" % animation_name, 
+						player, false))
+			if animation.track_get_type(i) == Animation.TrackType.TYPE_ANIMATION:
+				warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
+						"Sub animations not supported", 
+						"This may be supported in the future. offending animation: %s" % animation_name, 
+						player, false))
+		
 	return warnings

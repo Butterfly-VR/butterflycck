@@ -16,7 +16,7 @@ const OBJECT_INFO_ENDPOINT:String = "/api/v0/%s/%s"
 @export var modified_text:Label
 @export var warnings_list:VBoxContainer
 @export var upload_button:Button
-@export var page_selector:PageSelector
+@export var page_selector:EditorPageSelector
 
 var previewed_object_root:Node
 var preview_image:Image

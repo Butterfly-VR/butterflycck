@@ -27,6 +27,12 @@ class_name Grabbable
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	var warnings:Array[BaseRoot.Warning] = get_universal_warnings()
 	
+	if get_parent() is not Node3D:
+			warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
+				"Grabbable must be child of Node3D", 
+				"The parent Node3D is what will move when the player grabs it.", 
+				get_parent(), false))
+	
 	for sibling in get_parent().get_children():
 		if (sibling.get_script() != null 
 				and sibling.get_class() == get_class() 
@@ -34,20 +40,20 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 				and sibling != self):
 			warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
 				"Duplicate Grabbables on node", 
-				"A node cannot have more than one Grabbable attached", 
+				"A node cannot have more than one Grabbable attached.", 
 				self, false))
 	
 	if !hitbox:
 		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
 				"Grabbable missing hitbox", 
-				"the Grabbable requires a hitbox to be grabbed", 
+				"The Grabbable requires a hitbox to be grabbed.", 
 				self, false))
 	else:
 		if hitbox.collision_layer != 0 and hitbox.collision_layer != 2:
-			warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Info, 
+			warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Warning, 
 					"Grabbable hitbox exists in other layers", 
-					"the hitbox for the grabbable exists in layers other than the grabbables \
-							physics layer, this is probably not intentional", 
+					"The hitbox for the grabbable exists in layers other than the grabbables \
+							physics layer, this is probably not intentional.", 
 					hitbox, true, 
 					func():
 						hitbox.collision_layer = hitbox.collision_layer | 2
@@ -55,18 +61,18 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	
 	if snap_target and snap_target.get_parent() != get_parent():
 		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Warning, 
-				"grabbable snap target is not child of grabbable", 
-				"the snap target is used as an offset relative to the grabbable for \
+				"Grabbable snap target is not child of grabbable", 
+				"The snap target is used as an offset relative to the grabbable for \
 						positioning the player's hand. If it is not a child of the \
-						grabbale the offset may not be correct", 
+						grabbable the offset may not be correct.", 
 				snap_target, false))
 	
 	if !highlight_target:
 		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Info, 
-				"grabbable has no highlight mesh", 
-				"a highlight mesh is important to indicate that an object is grabbable,\
-				you should strongly consider adding a highlight target.", 
-				snap_target, false))
+				"Grabbable has no highlight mesh", 
+				"A highlight mesh is important to indicate that an object is grabbable,\
+						you should consider adding a highlight target.", 
+				self, false))
 	
 	return warnings
 
@@ -79,13 +85,11 @@ func prep_for_upload() -> bool:
 	
 	values["hitbox"] = hitbox.get_index()
 	values["max_grab_distance"] = max_grab_distance
-	values["highlight_mesh"] = hitbox.get_path_to(highlight_target) if highlight_target else ""
+	if highlight_target:
+		values["highlight_mesh"] = hitbox.get_path_to(highlight_target)
 	if snap_target:
-		values["snap_on_grab"] = true
 		values["snap_offset_position"] = snap_target.position
 		values["snap_offset_rotation"] = snap_target.rotation
-	else:
-		values["snap_on_grab"] = false
 	
 	parent.set_meta("Grabbable", values)
 	
@@ -94,4 +98,4 @@ func prep_for_upload() -> bool:
 	return true
 
 func get_marker_version_string() -> String:
-	return "1"
+	return "2"

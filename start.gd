@@ -7,6 +7,8 @@ const GIZMO_FOLDER:String = "res://addons/butterflycck/toolkit/gizmos/"
 var main_panel_instance
 
 func _enter_tree() -> void:
+	add_to_group("ButterflyCCKPlugin")
+	
 	# setup uplaod panel
 	main_panel_instance = MAINPANEL.instantiate()
 	EditorInterface.get_editor_main_screen().add_child(main_panel_instance)

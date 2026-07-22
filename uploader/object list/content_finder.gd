@@ -5,8 +5,12 @@ const OBJECT_LISTING:PackedScene = preload("res://addons/butterflycck/uploader/o
 
 @export var object_list:VBoxContainer
 @export var inspector:EditorObjectInspector
+@export var page_selector:EditorPageSelector
 
 var selected_type:int = 0
+
+func _ready() -> void:
+	get_tree().get_first_node_in_group("ButterflyCCKPlugin").scene_saved.connect(on_save)
 
 func on_target_type_changed(selected_type:int) -> void:
 	inspector.hide_self()
@@ -76,6 +80,6 @@ func _on_visibility_changed() -> void:
 		EditorInterface.save_all_scenes()
 	on_target_type_changed(selected_type)
 
-
-func _on_avatars_pressed(extra_arg_0: int) -> void:
-	pass # Replace with function body.
+func on_save(_path:String) -> void:
+	page_selector._on_upload_button_pressed()
+	on_target_type_changed(selected_type)

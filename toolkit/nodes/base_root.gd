@@ -118,15 +118,15 @@ func get_child_warnings(node:Node, warnings:WarningState) -> bool:
 				func(group:StringName) -> bool:
 					return !(group.begins_with("_") or group.begins_with("cck_"))):
 			warnings.state.push_back(Warning.new(Warning.WarningLevel.Error, 
-				"invalid group", 
-				"group names used in an uploaded object must start with 'cck_' to prevent conflicts", 
+				"Invalid group", 
+				"Group names used in an uploaded object must start with 'cck_' to prevent conflicts.", 
 				node, false))
 		if blacklisted_types.any(
 				func(blacklist_type) -> bool: return is_instance_of(node, blacklist_type)):
 			warnings.state.push_back(Warning.new(Warning.WarningLevel.Error, 
 					"Blacklisted Type", 
-					"this object contains a node of type %s, which is not allowed" % (
-					node.get_class()), 
+					"This object contains a node of type %s, which is not allowed." % \
+					node.get_class(), 
 					node, true, 
 					func(): 
 						node.queue_free() 
@@ -135,7 +135,7 @@ func get_child_warnings(node:Node, warnings:WarningState) -> bool:
 			warnings.state.push_back(Warning.new(Warning.WarningLevel.Error, 
 					"Node with script", 
 					"Scripts are currently not allowed on uploaded objects, \
-							sandboxed scripting will be implemented in a future alpha build", 
+							sandboxed scripting will be implemented in a future alpha build.", 
 					node, true, 
 					func(): 
 						node.queue_free() 
@@ -146,12 +146,12 @@ func get_root_warnings() -> Array[Warning]:
 	var warnings:Array[Warning] = get_base_class_warnings()
 	
 	if get_children().size() == 0:
-		warnings.append(Warning.new(Warning.WarningLevel.Error, "object root requires a child", 
-				"the object you wish to upload must be the child of the BaseRoot node", self, false))
+		warnings.append(Warning.new(Warning.WarningLevel.Error, "Object root requires a child", 
+				"The object you wish to upload must be the child of the BaseRoot node.", self, false))
 	if get_children().size() > 1:
-		warnings.append(Warning.new(Warning.WarningLevel.Error, "multiple children on root", 
-				"multiple children are not allowed on an object root, \
-				consider adding another node and reparenting the children to it", get_child(1), false))
+		warnings.append(Warning.new(Warning.WarningLevel.Error, "Multiple children on root", 
+				"Multiple children are not allowed on an object root, \
+				consider adding another node and reparenting the children to it.", get_child(1), false))
 	
 	return warnings
 

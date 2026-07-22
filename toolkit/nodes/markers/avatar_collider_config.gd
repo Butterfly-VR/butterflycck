@@ -8,16 +8,19 @@ extends CCKMarker
 ## in the client, the collider size is clamped between two values
 ## relative to the AABB of the avatar. This clamping behavior is currently not
 ## shown in the cck.
+## [br][br]
+## the capsule visualization is based on the position of the nearest parent Node3D.
+## The position may not be accurate if that node is not the Avatar's root node.
 class_name AvatarColliderConfig
 
 ## The radius of the collider. If this is greater than half the height, either
 ## the radius or the height will be clamped so that it is equal to half the height.
 ## Which value gets clamped is not specified.
-@export var radius:float = 0.5
+@export var radius:float = 0.25
 ## The height of the collider. If this is less than double the radius, either
 ## the radius or the height will be clamped so that it is equal to half the height.
 ## Which value gets clamped is not specified.
-@export var height:float = 1.0
+@export var height:float = 1.8
 
 func _process(delta: float) -> void:
 	var target:Node = get_parent()
@@ -39,6 +42,8 @@ func _process(delta: float) -> void:
 
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	var warnings:Array[BaseRoot.Warning] = get_universal_warnings()
+	
+	# todo: check size is in valid bounds based on aabb
 	
 	return warnings
 

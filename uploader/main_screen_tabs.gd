@@ -1,6 +1,6 @@
 @tool
 extends TabContainer
-class_name PageSelector
+class_name EditorPageSelector
 
 @export var button_section:HBoxContainer
 @export var upload_handler:EditorUploadHandler

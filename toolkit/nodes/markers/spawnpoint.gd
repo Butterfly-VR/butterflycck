@@ -6,8 +6,16 @@ extends CCKMarker
 ## start in upon joining a world. the parent must be a [Node3D] or derived from it.
 class_name Spawnpoint
 
+@export var enabled:bool
+
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	var warnings:Array[BaseRoot.Warning] = get_universal_warnings()
+	
+	if get_parent() is not Node3D:
+			warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
+				"Spawnpoint must be child of Node3D", 
+				"The Node3D is where players will spawn.", 
+				get_parent(), false))
 	
 	for sibling in get_parent().get_children():
 		if (sibling.get_script() != null 
@@ -16,8 +24,8 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 				and sibling != self):
 			warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
 				"Duplicate Spawnpoints on node", 
-				"A node cannot have more than one Spawnpoint attached", 
-				sibling, false))
+				"A node cannot have more than one Spawnpoint attached.", 
+				self, false))
 	
 	return warnings
 
@@ -25,11 +33,11 @@ func prep_for_upload() -> bool:
 	if get_parent() is not Node3D:
 		return false
 	
-	get_parent().set_meta("Spawnpoint", {"marker_version": get_marker_version_string()})
+	get_parent().set_meta("Spawnpoint", {"marker_version": get_marker_version_string(), "enabled": enabled})
 	
 	queue_free()
 	
 	return true
 
 func get_marker_version_string() -> String:
-	return "1"
+	return "2"

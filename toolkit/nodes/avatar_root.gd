@@ -35,13 +35,13 @@ func get_base_class_warnings() -> Array[BaseRoot.Warning]:
 		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Warning, 
 				"Avatar missing collider config", 
 				"An avatar should have a collider config node as a child to control \
-						the size of the avatar's collider. the default collider is based on the \
-						Avatar's AABB which may be too big", 
+						the size of the avatar's collider. The default collider is based on the \
+						Avatar's AABB which may be too big.", 
 				self, false))
 	if state.collider_settings_found > 1:
 		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Warning, 
 				"Avatar has multiple collider configs", 
-				"Only one of the configs will be applied ingame", 
+				"Only one of the configs will be applied in-game.", 
 				state.last_collider_setting, false))
 	
 	return warnings

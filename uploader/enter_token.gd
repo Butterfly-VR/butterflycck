@@ -21,7 +21,7 @@ const OUTPUT_LENGTH:int = 64
 @export var password_entry:LineEdit
 @export var account_handler:EditorAccountHandler
 @export var api_handler:EditorAPIHandler
-@export var page_selector:PageSelector
+@export var page_selector:EditorPageSelector
 @export var button:Button
 
 func _on_token_entered() -> void:

@@ -53,6 +53,12 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	
 	var warnings:Array[BaseRoot.Warning] = get_universal_warnings()
 	
+	if get_parent() is not Skeleton3D:
+			warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
+				"IKController must be child of Skeleton3D", 
+				"The IKController must be a child of the Skeleton3D it is intended to control", 
+				get_parent(), false))
+	
 	for sibling in get_parent().get_children():
 		if (sibling.get_script() != null 
 				and sibling.get_class() == get_class() 
