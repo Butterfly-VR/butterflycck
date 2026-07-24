@@ -17,7 +17,7 @@ func prep_for_upload() -> bool:
 	var trigger_info:Dictionary[String, Variant] = {}
 	trigger_info.assign(get_trigger_info())
 	
-	trigger_info["trigger_version"] = get_trigger_version_string()
+	trigger_info["version"] = get_trigger_version_string()
 	trigger_info["active"] = active
 	trigger_info["targets"] = targets
 	trigger_info["custom_parameters"] = custom_parameters

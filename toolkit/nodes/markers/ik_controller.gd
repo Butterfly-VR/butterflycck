@@ -107,7 +107,7 @@ func prep_for_upload() -> bool:
 	
 	var meta_values:Dictionary[String, Variant] = {}
 	
-	meta_values["marker_version"] = get_marker_version_string()
+	meta_values["version"] = get_marker_version_string()
 	
 	meta_values["head_bone"] = parent.find_bone(head_bone)
 	meta_values["head_view"] = eye_placement.position

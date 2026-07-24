@@ -24,7 +24,7 @@ func prep_for_upload() -> bool:
 	
 	var values:Dictionary[String, Variant] = {}
 	
-	values["marker_version"] = get_marker_version_string()
+	values["version"] = get_marker_version_string()
 	
 	var libraries:Dictionary[String, Dictionary] = {}
 	for library in player.get_animation_library_list():

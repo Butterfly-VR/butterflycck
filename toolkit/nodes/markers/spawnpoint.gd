@@ -33,7 +33,7 @@ func prep_for_upload() -> bool:
 	if get_parent() is not Node3D:
 		return false
 	
-	get_parent().set_meta("Spawnpoint", {"marker_version": get_marker_version_string(), "enabled": enabled})
+	get_parent().set_meta("Spawnpoint", {"version": get_marker_version_string(), "enabled": enabled})
 	
 	queue_free()
 	

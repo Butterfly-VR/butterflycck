@@ -13,7 +13,7 @@ func prep_for_upload() -> bool:
 	var tree:AnimationTree = get_child(0)
 	var player:AnimationPlayer = tree.get_node(tree.anim_player)
 	
-	values["marker_version"] = get_marker_version_string()
+	values["version"] = get_marker_version_string()
 	values["name"] = name
 	
 	values["active"] = tree.active

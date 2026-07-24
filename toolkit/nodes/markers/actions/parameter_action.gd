@@ -41,6 +41,15 @@ func get_action_name() -> String:
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	var warnings:Array[BaseRoot.Warning] = get_universal_warnings()
 	
-	push_warning("todo: uploader warnings ParameterAction")
+	if !target:
+		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
+			"ParameterAction target not set", 
+			"A ParameterAction must target a CCKAnimationTree to control the parameter of.", 
+			self, false))
+	if parameter.is_empty() or parameter == " ":
+		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
+			"ParameterAction parameter not set", 
+			"A specific parameter must be chosen for this action to control.", 
+			self, false))
 	
 	return warnings

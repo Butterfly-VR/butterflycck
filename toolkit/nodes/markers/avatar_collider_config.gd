@@ -11,6 +11,10 @@ extends CCKMarker
 ## [br][br]
 ## the capsule visualization is based on the position of the nearest parent Node3D.
 ## The position may not be accurate if that node is not the Avatar's root node.
+## [br][br]
+## IMPORTANT: Because of how the debug visualization is drawn, adding this node to a scene where 
+## the root node is a AvatarRoot or WorldRoot will result in a 'multiple children on root' error
+## in the scene tree. This error will not appear in the uploader or prevent the object being uploaded
 class_name AvatarColliderConfig
 
 ## The radius of the collider. If this is greater than half the height, either
@@ -50,7 +54,7 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 func prep_for_upload() -> bool:
 	var meta_values:Dictionary[String, Variant] = {}
 	
-	meta_values["marker_version"] = get_marker_version_string()
+	meta_values["version"] = get_marker_version_string()
 	meta_values["radius"] = radius
 	meta_values["height"] = height
 	

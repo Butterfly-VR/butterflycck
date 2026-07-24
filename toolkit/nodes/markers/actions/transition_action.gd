@@ -29,9 +29,6 @@ class UniquePathData:
 	var start_point:int
 	var valid:bool = true
 	
-	func _to_string() -> String:
-		return "UniquePathData[%s, %s, %s]" % [original_path, start_point, valid]
-	
 	static func create(original_path:String, start_point:int) -> UniquePathData:
 		var x = UniquePathData.new()
 		x.original_path = original_path
@@ -152,6 +149,20 @@ func get_action_name() -> String:
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	var warnings:Array[BaseRoot.Warning] = get_universal_warnings()
 	
-	push_warning("todo: uploader warnings TransitionAction")
+	if !target:
+		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
+			"TransitionAction target not set", 
+			"A TransitionAction must target a CCKAnimationTree containing a state machine.", 
+			self, false))
+	if state_machine.is_empty() or state_machine == " ":
+		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
+			"TransitionAction state machine not set", 
+			"You must specify the state machine within the AnimationTree that this action will control.", 
+			self, false))
+	if target_node.is_empty() or target_node == " ":
+		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
+			"TransitionAction target node not set", 
+			"You must specify the animation node within the state machine that this action will transition to.", 
+			self, false))
 	
 	return warnings

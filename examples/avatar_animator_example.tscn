@@ -1,0 +1,173 @@
+[gd_scene format=3 uid="uid://cqcosh1qum1wg"]
+
+[ext_resource type="Script" uid="uid://oaokbwqx2kvh" path="res://addons/butterflycck/toolkit/nodes/markers/animation_tree.gd" id="1_aoqid"]
+[ext_resource type="Script" uid="uid://mataiyg4vmx0" path="res://addons/butterflycck/toolkit/nodes/markers/actions/transition_action.gd" id="2_75hxs"]
+[ext_resource type="Script" uid="uid://ba21u52cu32lp" path="res://addons/butterflycck/toolkit/nodes/markers/actions/parameter_action.gd" id="3_qk87d"]
+[ext_resource type="Script" uid="uid://bciet0e1a4vdo" path="res://addons/butterflycck/toolkit/nodes/markers/triggers/player_movement_trigger.gd" id="4_7fr2a"]
+[ext_resource type="Script" uid="uid://bhl1pfuol6l8n" path="res://addons/butterflycck/toolkit/nodes/markers/triggers/player_jump_trigger.gd" id="5_b5i8v"]
+[ext_resource type="Script" uid="uid://bc2udl57df16f" path="res://addons/butterflycck/toolkit/nodes/markers/triggers/player_land_trigger.gd" id="6_qcy6l"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_kqeoh"]
+animation = &"examples/in air"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_8qepn"]
+animation = &"examples/jump"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_i4erw"]
+animation = &"examples/land"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_jdcoo"]
+animation = &"examples/idle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_2y6uh"]
+animation = &"examples/walk right"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_33iux"]
+animation = &"examples/walk left"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_qrf1s"]
+animation = &"examples/walk backwards"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_gdwnn"]
+animation = &"examples/walk forward"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_tb1dk"]
+animation = &"examples/run"
+
+[sub_resource type="AnimationNodeBlendSpace2D" id="AnimationNodeBlendSpace2D_j6d8e"]
+blend_point_0/node = SubResource("AnimationNodeAnimation_jdcoo")
+blend_point_0/pos = Vector2(0, 0)
+blend_point_1/node = SubResource("AnimationNodeAnimation_2y6uh")
+blend_point_1/pos = Vector2(1, 0)
+blend_point_2/node = SubResource("AnimationNodeAnimation_33iux")
+blend_point_2/pos = Vector2(-1, 0)
+blend_point_3/node = SubResource("AnimationNodeAnimation_qrf1s")
+blend_point_3/pos = Vector2(0, -1)
+blend_point_4/node = SubResource("AnimationNodeAnimation_gdwnn")
+blend_point_4/pos = Vector2(0, 0.7)
+blend_point_5/node = SubResource("AnimationNodeAnimation_tb1dk")
+blend_point_5/pos = Vector2(0, 1)
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_f8v6m"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_us63k"]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_nab0i"]
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_dtdkw"]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_jpogc"]
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_2bbyt"]
+states/End/position = Vector2(975, 189)
+states/Start/position = Vector2(206, 100)
+"states/examples_in air/node" = SubResource("AnimationNodeAnimation_kqeoh")
+"states/examples_in air/position" = Vector2(580, 189)
+states/examples_jump/node = SubResource("AnimationNodeAnimation_8qepn")
+states/examples_jump/position = Vector2(580, 100)
+states/examples_land/node = SubResource("AnimationNodeAnimation_i4erw")
+states/examples_land/position = Vector2(396, 189)
+states/locomotion/node = SubResource("AnimationNodeBlendSpace2D_j6d8e")
+states/locomotion/position = Vector2(396, 100)
+transitions = ["Start", "locomotion", SubResource("AnimationNodeStateMachineTransition_f8v6m"), "locomotion", "examples_jump", SubResource("AnimationNodeStateMachineTransition_us63k"), "examples_jump", "examples_in air", SubResource("AnimationNodeStateMachineTransition_nab0i"), "examples_in air", "examples_land", SubResource("AnimationNodeStateMachineTransition_dtdkw"), "examples_land", "locomotion", SubResource("AnimationNodeStateMachineTransition_jpogc")]
+graph_offset = Vector2(-151, 20)
+
+[sub_resource type="Animation" id="Animation_152ec"]
+resource_name = "idle"
+
+[sub_resource type="Animation" id="Animation_t0oqi"]
+resource_name = "in air"
+
+[sub_resource type="Animation" id="Animation_y54ps"]
+resource_name = "jump"
+
+[sub_resource type="Animation" id="Animation_38bi8"]
+resource_name = "land"
+
+[sub_resource type="Animation" id="Animation_ojvj4"]
+resource_name = "run"
+
+[sub_resource type="Animation" id="Animation_yn28g"]
+resource_name = "walk backwards"
+
+[sub_resource type="Animation" id="Animation_ts24h"]
+resource_name = "walk forward"
+
+[sub_resource type="Animation" id="Animation_k3dsr"]
+resource_name = "walk left"
+
+[sub_resource type="Animation" id="Animation_ca30u"]
+resource_name = "walk right"
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_7tf2y"]
+_data = {
+&"idle": SubResource("Animation_152ec"),
+&"in air": SubResource("Animation_t0oqi"),
+&"jump": SubResource("Animation_y54ps"),
+&"land": SubResource("Animation_38bi8"),
+&"run": SubResource("Animation_ojvj4"),
+&"walk backwards": SubResource("Animation_yn28g"),
+&"walk forward": SubResource("Animation_ts24h"),
+&"walk left": SubResource("Animation_k3dsr"),
+&"walk right": SubResource("Animation_ca30u")
+}
+
+[node name="AvatarAnimatorExample" type="Node3D" unique_id=1174338687]
+transform = Transform3D(-4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="CCKAnimationTree" type="Node" parent="." unique_id=2085425917]
+script = ExtResource("1_aoqid")
+metadata/_custom_type_script = "uid://oaokbwqx2kvh"
+
+[node name="AnimationTree" type="AnimationTree" parent="CCKAnimationTree" unique_id=1134425848]
+root_node = NodePath("../..")
+tree_root = SubResource("AnimationNodeStateMachine_2bbyt")
+anim_player = NodePath("../AnimationPlayer")
+parameters/locomotion/blend_position = Vector2(0, 0)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CCKAnimationTree" unique_id=135294209]
+root_node = NodePath("../..")
+libraries/examples = SubResource("AnimationLibrary_7tf2y")
+
+[node name="TransitionAction" type="Node" parent="." unique_id=390046560 node_paths=PackedStringArray("target")]
+script = ExtResource("2_75hxs")
+target = NodePath("../CCKAnimationTree")
+state_machine = "ROOT"
+target_node = "examples_land"
+transition_type = 2
+metadata/_custom_type_script = "uid://mataiyg4vmx0"
+
+[node name="TransitionAction2" type="Node" parent="." unique_id=286120910 node_paths=PackedStringArray("target")]
+script = ExtResource("2_75hxs")
+target = NodePath("../CCKAnimationTree")
+state_machine = "ROOT"
+target_node = "examples_jump"
+source_node = "locomotion"
+transition_type = 1
+metadata/_custom_type_script = "uid://mataiyg4vmx0"
+
+[node name="ParameterAction" type="Node" parent="." unique_id=613321834 node_paths=PackedStringArray("target")]
+script = ExtResource("3_qk87d")
+target = NodePath("../CCKAnimationTree")
+parameter = "locomotion/blend_position"
+metadata/_custom_type_script = "uid://ba21u52cu32lp"
+
+[node name="PlayerMovementTrigger" type="Node" parent="." unique_id=818045725 node_paths=PackedStringArray("triggered_actions")]
+script = ExtResource("4_7fr2a")
+triggered_actions = [NodePath("../ParameterAction")]
+metadata/_custom_type_script = "uid://bciet0e1a4vdo"
+
+[node name="PlayerJumpTrigger" type="Node" parent="." unique_id=373307415 node_paths=PackedStringArray("triggered_actions")]
+script = ExtResource("5_b5i8v")
+triggered_actions = [NodePath("../TransitionAction2")]
+metadata/_custom_type_script = "uid://bhl1pfuol6l8n"
+
+[node name="PlayerLandTrigger" type="Node" parent="." unique_id=376531034 node_paths=PackedStringArray("triggered_actions")]
+script = ExtResource("6_qcy6l")
+triggered_actions = [NodePath("../TransitionAction")]
+metadata/_custom_type_script = "uid://bc2udl57df16f"

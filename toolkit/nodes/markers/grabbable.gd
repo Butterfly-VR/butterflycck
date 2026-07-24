@@ -81,7 +81,7 @@ func prep_for_upload() -> bool:
 	var parent:Node = get_parent()
 	parent.remove_child(self)
 	
-	values["marker_version"] = get_marker_version_string()
+	values["version"] = get_marker_version_string()
 	
 	values["hitbox"] = hitbox.get_index()
 	values["max_grab_distance"] = max_grab_distance
