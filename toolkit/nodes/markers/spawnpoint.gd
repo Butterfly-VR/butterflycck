@@ -6,7 +6,7 @@ extends CCKMarker
 ## start in upon joining a world. the parent must be a [Node3D] or derived from it.
 class_name Spawnpoint
 
-@export var enabled:bool
+@export var enabled:bool = true
 
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	var warnings:Array[BaseRoot.Warning] = get_universal_warnings()

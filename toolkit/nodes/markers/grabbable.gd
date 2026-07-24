@@ -11,7 +11,7 @@ class_name Grabbable
 
 ## Used to detect a player attempting to grab this object.
 ## Should be monitorable and in no collision layers other than layer 2.
-@export var hitbox:Area3D
+@export var hitbox:CollisionObject3D
 ## The maximum distance this can be grabbed from, calculated from the grabber's
 ## origin to the point on the hitbox surface where the raycast collided.
 @export var max_grab_distance:float = -1.0
@@ -50,10 +50,10 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 				self, false))
 	else:
 		if hitbox.collision_layer != 0 and hitbox.collision_layer != 2:
-			warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Warning, 
+			warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Info, 
 					"Grabbable hitbox exists in other layers", 
 					"The hitbox for the grabbable exists in layers other than the grabbables \
-							physics layer, this is probably not intentional.", 
+							physics layer, this might not be intentional.", 
 					hitbox, true, 
 					func():
 						hitbox.collision_layer = hitbox.collision_layer | 2
@@ -83,7 +83,7 @@ func prep_for_upload() -> bool:
 	
 	values["version"] = get_marker_version_string()
 	
-	values["hitbox"] = hitbox.get_index()
+	values["hitbox"] = parent.get_path_to(hitbox)
 	values["max_grab_distance"] = max_grab_distance
 	if highlight_target:
 		values["highlight_mesh"] = hitbox.get_path_to(highlight_target)
