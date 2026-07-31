@@ -128,6 +128,7 @@ func _validate_property(property: Dictionary) -> void:
 			property.hint_string = "None"
 
 func get_action_info() -> Dictionary[String, Variant]:
+	notify_property_list_changed()
 	var values:Dictionary[String, Variant] = {}
 	
 	values["target"] = get_parent().get_path_to(target)

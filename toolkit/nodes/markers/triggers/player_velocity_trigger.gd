@@ -1,6 +1,6 @@
 @tool
 extends CCKTrigger
-class_name PlayerMovementTrigger
+class_name PlayerVelocityTrigger
 
 func get_trigger_info() -> Dictionary[String, Variant]:
 	var values:Dictionary[String, Variant] = {}
@@ -11,7 +11,7 @@ func get_trigger_version_string() -> String:
 	return "1"
 
 func get_trigger_name() -> String:
-	return "PlayerMovementTrigger_%s" % name
+	return "VelocityTrigger_%s" % name
 
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	var warnings:Array[BaseRoot.Warning] = get_universal_warnings()

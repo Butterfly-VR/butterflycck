@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://oaokbwqx2kvh" path="res://addons/butterflycck/toolkit/nodes/markers/animation_tree.gd" id="1_aoqid"]
 [ext_resource type="Script" uid="uid://mataiyg4vmx0" path="res://addons/butterflycck/toolkit/nodes/markers/actions/transition_action.gd" id="2_75hxs"]
 [ext_resource type="Script" uid="uid://ba21u52cu32lp" path="res://addons/butterflycck/toolkit/nodes/markers/actions/parameter_action.gd" id="3_qk87d"]
-[ext_resource type="Script" uid="uid://bciet0e1a4vdo" path="res://addons/butterflycck/toolkit/nodes/markers/triggers/player_movement_trigger.gd" id="4_7fr2a"]
+[ext_resource type="Script" uid="uid://bciet0e1a4vdo" path="res://addons/butterflycck/toolkit/nodes/markers/triggers/player_velocity_trigger.gd" id="4_7fr2a"]
 [ext_resource type="Script" uid="uid://bhl1pfuol6l8n" path="res://addons/butterflycck/toolkit/nodes/markers/triggers/player_jump_trigger.gd" id="5_b5i8v"]
 [ext_resource type="Script" uid="uid://bc2udl57df16f" path="res://addons/butterflycck/toolkit/nodes/markers/triggers/player_land_trigger.gd" id="6_qcy6l"]
 
@@ -38,13 +38,13 @@ animation = &"examples/run"
 blend_point_0/node = SubResource("AnimationNodeAnimation_jdcoo")
 blend_point_0/pos = Vector2(0, 0)
 blend_point_1/node = SubResource("AnimationNodeAnimation_2y6uh")
-blend_point_1/pos = Vector2(1, 0)
+blend_point_1/pos = Vector2(0.5, 0)
 blend_point_2/node = SubResource("AnimationNodeAnimation_33iux")
-blend_point_2/pos = Vector2(-1, 0)
+blend_point_2/pos = Vector2(-0.5, 0)
 blend_point_3/node = SubResource("AnimationNodeAnimation_qrf1s")
-blend_point_3/pos = Vector2(0, -1)
+blend_point_3/pos = Vector2(0, -0.5)
 blend_point_4/node = SubResource("AnimationNodeAnimation_gdwnn")
-blend_point_4/pos = Vector2(0, 0.7)
+blend_point_4/pos = Vector2(0, 0.5)
 blend_point_5/node = SubResource("AnimationNodeAnimation_tb1dk")
 blend_point_5/pos = Vector2(0, 1)
 
@@ -157,7 +157,7 @@ target = NodePath("../CCKAnimationTree")
 parameter = "locomotion/blend_position"
 metadata/_custom_type_script = "uid://ba21u52cu32lp"
 
-[node name="PlayerMovementTrigger" type="Node" parent="." unique_id=818045725 node_paths=PackedStringArray("triggered_actions")]
+[node name="PlayerVelocityTrigger" type="Node" parent="." unique_id=818045725 node_paths=PackedStringArray("triggered_actions")]
 script = ExtResource("4_7fr2a")
 triggered_actions = [NodePath("../ParameterAction")]
 metadata/_custom_type_script = "uid://bciet0e1a4vdo"

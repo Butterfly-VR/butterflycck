@@ -35,6 +35,7 @@ func prep_for_upload() -> bool:
 				libraries[library][library_animation] = player.get_animation(library_animation)
 	values["libraries"] = libraries
 	
+	values["player_name"] = name
 	values["animation"] = animation
 	values["active"] = player.active
 	values["playback_speed"] = player.speed_scale

@@ -11,7 +11,7 @@ func get_trigger_version_string() -> String:
 	return "1"
 
 func get_trigger_name() -> String:
-	return "PlayerLandTrigger_%s" % name
+	return "LandTrigger_%s" % name
 
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	var warnings:Array[BaseRoot.Warning] = get_universal_warnings()
