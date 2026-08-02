@@ -271,18 +271,18 @@ func parse_curve(curve:Curve) -> Dictionary[String, Variant]:
 	values["points"] = points
 	return values
 
-func get_concatenated_sate_machine_paths() -> String:
+func get_concatenated_state_machine_paths() -> String:
 	if get_child(0) is not AnimationTree:
 		return " "
 	
 	var root:AnimationRootNode = (get_child(0) as AnimationTree).tree_root
 	
-	var result:String = get_concatenated_sate_machine_paths_recursive("ROOT", root)
+	var result:String = get_concatenated_state_machine_paths_recursive("ROOT", root)
 	
 	result = result.trim_suffix(",")
 	return result
 
-func get_concatenated_sate_machine_paths_recursive(path:String, root:AnimationNode) -> String:
+func get_concatenated_state_machine_paths_recursive(path:String, root:AnimationNode) -> String:
 	var result:String = ""
 	if root is AnimationNodeStateMachine:
 		result = path + ","
@@ -290,25 +290,25 @@ func get_concatenated_sate_machine_paths_recursive(path:String, root:AnimationNo
 		for node_name in root.get_node_list():
 			var new_path:String = path + "/N%s" % node_name
 			var node:AnimationNode = root.get_node(node_name)
-			result += get_concatenated_sate_machine_paths_recursive(new_path, node)
+			result += get_concatenated_state_machine_paths_recursive(new_path, node)
 	
 	elif root is AnimationNodeBlendSpace1D:
 		for idx in root.get_blend_point_count():
 			var new_path:String = path + "/I%s" % idx
 			var node:AnimationNode = root.get_blend_point_node(idx)
-			result += get_concatenated_sate_machine_paths_recursive(new_path, node)
+			result += get_concatenated_state_machine_paths_recursive(new_path, node)
 	
 	elif root is AnimationNodeBlendSpace2D:
 		for idx in root.get_blend_point_count():
 			var new_path:String = path + "/I%s" % idx
 			var node:AnimationNode = root.get_blend_point_node(idx)
-			result += get_concatenated_sate_machine_paths_recursive(new_path, node)
+			result += get_concatenated_state_machine_paths_recursive(new_path, node)
 	
 	elif root is AnimationNodeBlendTree:
 		for node_name in root.get_node_list():
 			var new_path:String = path + "/N%s" % node_name
 			var node:AnimationNode = root.get_node(node_name)
-			result += get_concatenated_sate_machine_paths_recursive(new_path, node)
+			result += get_concatenated_state_machine_paths_recursive(new_path, node)
 	
 	return result
 

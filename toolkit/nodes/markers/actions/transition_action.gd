@@ -41,7 +41,7 @@ func _validate_property(property: Dictionary) -> void:
 		
 		property.hint = PropertyHint.PROPERTY_HINT_ENUM
 		
-		var paths:PackedStringArray = target.get_concatenated_sate_machine_paths().split(",", false)
+		var paths:PackedStringArray = target.get_concatenated_state_machine_paths().split(",", false)
 		var shortest_unique_paths:Dictionary[PackedStringArray, UniquePathData] = {}
 		var root_is_state_machine:bool = false
 		
@@ -61,17 +61,22 @@ func _validate_property(property: Dictionary) -> void:
 					break
 				else:
 					var other:UniquePathData = shortest_unique_paths[sub_path]
-					other.valid = false
-					shortest_unique_paths[sub_path] = other
 					
-					other = UniquePathData.create(other.original_path, other.start_point)
-					other.start_point -= 1
-					if other.start_point == -1:
-						push_error("two state machines had identical paths. bug?")
-						return
-					
-					shortest_unique_paths[other.original_path.split("/").slice(other.start_point)] = other
-					continue
+					if !other.valid:
+						continue
+					else:
+						if other.start_point == 0:
+							if start_point == 0:
+								push_error("two state machines had identical paths. bug?")
+								return
+							else:
+								# other path is already max length so we only extend ourself
+								continue
+						
+						other.valid = false
+						other = UniquePathData.create(other.original_path, other.start_point)
+						other.start_point -= 1
+						shortest_unique_paths[other.original_path.split("/", false).slice(other.start_point)] = other
 		
 		var result:String = ""
 		
@@ -84,7 +89,14 @@ func _validate_property(property: Dictionary) -> void:
 			
 			var path_string:String = ""
 			for chunk:String in path:
-				path_string += chunk.erase(0) + "/"
+				if chunk == "ROOT":
+					path_string += chunk + "/"
+				else:
+					if chunk[0] == "N" and chunk.substr(1).is_valid_int():
+						# special case to avoid "N0" and "I0" becoming the same displayed path
+						path_string += "\"%s\"/" % chunk.substr(1)
+					else:
+						path_string += chunk.substr(1) + "/"
 			path_string = path_string.trim_suffix("/")
 			
 			path_lookup[path_string] = shortest_unique_paths[path].original_path
@@ -94,7 +106,8 @@ func _validate_property(property: Dictionary) -> void:
 		property.hint_string = result
 	
 	if property.name == "target_node":
-		if target and !state_machine.is_empty() and (!path_lookup.is_empty() or state_machine == "ROOT"):
+		if target and target.get_child_count() > 0 and !state_machine.is_empty() \
+				and (!path_lookup.is_empty() or state_machine == "ROOT"):
 			property.hint = PropertyHint.PROPERTY_HINT_ENUM
 			
 			var current_node:AnimationRootNode = target.get_child(0).tree_root
@@ -103,8 +116,10 @@ func _validate_property(property: Dictionary) -> void:
 					var prefix:String = chunk[0]
 					match prefix:
 						"I":
+							# CCKAnimationTree guarentees this is a 1D/2D BlendSpace
 							current_node = current_node.get_blend_point_node(int(chunk.substr(1)))
 						"N":
+							# CCKAnimationTree guarentees this is a StateMachine or BlendTree
 							current_node = current_node.get_node(chunk.substr(1))
 						_:
 							push_error("invalid prefix %s in path segment" % prefix)
@@ -121,6 +136,8 @@ func _validate_property(property: Dictionary) -> void:
 			node_list_string = ""
 	
 	if property.name == "source_node":
+		# will be stale if this property is updated before target_node
+		# if update order stops being guarenteed we will need to change this
 		property.hint = PropertyHint.PROPERTY_HINT_ENUM
 		if !node_list_string.is_empty():
 			property.hint_string = "None," + node_list_string
@@ -128,7 +145,10 @@ func _validate_property(property: Dictionary) -> void:
 			property.hint_string = "None"
 
 func get_action_info() -> Dictionary[String, Variant]:
-	notify_property_list_changed()
+	# dirty hack to force the path_lookup to rebuild
+	# todo: should probably move the rebuild to its own function
+	get_property_list()
+	
 	var values:Dictionary[String, Variant] = {}
 	
 	values["target"] = get_parent().get_path_to(target)
@@ -165,5 +185,7 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 			"TransitionAction target node not set", 
 			"You must specify the animation node within the state machine that this action will transition to.", 
 			self, false))
+	
+	# todo: check we arnt holding stale values (check set values exist in the enum)
 	
 	return warnings
