@@ -6,6 +6,8 @@ class NodeStackItem:
 	var current_index:int = 0
 	
 	func get_next_child() -> NodeStackItem:
+		if !node:
+			return null
 		if node.get_children().size() > current_index:
 			var child = node.get_child(current_index)
 			current_index += 1

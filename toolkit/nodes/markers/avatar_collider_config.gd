@@ -25,8 +25,11 @@ class_name AvatarColliderConfig
 ## the radius or the height will be clamped so that it is equal to half the height.
 ## Which value gets clamped is not specified.
 @export var height:float = 1.8
+@export var visible:bool = true
 
 func _process(delta: float) -> void:
+	if !visible:
+		return
 	var target:Node = get_parent()
 	for i in range(0, 16):
 		if target is Node3D:

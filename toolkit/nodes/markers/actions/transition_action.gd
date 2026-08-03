@@ -12,17 +12,10 @@ class_name TransitionAction
 		notify_property_list_changed()
 @export_enum(" ") var target_node:String
 @export_enum("None") var source_node:String = "None"
-@export var transition_type:TransitionTypes
-@export var teleport_if_unreachable:bool = false
+@export var teleport:bool = false
 
 var path_lookup:Dictionary[String, String]
 var node_list_string:String = ""
-
-enum TransitionTypes{
-	single_transition,
-	travel,
-	instant
-}
 
 class UniquePathData:
 	var original_path:String
@@ -156,8 +149,7 @@ func get_action_info() -> Dictionary[String, Variant]:
 	values["target_node"] = target_node
 	if source_node != "None":
 		values["source_node"] = source_node
-	values["transition_type"] = transition_type as int
-	values["teleport_if_unreachable"] = teleport_if_unreachable
+	values["teleport"] = teleport
 	
 	return values
 
