@@ -96,7 +96,7 @@ func object_selected(original_root:BaseRoot, original_file_path:String) -> void:
 		BaseRoot.ObjectType.avatar:
 			object_type_string = "Avatar"
 	
-	root.assign_uuid()
+	root.try_assign_uuid()
 	if root.attached_uuid:
 		var response = await api_handler.make_request(
 				HTTPClient.METHOD_GET, 

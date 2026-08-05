@@ -30,7 +30,7 @@ var blacklisted_types:Array = [Window, EditorPlugin, HTTPRequest, MultiplayerSpa
 @export_tool_button("assign UUID", "Callable") var assign_button = assign_uuid
 
 ## The actual UUID of the object, is set by assign UUID.
-var attached_uuid:UUID
+@export_storage var attached_uuid:UUID
 
 ## The possible types of objects.
 enum ObjectType{
@@ -84,6 +84,17 @@ func assign_uuid() -> void:
 		new_uuid = UUID.from_String(_uuid)
 		if !new_uuid:
 			new_uuid = UUID.new(true)
+	_uuid = new_uuid.to_string()
+	attached_uuid = new_uuid
+
+func try_assign_uuid() -> void:
+	var new_uuid:UUID
+	if _uuid.is_empty():
+		return
+	else:
+		new_uuid = UUID.from_String(_uuid)
+		if !new_uuid:
+			return
 	_uuid = new_uuid.to_string()
 	attached_uuid = new_uuid
 
@@ -143,15 +154,25 @@ func get_child_warnings(node:Node, warnings:WarningState) -> bool:
 	return true
 
 func get_root_warnings() -> Array[Warning]:
-	var warnings:Array[Warning] = get_base_class_warnings()
+	var warnings:Array[Warning] = []
 	
-	if get_children().size() == 0:
+	if get_child_count() == 0:
 		warnings.append(Warning.new(Warning.WarningLevel.Error, "Object root requires a child", 
 				"The object you wish to upload must be the child of the BaseRoot node.", self, false))
-	if get_children().size() > 1:
+		return warnings
+	
+	if get_child_count() > 1:
 		warnings.append(Warning.new(Warning.WarningLevel.Error, "Multiple children on root", 
 				"Multiple children are not allowed on an object root, \
 				consider adding another node and reparenting the children to it.", get_child(1), false))
+	
+	if attached_uuid == null:
+		warnings.append(Warning.new(Warning.WarningLevel.Error, "No UUID assigned", 
+				"Before uploading an object, you must click \"assign UUID\" to generate \
+						an upload id for the object. This is due to a technical limitation \
+						that may be fixed in the future.", get_child(1), false))
+	
+	warnings.append_array(get_base_class_warnings())
 	
 	return warnings
 
@@ -159,7 +180,7 @@ func get_root_warnings() -> Array[Warning]:
 func get_upload_warnings() -> Array[Warning]:
 	var warnings:WarningState = WarningState.new()
 	
-	warnings.state = get_base_class_warnings()
+	warnings.state = get_root_warnings()
 	
 	if get_children().size() > 0:
 		EditorSceneTreeHelper.call_children_recursive(get_child(0), get_child_warnings.bind(warnings))

@@ -34,9 +34,24 @@ func find_objects(type:GDScript) -> void:
 	# todo: make not recursive
 	var root_dir:String = "res://"
 	var scene_files:Array[String] = find_objects_recursive(type, root_dir)
+	var load_threads:Dictionary[String, Thread] = {}
 	
 	for file:String in scene_files:
-		var scene:Node = (load(file) as PackedScene).instantiate()
+		var load_thread:Thread = Thread.new()
+		load_thread.start(
+				(func(file:String) -> Node:
+					return (load(file) as PackedScene).instantiate()).bind(file))
+		load_threads[file] = load_thread
+	
+	for file:String in load_threads.keys():
+		var load_thread:Thread = load_threads[file]
+		
+		while !load_thread.is_started():
+			await get_tree().physics_frame
+		while load_thread.is_alive():
+			await get_tree().physics_frame
+		
+		var scene:Node = load_thread.wait_to_finish()
 		find_objects_in_scene(type, scene, file)
 
 func find_objects_recursive(type:GDScript, path:String) -> Array[String]:
@@ -44,7 +59,7 @@ func find_objects_recursive(type:GDScript, path:String) -> Array[String]:
 	for dir:String in DirAccess.get_directories_at(path):
 		files.append_array(find_objects_recursive(type, path + "/" + dir))
 	for file:String in DirAccess.get_files_at(path):
-		if file.ends_with(".tscn"):
+		if file.ends_with(".tscn") or file.ends_with(".scn"):
 			files.push_back(path + "/" + file)
 	return files
 
@@ -55,13 +70,13 @@ func find_objects_in_scene(type:GDScript, scene_root:Node, origin_file_path:Stri
 	EditorSceneTreeHelper.call_children_recursive(scene_root, check_node_is_object.bind(objects, type), true)
 	# list the objects we found in the ui
 	for object:BaseRoot in objects:
-		object.assign_uuid()
+		object.try_assign_uuid()
 		var listing:EditorObjectListing = OBJECT_LISTING.instantiate()
 		
 		listing.object_name.text = (
 				object.object_name if !object.object_name.is_empty() else object.name)
 		listing.uuid.text = (
-				object.attached_uuid.to_string() if object.attached_uuid else "never uploaded")
+				object.attached_uuid.to_string() if object.attached_uuid else "UUID not set")
 		
 		listing.select_button.pressed.connect(inspector.object_selected.bind(object, origin_file_path))
 		

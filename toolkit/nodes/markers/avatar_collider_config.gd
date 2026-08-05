@@ -14,7 +14,8 @@ extends CCKMarker
 ## [br][br]
 ## IMPORTANT: Because of how the debug visualization is drawn, adding this node to a scene where 
 ## the root node is a AvatarRoot or WorldRoot will result in a 'multiple children on root' error
-## in the scene tree. This error will not appear in the uploader or prevent the object being uploaded
+## in the scene tree. This error will not appear in the uploader or prevent the object being uploaded.
+## The error will disapear if you disable the visibillity of the debug visual.
 class_name AvatarColliderConfig
 
 ## The radius of the collider. If this is greater than half the height, either
@@ -25,18 +26,13 @@ class_name AvatarColliderConfig
 ## the radius or the height will be clamped so that it is equal to half the height.
 ## Which value gets clamped is not specified.
 @export var height:float = 1.8
+@export var offset:Vector3 = Vector3.ZERO
 @export var visible:bool = true
 
 func _process(delta: float) -> void:
 	if !visible:
 		return
 	var target:Node = get_parent()
-	for i in range(0, 16):
-		if target is Node3D:
-			break
-		if target.get_parent() == null:
-			return
-		target = target.get_parent()
 	
 	if target is not Node3D:
 		return
@@ -45,21 +41,33 @@ func _process(delta: float) -> void:
 	position.y += height / 2
 	
 	DebugDraw3D.draw_capsule(
-			position, Quaternion.IDENTITY, radius, height)
+			position + offset, Quaternion.IDENTITY, radius, height)
 
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	var warnings:Array[BaseRoot.Warning] = get_universal_warnings()
 	
-	# todo: check size is in valid bounds based on aabb
+	if get_parent() is not Node3D:
+		warnings.append(BaseRoot.Warning.new(BaseRoot.Warning.WarningLevel.Error, 
+				"Collider config must be child of Node3D.", 
+				"The parent node (+ the offset) determines where the Avatar's collider \
+						will be positioned. the parent should be positioned between the
+						avatar's feet.", 
+				self, false))
+	
+	# todo: check sizeand offset are in valid bounds based on aabb
 	
 	return warnings
 
 func prep_for_upload() -> bool:
+	if get_parent() is not Node3D:
+		return false
+	
 	var meta_values:Dictionary[String, Variant] = {}
 	
 	meta_values["version"] = get_marker_version_string()
 	meta_values["radius"] = radius
 	meta_values["height"] = height
+	meta_values["offset"] = offset
 	
 	get_parent().set_meta("AvatarColliderConfig", meta_values)
 	
@@ -68,4 +76,4 @@ func prep_for_upload() -> bool:
 	return true
 
 func get_marker_version_string() -> String:
-	return "1"
+	return "2"
