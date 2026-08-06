@@ -166,11 +166,12 @@ func get_root_warnings() -> Array[Warning]:
 				"Multiple children are not allowed on an object root, \
 				consider adding another node and reparenting the children to it.", get_child(1), false))
 	
+	try_assign_uuid()
 	if attached_uuid == null:
 		warnings.append(Warning.new(Warning.WarningLevel.Error, "No UUID assigned", 
 				"Before uploading an object, you must click \"assign UUID\" to generate \
 						an upload id for the object. This is due to a technical limitation \
-						that may be fixed in the future.", get_child(1), false))
+						that may be fixed in the future.", self, false))
 	
 	warnings.append_array(get_base_class_warnings())
 	

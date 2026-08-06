@@ -39,8 +39,8 @@ func find_objects(type:GDScript) -> void:
 	for file:String in scene_files:
 		var load_thread:Thread = Thread.new()
 		load_thread.start(
-				(func(file:String) -> Node:
-					return (load(file) as PackedScene).instantiate()).bind(file))
+				(func(file:String) -> PackedScene:
+					return (load(file) as PackedScene)).bind(file))
 		load_threads[file] = load_thread
 	
 	for file:String in load_threads.keys():
@@ -51,7 +51,7 @@ func find_objects(type:GDScript) -> void:
 		while load_thread.is_alive():
 			await get_tree().physics_frame
 		
-		var scene:Node = load_thread.wait_to_finish()
+		var scene:Node = load_thread.wait_to_finish().instantiate()
 		find_objects_in_scene(type, scene, file)
 
 func find_objects_recursive(type:GDScript, path:String) -> Array[String]:
