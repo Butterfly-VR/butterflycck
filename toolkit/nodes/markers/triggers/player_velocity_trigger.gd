@@ -1,5 +1,8 @@
 @tool
 extends CCKTrigger
+## Emits an event whenever the player's velocity changes, pushes a single parameter 
+## containing the new velocity. This node will be removed in the future for a more 
+## flexible PlayerValuesTrigger. 
 class_name PlayerVelocityTrigger
 
 func get_trigger_info() -> Dictionary[String, Variant]:

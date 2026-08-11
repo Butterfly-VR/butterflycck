@@ -1,8 +1,11 @@
-## triggers any attached actions every physics tick. can optionally include a parameter counting the number of ticks it has been active for.
 @tool
 extends CCKTrigger
+## Emits an event every frame. Can optionally include a parameter containing 
+## the number of ticks it has been active.
 class_name AlwaysTrigger
 
+## If true, will push a parameter containing the total number of ticks this trigger
+## has been active for.
 @export var include_tick_count:bool = false
 
 func get_trigger_info() -> Dictionary[String, Variant]:

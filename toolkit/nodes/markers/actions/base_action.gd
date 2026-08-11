@@ -1,10 +1,16 @@
 @abstract
 @tool
 extends CCKMarker
+## Base class for all action nodes.
+##
+## An action nodes performs some action when it recieves and event from a CCKTrigger. 
+## for more info see the wiki at https://github.com/Butterfly-VR/butterflycck/wiki
 class_name CCKAction
 
+## If false, will ignore any events targeting it.
 @export var active:bool = true
-# custom parameters here always get pushed behind all other parameters
+## Specifies any additional parameters that will be added to events targeting this
+## action. These custom parameters always get pushed after all other parameters.
 @export var custom_parameters:Array[Variant]
 
 var action_id = UUID.new(true)

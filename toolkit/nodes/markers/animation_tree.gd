@@ -1,5 +1,12 @@
 @tool
 extends CCKMarker
+## A safe wrapper around a regular AnimationTree.
+##
+## In Godot an AnimationTree state machine can contain arbitary code using the advance expression feature. To avoid this 
+## and the possibility of modifying arbitary properties using animations both AnimationTrees and AnimationPlayers must be
+## wrapped in cck markers in order to be safe to upload. To use this node you should add your AnimationTree as the first
+## child of this node. All properties from the child AnimationTree will be preserved and the AnimationTree on the client
+## will inherit the name and path of this node.
 class_name CCKAnimationTree
 
 var tree_parse_failed:bool = false

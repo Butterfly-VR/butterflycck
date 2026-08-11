@@ -26,6 +26,7 @@ class_name AvatarColliderConfig
 ## the radius or the height will be clamped so that it is equal to half the height.
 ## Which value gets clamped is not specified.
 @export var height:float = 1.8
+## Offsets the collider from the center of the parent node. Limitted to the bounds of the avatar's AABB.
 @export var offset:Vector3 = Vector3.ZERO
 @export var visible:bool = true
 

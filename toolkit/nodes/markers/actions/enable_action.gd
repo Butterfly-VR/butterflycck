@@ -1,8 +1,6 @@
-## Toggles or sets the "enabled" or "active" property of the parent node if it exists
-##
-## can either toggle the value or take a single bool parameter to set it
 @tool
 extends CCKAction
+## Toggles or sets the "enabled" or "active" property of the parent node if it exists
 class_name EnableAction
 
 enum TargetProperties{
@@ -10,7 +8,9 @@ enum TargetProperties{
 	Active
 }
 
+## if true, uses the first parameter to set the property. Does nothing if the type is not a bool
 @export var take_parameter:bool
+## determines which property name will be targeted
 @export var target_property:TargetProperties
 
 func get_action_info() -> Dictionary[String, Variant]:

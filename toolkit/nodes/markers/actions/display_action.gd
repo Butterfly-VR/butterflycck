@@ -1,7 +1,10 @@
 @tool
 extends CCKAction
+## Takes the first parameter and displays it in the parent Label3D.
 class_name DisplayAction
 
+## The text to show in the Label3D. Must contain a %s placeholder which will be 
+## replaced with the textual representation of the value.
 @export_multiline var text:String = "%s"
 
 func get_action_info() -> Dictionary[String, Variant]:

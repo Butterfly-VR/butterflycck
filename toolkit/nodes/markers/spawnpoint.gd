@@ -6,6 +6,8 @@ extends CCKMarker
 ## start in upon joining a world. the parent must be a [Node3D] or derived from it.
 class_name Spawnpoint
 
+## Determines if this Spawnpoint is enabled. Players will spawn and respawn at the first enabled Spawnpoint.
+## The behavour when multiple Spawnpoints are enabled is currently unspecified
 @export var enabled:bool = true
 
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:

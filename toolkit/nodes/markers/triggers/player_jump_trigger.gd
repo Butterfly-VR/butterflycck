@@ -1,5 +1,7 @@
 @tool
 extends CCKTrigger
+## Emits an event whenever the player leaves the ground. This node will 
+## be removed in the future for a more flexible PlayerValuesTrigger.
 class_name PlayerJumpTrigger
 
 func get_trigger_info() -> Dictionary[String, Variant]:

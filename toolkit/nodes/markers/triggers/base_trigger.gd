@@ -1,12 +1,20 @@
 @abstract
 @tool
 extends CCKMarker
+## Base class for all trigger nodes.
+##
+## A trigger nodes emits an event for any attached CCKActions whenever a specified 
+## condition becomes true. for more info see the wiki at 
+## https://github.com/Butterfly-VR/butterflycck/wiki
 class_name CCKTrigger
-# base class for all triggers
 
+## If false, will not trigger any attached events.
 @export var active:bool = true
-# custom parameters always get pushed in front of parameters from the trigger
+## Specifies any extra parameters that will be included with events emitted by 
+## this trigger. Custom parameters always get pushed in front of parameters 
+## from the trigger.
 @export var custom_parameters:Array[Variant]
+## the list of CCKActions triggered by this node. Each one recieves a copy of the event.
 @export var triggered_actions:Array[CCKAction]
 
 func prep_for_upload() -> bool:

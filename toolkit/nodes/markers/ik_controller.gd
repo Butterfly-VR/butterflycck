@@ -19,7 +19,7 @@ class_name IKController
 @export_enum(" ") var chest_bone: String
 
 ## Controls the position of the player's 'eyes' relative to the avatar's head.
-## Should generally be placed between the avatar's eyes near skin level.
+## Should generally be placed between and slightly behind the avatar's eyes.
 @export var eye_placement:Node3D
 
 func _validate_property(property: Dictionary) -> void:

@@ -1,17 +1,24 @@
 @tool
 extends CCKAction
+## When triggered, causes the specified transition in the specified state machine.
 class_name TransitionAction
 
+## The target CCKAnimationTree.
 @export var target:CCKAnimationTree:
 	set(x):
 		target = x
 		notify_property_list_changed()
+## The target StateMachine.
 @export_enum(" ") var state_machine:String:
 	set(x):
 		state_machine = x
 		notify_property_list_changed()
+## The node to transition to.
 @export_enum(" ") var target_node:String
+## If not 'None', will only transition if this is the current node in the StateMachine.
 @export_enum("None") var source_node:String = "None"
+## If true, teleport directly to target_node, otherwise follow a path of 
+## transitions to the target. Will always teleport if no path to the target exists.
 @export var teleport:bool = false
 
 var path_lookup:Dictionary[String, String]
@@ -63,8 +70,13 @@ func _validate_property(property: Dictionary) -> void:
 								push_error("two state machines had identical paths. bug?")
 								return
 							else:
-								# other path is already max length so we only extend ourself
-								continue
+								# this case is a pain to handle since only extending one of the paths
+								# breaks the assumption that no path is a prefix of another path
+								# at any rate it can only happen if one of the paths contains 
+								# a second ROOT node so its pretty unlikely to happen by accident
+								push_error("hit the weird edge case when two nodes have the same path \
+										but one of them cant be extended. you only have yourself to blame")
+								return
 						
 						other.valid = false
 						other = UniquePathData.create(other.original_path, other.start_point)
@@ -138,7 +150,7 @@ func _validate_property(property: Dictionary) -> void:
 			property.hint_string = "None"
 
 func get_action_info() -> Dictionary[String, Variant]:
-	# dirty hack to force the path_lookup to rebuild
+	# dirty hack to force path_lookup to rebuild
 	# todo: should probably move the rebuild to its own function
 	get_property_list()
 	
