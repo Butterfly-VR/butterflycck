@@ -4,22 +4,41 @@ extends CCKMarker
 ##
 ## When attached to a [Skeleton3D] on an avatar, this marker configures
 ## the avatar IK to do stuff like move the avatar's head when the player
-## looks around or move their arms or legs if they are in VR.
+## looks around or move their arms or legs if they are in VR. This node must
+## be a direct child of the [Skeleton3D] it controls, and all of its bone
+## fields below must be assigned to valid bones on that [Skeleton3D].
 ## [br]
 ## Also configures the positioning of the camera relative to the avatar's head.
 class_name IKController
 
+## The name of the bone in the parent [Skeleton3D] to use as the avatar's
+## head, used for head tracking and camera placement. Required.
 @export_enum(" ") var head_bone: String
+## The name of the bone in the parent [Skeleton3D] to use as the avatar's
+## left hand, used for hand tracking. Required.
 @export_enum(" ") var left_hand_bone: String
+## The name of the bone in the parent [Skeleton3D] to use as the avatar's
+## right hand, used for hand tracking. Required.
 @export_enum(" ") var right_hand_bone: String
+## The name of the bone in the parent [Skeleton3D] to use as the avatar's
+## left foot, used for foot tracking (for example in VR). Required.
 @export_enum(" ") var left_foot_bone: String
+## The name of the bone in the parent [Skeleton3D] to use as the avatar's
+## right foot, used for foot tracking (for example in VR). Required.
 @export_enum(" ") var right_foot_bone: String
+## The name of the bone in the parent [Skeleton3D] to use as the avatar's
+## spine. Required.
 @export_enum(" ") var spine_bone: String
+## The name of the bone in the parent [Skeleton3D] to use as the avatar's
+## hips. Required.
 @export_enum(" ") var hip_bone: String
+## The name of the bone in the parent [Skeleton3D] to use as the avatar's
+## chest. Required.
 @export_enum(" ") var chest_bone: String
 
 ## Controls the position of the player's 'eyes' relative to the avatar's head.
-## Should generally be placed between and slightly behind the avatar's eyes.
+## Should generally be placed between and slightly behind the avatar's eyes,
+## and should be a child of the same [Skeleton3D] as this marker. Required.
 @export var eye_placement:Node3D
 
 func _validate_property(property: Dictionary) -> void:

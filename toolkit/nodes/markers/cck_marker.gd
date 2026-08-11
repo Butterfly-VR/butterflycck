@@ -7,15 +7,15 @@ extends Node
 ## information for the client, telling it how to modify the object.
 ## [br]
 ## This is done for three main reasons: it allows predefined scripts to run
-## on an object without giving an attacker the abillity to execute arbritary
-## code on the client, they can replace certain "dangerous" nodes like the 
-## AnimationMixers that can also execute arbitary code, and it allows 
+## on an object without giving an attacker the ability to execute arbitrary
+## code on the client, they can replace certain "dangerous" nodes like
+## [AnimationMixer]s that can also execute arbitrary code, and it allows 
 ## the implementation of a marker to change without needing to modify 
 ## or reupload all previous uploads.
 class_name CCKMarker
 
-## Gets a list of warnings that apply to any marker node, for example 
-## a child node that is not a [CCKExtender].
+## Gets a list of warnings that apply to any marker node, such as a warning
+## that markers should not have child nodes.
 func get_universal_warnings() -> Array[BaseRoot.Warning]:
 	var warnings:Array[BaseRoot.Warning] = []
 	

@@ -1,21 +1,23 @@
 @tool
 extends CCKMarker
-## This marker tells the client how large the avatar's CapsuleCollider should be.
+## This marker tells the client how large the avatar's [CapsuleShape3D]-based
+## collider should be.
 ##
 ## If this node is missing from an avatar the collider will be sized to the 
-## Avatar's AABB. 
+## Avatar's [AABB]. 
 ## [br]
-## in the client, the collider size is clamped between two values
-## relative to the AABB of the avatar. This clamping behavior is currently not
+## In the client, the collider size is clamped between two values
+## relative to the [AABB] of the avatar. This clamping behavior is currently not
 ## shown in the cck.
 ## [br][br]
-## the capsule visualization is based on the position of the nearest parent Node3D.
-## The position may not be accurate if that node is not the Avatar's root node.
+## The capsule visualization is drawn relative to the position of this
+## marker's parent, which must be a [Node3D]. The position may not be
+## accurate if that parent is not the Avatar's root node.
 ## [br][br]
 ## IMPORTANT: Because of how the debug visualization is drawn, adding this node to a scene where 
-## the root node is a AvatarRoot or WorldRoot will result in a 'multiple children on root' error
+## the root node is an [AvatarRoot] or [WorldRoot] will result in a 'multiple children on root' error
 ## in the scene tree. This error will not appear in the uploader or prevent the object being uploaded.
-## The error will disapear if you disable the visibillity of the debug visual.
+## The error will disappear if you disable the visibility of the debug visual (see [member visible]).
 class_name AvatarColliderConfig
 
 ## The radius of the collider. If this is greater than half the height, either
@@ -26,8 +28,10 @@ class_name AvatarColliderConfig
 ## the radius or the height will be clamped so that it is equal to half the height.
 ## Which value gets clamped is not specified.
 @export var height:float = 1.8
-## Offsets the collider from the center of the parent node. Limitted to the bounds of the avatar's AABB.
+## Offsets the collider from the center of the parent node. Limited to the bounds of the avatar's [AABB].
 @export var offset:Vector3 = Vector3.ZERO
+## If false, hides this marker's debug capsule visualization in the editor.
+## Has no effect on the collider that is generated in-game.
 @export var visible:bool = true
 
 func _process(delta: float) -> void:

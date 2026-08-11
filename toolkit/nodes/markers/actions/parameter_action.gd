@@ -1,14 +1,17 @@
 @tool
 extends CCKAction
-## When triggered, sets the specified parameter to the first parameter.
+## When triggered, sets the specified parameter of the target [CCKAnimationTree]
+## to the value of the event's first parameter.
 class_name ParameterAction
 
-## the target CCKAnimationTree
+## The target [CCKAnimationTree].
 @export var target:CCKAnimationTree:
 	set(x):
 		target = x
 		notify_property_list_changed()
-## The parameter to set the value of. Does nothing if the types do not match.
+## The [AnimationTree] parameter to set the value of, chosen from the
+## parameters exposed by the target's [AnimationTree]. Does nothing if the
+## types do not match.
 @export_enum(" ") var parameter:String
 
 func _validate_property(property: Dictionary) -> void:

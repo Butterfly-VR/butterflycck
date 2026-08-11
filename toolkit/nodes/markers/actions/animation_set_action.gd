@@ -1,16 +1,17 @@
 @tool
 extends CCKAction
-## When triggered, changes the animation of the target CCKAnimationPlayer
+## When triggered, changes the animation of the target [CCKAnimationPlayer].
 class_name AnimationSetAction
 
-## the target CCKAnimationPlayer
+## The target [CCKAnimationPlayer].
 @export var target:CCKAnimationPlayer:
 	set(x):
 		target = x
 		notify_property_list_changed()
-## Determines which animation will play when triggered. If set to "From Parameter", 
-## the first parameter will be used as the name of the target animation. Does nothing
-## if the first parameter is not a String or is not the name of an animation
+## Determines which animation will play when triggered. If set to
+## [code]From Parameter[/code], the first parameter will be used as the name
+## of the target animation. Does nothing if the first parameter is not a
+## String or is not the name of an animation.
 @export_enum("From Parameter") var animation:String
 
 func _validate_property(property: Dictionary) -> void:

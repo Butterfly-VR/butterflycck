@@ -5,7 +5,7 @@ extends BaseRoot
 ## A world should usually contain at least one [Spawnpoint] marker.
 class_name WorldRoot
 
-## Returns [enum BaseRoot.ObjectType].world.
+## Returns [constant BaseRoot.ObjectType.world].
 func get_object_type() -> ObjectType:
 	return ObjectType.world
 

@@ -1,16 +1,17 @@
 @tool
 extends CCKMarker
-## A safe wrapper around a regular AnimationPlayer.
+## A safe wrapper around a regular [AnimationPlayer].
 ##
-## In Godot an AnimationPlayer can modify arbitary properties using animations. 
-## Therefore, both AnimationTrees and AnimationPlayers must be wrapped in cck 
+## In Godot an [AnimationPlayer] can modify arbitrary properties using animations. 
+## Therefore, both [AnimationTree]s and [AnimationPlayer]s must be wrapped in cck 
 ## markers in order to be safe to upload. To use this node you should add your 
-## AnimationPlayer as the first child of this node. All properties from the child 
-## AnimationPlayer will be preserved and the AnimationPlayer on the client will 
+## [AnimationPlayer] as the first child of this node. All properties from the child 
+## [AnimationPlayer] will be preserved and the [AnimationPlayer] on the client will 
 ## inherit the name and path of this node.
 class_name CCKAnimationPlayer
 
-## Determines what animation will initially play.
+## Determines what animation will initially play. Populated from the
+## animations available on the child [AnimationPlayer].
 @export_enum(" ") var animation:String
 
 func _validate_property(property: Dictionary) -> void:

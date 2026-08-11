@@ -1,7 +1,7 @@
 @tool
 extends CCKTrigger
 ## Emits an event whenever the player lands after being in the air. This node will 
-## be removed in the future for a more flexible PlayerValuesTrigger.
+## be removed in the future for a more flexible [i]PlayerValuesTrigger[/i].
 class_name PlayerLandTrigger
 
 func get_trigger_info() -> Dictionary[String, Variant]:

@@ -1,5 +1,9 @@
 @tool
 extends Node3D
+## A visual guide showing the default size of the player's capsule collider.
+##
+## This is mainly useful for correctly scaling objects in worlds or other uploads.
+## This node will be removed when uploading
 class_name PlayerSizeReference
 
 func _ready() -> void:

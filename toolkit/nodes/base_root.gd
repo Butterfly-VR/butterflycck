@@ -1,40 +1,47 @@
 @tool
 @abstract
 extends Node
-## Base class for uploadable objects. contains a UUID corrosponding to
-## the uploaded object, and a default name for it
+## Base class for uploadable objects. Contains a UUID corresponding to
+## the uploaded object, and a default name for it.
 ##
-## To upload an object; you must create a node with one of the derived classes
+## To upload an object, you must create a node with one of the derived classes
 ## of this node and then create a single root node that is a child of that node.
 ## That root node should contain everything you want to upload.
 ## [br]
 ## Scripts are not allowed on any uploaded objects.
 ## [br][br]
 ## Tip: An [UploadSkipMarker] can contain nodes in the object you 
-## dont want uploaded, and will silence warning related to them.
+## don't want uploaded, and will silence warnings related to them.
 class_name BaseRoot
 
 ## List of types that are not allowed in any object.
-## These classes either provide unwanted capabilities or 
-## allow potential code execution by an attacker.
+## These classes either provide unwanted capabilities (such as [Window] or 
+## [EditorPlugin]) or allow potential code execution by an attacker (such as 
+## [AnimationMixer], the base class of [AnimationPlayer] and [AnimationTree]).
 var blacklisted_types:Array = [Window, EditorPlugin, HTTPRequest, MultiplayerSpawner, MultiplayerSynchronizer, StatusIndicator, AnimationMixer]
 
-## The default name for this object, will be replaced with the 
-## uploaded object's name if the UUID is for an existing object.
+## The default name for this object. This is only used as a fallback; if the
+## UUID assigned to this object matches an existing uploaded object, that
+## object's existing name is shown in the upload menu instead.
 @export var object_name:String
-## The UUID of the object. If you edit this, you must click the
-## assign UUID button for your changes to be saved.
+## The UUID of the object, as text. A valid UUID entered here will be applied
+## automatically. If this is left empty or contains invalid text, you must
+## press the [b]assign UUID[/b] button to generate a new one.
 @export var _uuid:String
 
-## Parses the entered uuid
+## Generates a new UUID if [member _uuid] is empty or invalid, or confirms
+## the UUID currently entered in [member _uuid] otherwise.
 @export_tool_button("assign UUID", "Callable") var assign_button = assign_uuid
 
-## The actual UUID of the object, is set by assign UUID.
+## The actual [UUID] of the object. Kept in sync with [member _uuid] and
+## generated automatically by [method assign_uuid]/[method try_assign_uuid].
 @export_storage var attached_uuid:UUID
 
 ## The possible types of objects.
 enum ObjectType{
+	## A world, uploaded via [WorldRoot].
 	world,
+	## An avatar, uploaded via [AvatarRoot].
 	avatar,
 	## not yet implemented
 	prop,
@@ -45,20 +52,35 @@ enum ObjectType{
 class WarningState:
 	var state:Array[Warning]
 
-# warning to be displayed in the upload panel
-# Error level warnings prevent uploading
+## A warning or error to be displayed in the upload panel for an object.
+## Returned by [method CCKMarker.get_uploader_warnings], [method BaseRoot.get_base_class_warnings],
+## and related functions.
 class Warning:
+	## The severity of a [Warning].
 	enum WarningLevel{
+		## An informational message. Does not indicate a problem and does not
+		## prevent uploading.
 		Info,
+		## A likely misconfiguration. Does not prevent uploading, but may
+		## result in unintended behavior.
 		Warning,
+		## A configuration error. Prevents the object from being uploaded.
 		Error
 	}
 	
+	## The severity of this warning. See [enum WarningLevel].
 	var level:WarningLevel
+	## A short summary of the warning, shown in the warning list.
 	var header:String
+	## A detailed explanation of the warning and how to resolve it.
 	var body:String
+	## The node this warning applies to. Selected when the user clicks on
+	## the warning in the upload panel.
 	var source:Node
+	## If true, the upload panel will offer a button that calls [member autofix].
 	var has_autofix:bool = false
+	## Called when the user clicks the autofix button, if [member has_autofix]
+	## is true. Should return true if the fix succeeded.
 	var autofix:Callable
 	
 	func _init(level:WarningLevel, header:String, body:String, source:Node, 
@@ -71,11 +93,12 @@ class Warning:
 			self.has_autofix = true
 			self.autofix = autofix
 
-## retrieves the type of an object, will usually be a constant value
+## Retrieves the type of an object, will usually be a constant value.
 @abstract func get_object_type() -> ObjectType;
 
-## called by the assign UUID button, sets [attached_uuid] to the parsed
-## value of [_uuid]
+## Called by the assign UUID button. Sets [member attached_uuid] to the
+## parsed value of [member _uuid], generating a new one if [member _uuid]
+## is empty or invalid.
 func assign_uuid() -> void:
 	var new_uuid:UUID
 	if _uuid.is_empty():
@@ -98,8 +121,9 @@ func try_assign_uuid() -> void:
 	_uuid = new_uuid.to_string()
 	attached_uuid = new_uuid
 
-## Prepares the object and any [CCKMarker]s within it for uploading.
-## Returns false if an error occured during preparation.
+## Prepares the object and any [CCKMarker]s within it for uploading, and
+## resets the root child node's position and rotation to zero.
+## Returns false if an error occurred during preparation.
 func on_pre_upload() -> bool:
 	var success:bool = true
 	EditorSceneTreeHelper.call_children_recursive(
@@ -119,7 +143,7 @@ func on_pre_upload() -> bool:
 	
 	return success
 
-## Helper function for getting warnings accossiated with a child node.
+## Helper function for getting warnings associated with a child node.
 func get_child_warnings(node:Node, warnings:WarningState) -> bool:
 	if node is CCKMarker:
 		warnings.state.append_array((node as CCKMarker).get_uploader_warnings())
@@ -153,6 +177,9 @@ func get_child_warnings(node:Node, warnings:WarningState) -> bool:
 						return true))
 	return true
 
+## Retrieves warnings related to the root node itself, such as an incorrect
+## number of children, a missing UUID, and the warnings from
+## [method get_base_class_warnings].
 func get_root_warnings() -> Array[Warning]:
 	var warnings:Array[Warning] = []
 	
@@ -177,7 +204,7 @@ func get_root_warnings() -> Array[Warning]:
 	
 	return warnings
 
-## Retrives the list of warning and errors for this object.
+## Retrieves the list of warnings and errors for this object.
 func get_upload_warnings() -> Array[Warning]:
 	var warnings:WarningState = WarningState.new()
 	
@@ -197,7 +224,7 @@ class AABBRef:
 	var is_init:bool = false
 	var aabb:AABB
 
-## Helper function for genering the preview image.
+## Helper function for generating the preview image.
 func get_combined_aabb(node:Node, buffer:AABBRef) -> bool:
 	if node is VisualInstance3D:
 		var aabb:AABB = (node as VisualInstance3D).get_aabb()
@@ -211,8 +238,9 @@ func get_combined_aabb(node:Node, buffer:AABBRef) -> bool:
 	return true
 
 ## Positions the camera for generating the preview image for an object.
-## This default implementation positions the camera such that the entire AABB
-## of the object is visible, facing -z.
+## This default implementation positions the camera on the object's -Z side,
+## facing back toward it along +Z, such that the entire [AABB] of the object
+## is visible.
 func get_preview_camera_transform() -> Transform3D:
 	var camera:Camera3D = Camera3D.new()
 	add_child(camera)

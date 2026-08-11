@@ -1,8 +1,8 @@
 @tool
 extends CCKMarker
-## prevents child nodes from appearing in the uploaded object
+## Prevents child nodes from appearing in the uploaded object.
 ##
-## This is a marker node that applies no metadata to the uplaoded object.
+## This is a marker node that applies no metadata to the uploaded object.
 ## Children of this marker will not be uploaded, and this node will not
 ## generate warnings if it contains blacklisted children.
 ## [br][br]

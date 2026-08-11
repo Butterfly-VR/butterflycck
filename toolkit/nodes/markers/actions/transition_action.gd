@@ -1,24 +1,27 @@
 @tool
 extends CCKAction
-## When triggered, causes the specified transition in the specified state machine.
+## When triggered, causes a transition to the specified node within the
+## specified state machine of the target [CCKAnimationTree].
 class_name TransitionAction
 
-## The target CCKAnimationTree.
+## The target [CCKAnimationTree].
 @export var target:CCKAnimationTree:
 	set(x):
 		target = x
 		notify_property_list_changed()
-## The target StateMachine.
+## The path to the target [code]AnimationNodeStateMachine[/code] within the tree.
 @export_enum(" ") var state_machine:String:
 	set(x):
 		state_machine = x
 		notify_property_list_changed()
-## The node to transition to.
+## The name of the node within the state machine to transition to.
 @export_enum(" ") var target_node:String
-## If not 'None', will only transition if this is the current node in the StateMachine.
+## If not [code]None[/code], will only transition if this is the current node
+## in the state machine.
 @export_enum("None") var source_node:String = "None"
-## If true, teleport directly to target_node, otherwise follow a path of 
-## transitions to the target. Will always teleport if no path to the target exists.
+## If true, teleports directly to [member target_node], otherwise follows a
+## path of transitions to the target. Will always teleport if no path to the
+## target exists.
 @export var teleport:bool = false
 
 var path_lookup:Dictionary[String, String]

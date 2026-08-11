@@ -3,8 +3,8 @@
 extends CCKMarker
 ## Base class for all action nodes.
 ##
-## An action nodes performs some action when it recieves and event from a CCKTrigger. 
-## for more info see the wiki at https://github.com/Butterfly-VR/butterflycck/wiki
+## An action node performs some action when it receives an event from a [CCKTrigger]. 
+## For more info see the wiki at [url]https://github.com/Butterfly-VR/butterflycck/wiki[/url]
 class_name CCKAction
 
 ## If false, will ignore any events targeting it.
@@ -30,17 +30,20 @@ func prep_for_upload() -> bool:
 	
 	return true
 
+## Actions use [method get_action_version_string] instead of this function;
+## calling this will push an error and return [code]"UNNAMED"[/code].
 func get_marker_version_string() -> String:
 	push_error("tried to get CCKMarker version of a CCKaction. \
 			(did you mean get_action_version_string()?)")
 	return "UNNAMED"
 
-## gets the required info for this Action's effect
-## this is used for configuring the trigger in game
-## if this cannot be done (for example the action has a parent of the wrong type)
-## then an empty dict should be returned
-## the usual rule about prefering to raise upload warnings applies
-## if ["action_version"], ["active"], ["action_id"], or ["custom_parameters"] are present they will be overwritten
+## Gets the required info for this action's effect.[br]
+## This is used for configuring the action in game.[br]
+## If this cannot be done (for example the action has a parent of the wrong type)
+## then an empty dict should be returned.[br]
+## The usual rule about preferring to raise upload warnings applies.[br]
+## If [code]"version"[/code], [code]"active"[/code], [code]"action_id"[/code], or
+## [code]"custom_parameters"[/code] are present they will be overwritten.
 @abstract
 func get_action_info() -> Dictionary[String, Variant];
 
