@@ -54,7 +54,7 @@ func prep_for_upload() -> bool:
 			continue
 		if property_name.ends_with("playback"):
 			continue
-		parameters[property_name] = tree.get(property_name)
+		parameters[property_name.trim_prefix("parameters/")] = tree.get(property_name)
 	values["parameters"] = parameters
 	
 	get_parent().set_meta("CCKAnimationTree_%s" % name, values)
