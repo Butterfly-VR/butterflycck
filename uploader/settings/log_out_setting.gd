@@ -1,12 +1,13 @@
 @tool
 extends HBoxContainer
 
-const USER_INFO_ENDPOINT:String = "/api/v0/user/%s"
+const USER_INFO_ENDPOINT: String = "/api/v0/user/%s"
 
-@export var account_handler:EditorAccountHandler
-@export var api_handler:EditorAPIHandler
-@export var name_label:Label
-@export var page_selector:EditorPageSelector
+@export var account_handler: EditorAccountHandler
+@export var api_handler: EditorAPIHandler
+@export var name_label: Label
+@export var page_selector: EditorPageSelector
+
 
 func _process(delta: float) -> void:
 	if !is_visible_in_tree():
@@ -15,17 +16,19 @@ func _process(delta: float) -> void:
 		return
 	if name_label.text != "":
 		return
-	
-	var response:Array[Variant] = await api_handler.make_request(
-			HTTPClient.METHOD_GET, 
-			USER_INFO_ENDPOINT % (await account_handler.get_uuid()).to_string(), 
-			PackedStringArray([account_handler.get_token_header()]))
-	var result:Array[Variant] = api_handler.handle_response(
-			response[0], 
-			response[2], 
-			[200], 
-			["username"])
-	var values:Dictionary[String, Variant] = result[4]
+
+	var response: Array[Variant] = await api_handler.make_request(
+		HTTPClient.METHOD_GET,
+		USER_INFO_ENDPOINT % (await account_handler.get_uuid()).to_string(),
+		PackedStringArray([account_handler.get_token_header()]),
+	)
+	var result: Array[Variant] = api_handler.handle_response(
+		response[0],
+		response[2],
+		[200],
+		["username"],
+	)
+	var values: Dictionary[String, Variant] = result[4]
 	name_label.text = values["username"]
 
 
