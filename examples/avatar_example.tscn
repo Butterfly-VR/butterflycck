@@ -496,6 +496,7 @@ bones/46/scale = Vector3(1, 1, 1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8856721, 0)
 mesh = SubResource("CapsuleMesh_hk5ee")
 skin = SubResource("Skin_rpm7d")
+skeleton = NodePath("..")
 
 [node name="IKController" type="Node" parent="humanoid2/Skeleton3D" unique_id=1033393999 node_paths=PackedStringArray("eye_placement")]
 script = ExtResource("3_2hnfw")

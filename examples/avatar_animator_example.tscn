@@ -139,7 +139,6 @@ script = ExtResource("2_75hxs")
 target = NodePath("../CCKAnimationTree")
 state_machine = "ROOT"
 target_node = "examples_land"
-teleport = null
 metadata/_custom_type_script = "uid://mataiyg4vmx0"
 
 [node name="TransitionAction2" type="Node" parent="." unique_id=286120910 node_paths=PackedStringArray("target")]
@@ -148,7 +147,6 @@ target = NodePath("../CCKAnimationTree")
 state_machine = "ROOT"
 target_node = "examples_jump"
 source_node = "locomotion"
-teleport = null
 metadata/_custom_type_script = "uid://mataiyg4vmx0"
 
 [node name="ParameterAction" type="Node" parent="." unique_id=613321834 node_paths=PackedStringArray("target")]
