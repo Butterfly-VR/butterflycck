@@ -298,7 +298,7 @@ func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
 			scene_file.store_line(line)
 			continue
 		
-		var file_name = line.rsplit("/", false, 1)[1]
+		var file_name = line.rsplit("/", false, 1)[1].trim_suffix("\"")
 		
 		var old_path:String  = line.trim_prefix("load_path = \"").trim_suffix("\"")
 		var new_path:String = (
@@ -315,7 +315,7 @@ func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
 	scene_file.close()
 	original_scene.close()
 	
-	pck.add_file(internal_path, path)
+	pck.add_file(internal_path, new_scene_file_path)
 	
 	pck.flush()
 	
