@@ -9,7 +9,8 @@ const GIGABYTE:int = MEGABYTE * 1024
 const MEGABYTE:int = KILOBYTE * 1024
 const KILOBYTE:int = 1024
 const CUSTOM_LICENSE_TYPE:int = 3
-const PCK_INTERNAL_PATH:String = "res://_loaded_content/%s/%s.tscn"
+const PCK_INTERNAL_PATH:String = "res://_loaded_content/%s/%s/root.tscn"
+const PCK_ITEM_PATH:String = "res://_loaded_content/%s/%s/%s"
 #region Licenses
 #region cc-nd
 const LICENSE_TEXT_CC_ND:String = "CC BY-NC-ND License Placeholder"
@@ -256,41 +257,70 @@ func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
 				x.owner = root.get_child(0) 
 				return true)
 	
+	var found_uncleaned_marker:bool = false
+	
 	# debug check, all cckmarkers should free themselves before this point
 	EditorSceneTreeHelper.call_children_recursive(
 			root.get_child(0), 
 			func(x:Node) -> bool: 
 				if x is CCKMarker:
+					found_uncleaned_marker = true
 					push_error(
 							"node at %s was not cleaned up properly, this object cannot be uploaded" 
 							% x.owner.get_path_to(x))
 				return true)
 	
+	if found_uncleaned_marker:
+		return null
+	
 	var pack:PackedScene = PackedScene.new()
 	pack.pack(root.get_child(0))
 	
 	var path:String = FileAccess.create_temp(
-			FileAccess.ModeFlags.WRITE_READ, "scene_tmp", ".tscn", true).get_path()
+			FileAccess.ModeFlags.WRITE, "scene_tmp", ".tscn", true).get_path()
 	
 	ResourceSaver.save(pack, path, 2 + 4 + 8 + 32 + 64)
 	
 	var pck_path:String = FileAccess.create_temp(
-			FileAccess.ModeFlags.WRITE_READ, "upload_tmp", ".pck", true).get_path()
+			FileAccess.ModeFlags.WRITE, "upload_tmp", ".pck", true).get_path()
 	var pck := PCKPacker.new()
 	pck.pck_start(pck_path)
 	
-	var scene_file:FileAccess = FileAccess.open(path, FileAccess.READ)
-	for line in scene_file.get_as_text().split("\n"):
-		if line.begins_with("load_path = \""):
-			var dependancy_path:String = line.trim_prefix(
-					"load_path = \"").trim_suffix("\"")
-			pck.add_file(dependancy_path, dependancy_path)
+	var original_scene:FileAccess = FileAccess.open(path, FileAccess.READ_WRITE)
+	var scene_file:FileAccess = FileAccess.create_temp(
+			FileAccess.ModeFlags.WRITE, "upload_tmp", ".pck", true)
+	var new_scene_file_path:String = scene_file.get_path()
+	
+	while original_scene.get_position() < original_scene.get_length():
+		var line:String = original_scene.get_line()
+		
+		if !line.begins_with("load_path = \""):
+			scene_file.store_line(line)
+			continue
+		
+		var file_name = line.rsplit("/", false, 1)[1]
+		
+		var old_path:String  = line.trim_prefix("load_path = \"").trim_suffix("\"")
+		var new_path:String = (
+				PCK_ITEM_PATH % [
+						root.get_object_type(), 
+						uuid, 
+						file_name])
+		
+		pck.add_file(new_path, old_path)
+		
+		line = "load_path = \"%s\"" % new_path
+		scene_file.store_line(line)
 	
 	scene_file.close()
+	original_scene.close()
 	
 	pck.add_file(internal_path, path)
 	
 	pck.flush()
+	
+	if !PCKChecker.is_pck_good(pck_path, str(root.get_object_type()), uuid.to_string()):
+		push_error("Failed upload sanity check, this is a bug.")
 	
 	var unencrypted_path:String = FileAccess.create_temp(
 			FileAccess.ModeFlags.WRITE, "compressed_pck", ".tmp", true).get_path()
@@ -332,6 +362,7 @@ func create_finialized_file(root:BaseRoot, uuid:UUID) -> FileAccess:
 	# cleanup temporary files we couldnt delete automatically
 	DirAccess.remove_absolute(path)
 	DirAccess.remove_absolute(pck_path)
+	DirAccess.remove_absolute(new_scene_file_path)
 	DirAccess.remove_absolute(unencrypted_path)
 	
 	return encrypted
