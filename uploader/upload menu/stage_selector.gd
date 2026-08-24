@@ -146,6 +146,9 @@ func collect_object_values() -> ObjectMeta:
 
 func upload() -> void:
 	var object = collect_object_values()
+	if object == null:
+		push_error("null object on upload, this is a bug.")
+		return
 
 	# todo: dont send unchanged object data? maybe keep remote object to compare
 	var upload_values: Dictionary[String, Variant] = {
