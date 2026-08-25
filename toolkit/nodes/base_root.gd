@@ -15,9 +15,6 @@ extends Node
 class_name BaseRoot
 
 ## List of types that are not allowed in any object.
-## These classes either provide unwanted capabilities (such as [Window] or
-## [EditorPlugin]) or allow potential code execution by an attacker (such as
-## [AnimationMixer], the base class of [AnimationPlayer] and [AnimationTree]).
 var blacklisted_types: Array = [
 	Window,
 	EditorPlugin,
@@ -25,7 +22,6 @@ var blacklisted_types: Array = [
 	MultiplayerSpawner,
 	MultiplayerSynchronizer,
 	StatusIndicator,
-	AnimationMixer,
 ]
 
 ## The default name for this object. This is only used as a fallback; if the

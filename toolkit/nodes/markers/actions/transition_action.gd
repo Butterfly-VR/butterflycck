@@ -1,11 +1,11 @@
 @tool
 extends CCKAction
 ## When triggered, causes a transition to the specified node within the
-## specified state machine of the target [CCKAnimationTree].
+## specified state machine of the target [AnimationTree].
 class_name TransitionAction
 
-## The target [CCKAnimationTree].
-@export var target: CCKAnimationTree:
+## The target [AnimationTree].
+@export var target: AnimationTree:
 	set(x):
 		target = x
 		notify_property_list_changed()
@@ -40,6 +40,42 @@ class UniquePathData:
 		x.start_point = start_point
 		return x
 
+func get_concatenated_state_machine_paths(target:AnimationTree) -> String:
+	var root: AnimationRootNode = target.tree_root
+	var result: String = get_concatenated_state_machine_paths_recursive("ROOT", root)
+	result = result.trim_suffix(",")
+	return result
+
+
+func get_concatenated_state_machine_paths_recursive(path: String, root: AnimationNode) -> String:
+	var result: String = ""
+	
+	if root is AnimationNodeStateMachine:
+		result = path + ","
+		for node_name in root.get_node_list():
+			var new_path: String = path + "/N%s" % node_name
+			var node: AnimationNode = root.get_node(node_name)
+			result += get_concatenated_state_machine_paths_recursive(new_path, node)
+
+	elif root is AnimationNodeBlendSpace1D:
+		for idx in root.get_blend_point_count():
+			var new_path: String = path + "/I%s" % idx
+			var node: AnimationNode = root.get_blend_point_node(idx)
+			result += get_concatenated_state_machine_paths_recursive(new_path, node)
+
+	elif root is AnimationNodeBlendSpace2D:
+		for idx in root.get_blend_point_count():
+			var new_path: String = path + "/I%s" % idx
+			var node: AnimationNode = root.get_blend_point_node(idx)
+			result += get_concatenated_state_machine_paths_recursive(new_path, node)
+
+	elif root is AnimationNodeBlendTree:
+		for node_name in root.get_node_list():
+			var new_path: String = path + "/N%s" % node_name
+			var node: AnimationNode = root.get_node(node_name)
+			result += get_concatenated_state_machine_paths_recursive(new_path, node)
+
+	return result
 
 func _validate_property(property: Dictionary) -> void:
 	if property.name == "state_machine" and target:
@@ -47,7 +83,7 @@ func _validate_property(property: Dictionary) -> void:
 
 		property.hint = PropertyHint.PROPERTY_HINT_ENUM
 
-		var paths: PackedStringArray = target.get_concatenated_state_machine_paths().split(
+		var paths: PackedStringArray = get_concatenated_state_machine_paths(target).split(
 			",",
 			false,
 		)
@@ -124,20 +160,20 @@ func _validate_property(property: Dictionary) -> void:
 		property.hint_string = result
 
 	if property.name == "target_node":
-		if target and target.get_child_count() > 0 and !state_machine.is_empty() \
+		if target and !state_machine.is_empty() \
 				and (!path_lookup.is_empty() or state_machine == "ROOT"):
 			property.hint = PropertyHint.PROPERTY_HINT_ENUM
 
-			var current_node: AnimationRootNode = target.get_child(0).tree_root
+			var current_node: AnimationRootNode = target.tree_root
 			if state_machine != "ROOT":
 				for chunk in path_lookup[state_machine].trim_prefix("ROOT/").split("/", false):
 					var prefix: String = chunk[0]
 					match prefix:
 						"I":
-							# CCKAnimationTree guarentees this is a 1D/2D BlendSpace
+							# guarenteed this is a 1D/2D BlendSpace
 							current_node = current_node.get_blend_point_node(int(chunk.substr(1)))
 						"N":
-							# CCKAnimationTree guarentees this is a StateMachine or BlendTree
+							# guarenteed this is a StateMachine or BlendTree
 							current_node = current_node.get_node(chunk.substr(1))
 						_:
 							push_error("invalid prefix %s in path segment" % prefix)
@@ -195,7 +231,7 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 		warnings.append(BaseRoot.Warning.new(
 				BaseRoot.Warning.WarningLevel.Error,
 				"TransitionAction target not set",
-				"A TransitionAction must target a CCKAnimationTree containing a state machine.",
+				"A TransitionAction must target an AnimationTree containing a state machine.",
 				self,
 				false,
 			))

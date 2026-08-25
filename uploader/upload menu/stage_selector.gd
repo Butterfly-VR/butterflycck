@@ -66,6 +66,7 @@ func change_stage(idx: int) -> void:
 
 
 func setup(root: BaseRoot, default_image: Image) -> void:
+	upload_menu.upload_button.disabled = true
 	await get_tree().physics_frame
 	root.assign_uuid()
 
@@ -109,6 +110,7 @@ func setup(root: BaseRoot, default_image: Image) -> void:
 		object.license,
 		object.custom_license,
 	)
+	upload_menu.upload_button.disabled = false
 
 
 # gets the set values from the upload menus

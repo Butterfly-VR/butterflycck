@@ -516,14 +516,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6576326, -0.107992426)
 
 [node name="AvatarAnimatorExample" parent="humanoid2/Skeleton3D" unique_id=1174338687 instance=ExtResource("3_hk5ee")]
 
-[node name="AnimationTree" parent="humanoid2/Skeleton3D/AvatarAnimatorExample/CCKAnimationTree" parent_id_path=PackedInt32Array(1174338687, 2085425917) index="0" unique_id=1134425848]
-root_node = NodePath("../../..")
+[node name="AnimationTree" parent="humanoid2/Skeleton3D/AvatarAnimatorExample" index="6" unique_id=1134425848]
+root_node = NodePath("../..")
 
-[node name="AnimationPlayer" parent="humanoid2/Skeleton3D/AvatarAnimatorExample/CCKAnimationTree" parent_id_path=PackedInt32Array(1174338687, 2085425917) index="1" unique_id=135294209]
-root_node = NodePath("../../..")
+[node name="AnimationPlayer" parent="humanoid2/Skeleton3D/AvatarAnimatorExample" index="7" unique_id=135294209]
+root_node = NodePath("../..")
 
 [node name="AvatarColliderConfig" type="Node" parent="humanoid2" unique_id=1876983537]
 script = ExtResource("11_vn2pt")
+visible = false
 metadata/_custom_type_script = "uid://cl6wcy3i3yaqj"
 
 [editable path="humanoid2/Skeleton3D/AvatarAnimatorExample"]

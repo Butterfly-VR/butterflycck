@@ -29,15 +29,15 @@ func get_base_class_warnings() -> Array[BaseRoot.Warning]:
 	EditorSceneTreeHelper.call_children_recursive(
 		self.get_child(0),
 		func(x: Node) -> bool:
-			if x is CCKMarker:
+			if x is AnimationPlayer or x is AnimationTree:
+				state.has_animator = true
+			elif x is CCKMarker:
 				if x is AvatarColliderConfig:
 					state.collider_settings_found += 1
 					state.last_collider_setting = x as AvatarColliderConfig
 				if x is IKController:
 					state.ik_controllers_found += 1
 					state.last_ik_controller = x as IKController
-				if x is CCKAnimationPlayer or x is CCKAnimationTree:
-					state.has_animator = true
 				return false
 			return true,
 		true,
@@ -84,7 +84,7 @@ func get_base_class_warnings() -> Array[BaseRoot.Warning]:
 		warnings.append(BaseRoot.Warning.new(
 				BaseRoot.Warning.WarningLevel.Info,
 				"Avatar missing animator",
-				"No CCKAnimationPlayer or CCKAnimationTree was found as a child of \
+				"No AnimationPlayer or AnimationTree was found as a child of \
 						this avatar. Without one, this avatar will only be animated by IK.",
 				self,
 				false,

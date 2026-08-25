@@ -1,16 +1,16 @@
 @tool
 extends CCKAction
-## When triggered, sets the specified parameter of the target [CCKAnimationTree]
+## When triggered, sets the specified parameter of the target [AnimationTree]
 ## to the value of the event's first parameter.
 class_name ParameterAction
 
-## The target [CCKAnimationTree].
-@export var target: CCKAnimationTree:
+## The target [AnimationTree].
+@export var target: AnimationTree:
 	set(x):
 		target = x
 		notify_property_list_changed()
 ## The [AnimationTree] parameter to set the value of, chosen from the
-## parameters exposed by the target's [AnimationTree]. Does nothing if the
+## parameters exposed by the target [AnimationTree]. Does nothing if the
 ## types do not match.
 @export_enum(" ") var parameter: String
 
@@ -19,10 +19,8 @@ func _validate_property(property: Dictionary) -> void:
 	if property.name == "parameter" and target:
 		property.hint = PropertyHint.PROPERTY_HINT_ENUM
 
-		var tree: AnimationTree = target.get_child(0)
-
 		var result: String = ""
-		for property_values in tree.get_property_list():
+		for property_values in target.get_property_list():
 			if !(property_values.name as String).begins_with("parameters/"):
 				continue
 			if (property_values.name as String).ends_with("playback"):
@@ -56,7 +54,7 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 		warnings.append(BaseRoot.Warning.new(
 				BaseRoot.Warning.WarningLevel.Error,
 				"ParameterAction target not set",
-				"A ParameterAction must target a CCKAnimationTree to control the parameter of.",
+				"A ParameterAction must target a AnimationTree to control the parameter of.",
 				self,
 				false,
 			))

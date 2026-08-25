@@ -6,12 +6,10 @@ extends Node
 ## Marker nodes are not uploaded themselves, instead they include extra
 ## information for the client, telling it how to modify the object.
 ## [br]
-## This is done for three main reasons: it allows predefined scripts to run
+## This is done for two main reasons: it allows predefined scripts to run
 ## on an object without giving an attacker the ability to execute arbitrary
-## code on the client, they can replace certain "dangerous" nodes like
-## [AnimationMixer]s that can also execute arbitrary code, and it allows
-## the implementation of a marker to change without needing to modify
-## or reupload all previous uploads.
+## code on the client, and it allows the implementation of a marker to change 
+## without needing to modify or reupload all previous uploads.
 class_name CCKMarker
 
 

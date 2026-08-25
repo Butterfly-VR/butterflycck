@@ -1,6 +1,5 @@
 [gd_scene format=3 uid="uid://cqcosh1qum1wg"]
 
-[ext_resource type="Script" uid="uid://oaokbwqx2kvh" path="res://addons/butterflycck/toolkit/nodes/markers/animation_tree.gd" id="1_aoqid"]
 [ext_resource type="Script" uid="uid://mataiyg4vmx0" path="res://addons/butterflycck/toolkit/nodes/markers/actions/transition_action.gd" id="2_75hxs"]
 [ext_resource type="Script" uid="uid://ba21u52cu32lp" path="res://addons/butterflycck/toolkit/nodes/markers/actions/parameter_action.gd" id="3_qk87d"]
 [ext_resource type="Script" uid="uid://bciet0e1a4vdo" path="res://addons/butterflycck/toolkit/nodes/markers/triggers/player_velocity_trigger.gd" id="4_7fr2a"]
@@ -120,30 +119,16 @@ _data = {
 [node name="AvatarAnimatorExample" type="Node3D" unique_id=1174338687]
 transform = Transform3D(-4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0, 1, 0, 0, 0)
 
-[node name="CCKAnimationTree" type="Node" parent="." unique_id=2085425917]
-script = ExtResource("1_aoqid")
-metadata/_custom_type_script = "uid://oaokbwqx2kvh"
-
-[node name="AnimationTree" type="AnimationTree" parent="CCKAnimationTree" unique_id=1134425848]
-root_node = NodePath("../..")
-tree_root = SubResource("AnimationNodeStateMachine_2bbyt")
-anim_player = NodePath("../AnimationPlayer")
-parameters/locomotion/blend_position = Vector2(0, 0)
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="CCKAnimationTree" unique_id=135294209]
-root_node = NodePath("../..")
-libraries/examples = SubResource("AnimationLibrary_7tf2y")
-
 [node name="TransitionAction" type="Node" parent="." unique_id=390046560 node_paths=PackedStringArray("target")]
 script = ExtResource("2_75hxs")
-target = NodePath("../CCKAnimationTree")
+target = NodePath("../AnimationTree")
 state_machine = "ROOT"
 target_node = "examples_land"
 metadata/_custom_type_script = "uid://mataiyg4vmx0"
 
 [node name="TransitionAction2" type="Node" parent="." unique_id=286120910 node_paths=PackedStringArray("target")]
 script = ExtResource("2_75hxs")
-target = NodePath("../CCKAnimationTree")
+target = NodePath("../AnimationTree")
 state_machine = "ROOT"
 target_node = "examples_jump"
 source_node = "locomotion"
@@ -151,7 +136,7 @@ metadata/_custom_type_script = "uid://mataiyg4vmx0"
 
 [node name="ParameterAction" type="Node" parent="." unique_id=613321834 node_paths=PackedStringArray("target")]
 script = ExtResource("3_qk87d")
-target = NodePath("../CCKAnimationTree")
+target = NodePath("../AnimationTree")
 parameter = "locomotion/blend_position"
 metadata/_custom_type_script = "uid://ba21u52cu32lp"
 
@@ -169,3 +154,11 @@ metadata/_custom_type_script = "uid://bhl1pfuol6l8n"
 script = ExtResource("6_qcy6l")
 triggered_actions = [NodePath("../TransitionAction")]
 metadata/_custom_type_script = "uid://bc2udl57df16f"
+
+[node name="AnimationTree" type="AnimationTree" parent="." unique_id=1134425848]
+tree_root = SubResource("AnimationNodeStateMachine_2bbyt")
+anim_player = NodePath("../AnimationPlayer")
+parameters/locomotion/blend_position = Vector2(0, 0)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=135294209]
+libraries/examples = SubResource("AnimationLibrary_7tf2y")
