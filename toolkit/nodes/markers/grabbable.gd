@@ -109,7 +109,7 @@ func prep_for_upload() -> bool:
 	values["hitbox"] = parent.get_path_to(hitbox)
 	values["max_grab_distance"] = max_grab_distance
 	if highlight_target:
-		values["highlight_mesh"] = hitbox.get_path_to(highlight_target)
+		values["highlight_mesh"] = parent.get_path_to(highlight_target)
 	if snap_target:
 		values["snap_offset_position"] = snap_target.position
 		values["snap_offset_rotation"] = snap_target.rotation
