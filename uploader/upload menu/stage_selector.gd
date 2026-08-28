@@ -342,7 +342,7 @@ func create_finialized_file(root: BaseRoot, uuid: UUID) -> FileAccess:
 	pck.flush()
 
 	if !PCKChecker.is_pck_good(pck_path, str(root.get_object_type()), uuid.to_string()):
-		push_error("Failed upload sanity check, this is a bug.")
+		push_error("Failed upload sanity check, this is a bug or your doing something shady.")
 
 	var unencrypted_path: String = FileAccess \
 			.create_temp(FileAccess.ModeFlags.WRITE, "compressed_pck", ".tmp", true) \
