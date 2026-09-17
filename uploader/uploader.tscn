@@ -34,7 +34,6 @@ layout_mode = 2
 text = "warning: changes to scenes made while on this page may not be counted or may cause bugs / failed uploads. this will be fixed later"
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer" unique_id=1721660990]
-visible = false
 layout_mode = 2
 
 [node name="Button" type="Button" parent="VBoxContainer/HBoxContainer2" unique_id=1214213353]
@@ -671,25 +670,32 @@ text = "License:"
 [node name="OptionButton" type="OptionButton" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer/HBoxContainer4" unique_id=1325860467]
 layout_mode = 2
 size_flags_vertical = 0
-selected = 2
-item_count = 5
-popup/item_0/text = "GPL V3"
+selected = 7
+item_count = 9
+popup/item_0/text = "CC0"
 popup/item_0/id = 0
-popup/item_1/text = "MIT"
+popup/item_1/text = "CC BY"
 popup/item_1/id = 1
-popup/item_2/text = "CC BY-NC-ND"
+popup/item_2/text = "CC BY SA"
 popup/item_2/id = 2
-popup/item_3/text = "CC BY-NC-SA"
+popup/item_3/text = "CC BY ND"
 popup/item_3/id = 3
-popup/item_4/text = "Custom"
+popup/item_4/text = "CC BY ND"
 popup/item_4/id = 4
-popup/item_4/disabled = true
+popup/item_5/text = "CC BY NC SA"
+popup/item_5/id = 5
+popup/item_6/text = "CC BY NC ND"
+popup/item_6/id = 6
+popup/item_7/text = "Rights Reserved"
+popup/item_7/id = 7
+popup/item_8/text = "Custom"
+popup/item_8/id = 8
 
 [node name="Label2" type="Label" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer/HBoxContainer4" unique_id=1873295046]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 12
-text = "By choosing a license here you agreed that you understand the terms of the license and are binding the uploaded content to the terms of this license. Additionally, you accept full responsability for ensuring the uploaded object can be licensed by you under these terms."
+text = "By choosing a license here you agreed that you understand the terms of the license and are binding the uploaded content to the terms of this license. Additionally, you accept full responsability for ensuring the uploaded object can be licensed by you under these terms. By uploading to ButterflyVR you implicitly license ButterflyVR to store and distribute your uploaded files."
 autowrap_mode = 2
 
 [node name="CheckBox" type="CheckBox" parent="TabContainer/ObjectUpload/HBoxContainer/TabContainer/Upload/VBoxContainer" unique_id=651025654]

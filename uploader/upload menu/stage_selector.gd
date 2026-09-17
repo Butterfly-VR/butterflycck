@@ -5,25 +5,37 @@ class_name EditorUploadHandler
 const OBJECT_INFO_ENDPOINT: String = "/api/v0/%s/%s"
 const OBJECT_DOWNLOAD_ENDPOINT: String = "/api/v0/%s/%s/epck"
 const OBJECT_IMAGE_ENDPOINT: String = "/api/v0/%s/%s/image"
+const USER_INFO_ENDPOINT: String = "/api/v0/user/%s"
 const GIGABYTE: int = MEGABYTE * 1024
 const MEGABYTE: int = KILOBYTE * 1024
 const KILOBYTE: int = 1024
 const CUSTOM_LICENSE_TYPE: int = 3
 const PCK_INTERNAL_PATH: String = "res://_loaded_content/%s/%s/root.tscn"
 const PCK_ITEM_PATH: String = "res://_loaded_content/%s/%s/%s"
+
 #region Licenses
-#region cc-nd
-const LICENSE_TEXT_CC_ND: String = "CC BY-NC-ND License Placeholder"
-#endregion
-#region cc-sa
-const LICENSE_TEXT_CC_SA: String = "CC BY-NC-SA License Placeholder"
-#endregion
-#region mit
-const LICENSE_TEXT_MIT: String = "MIT License Placeholder"
-#endregion
-#region gpl
-const LICENSE_TEXT_GPL: String = "GPL V3 License Placeholder"
-#endregion
+const LICENSE_TEXT_CC_0: String = "
+    %s  by %s is marked CC0 1.0. To view a copy of this mark, visit https://creativecommons.org/publicdomain/zero/1.0/
+"
+const LICENSE_TEXT_CC_BY: String = "
+    %s  © %s by %s is licensed under CC BY 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by/4.0/
+"
+const LICENSE_TEXT_CC_BY_SA: String = "
+    %s  © %s by %s is licensed under CC BY-SA 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-sa/4.0/
+"
+const LICENSE_TEXT_CC_BY_ND: String = "
+    %s  © %s by %s is licensed under CC BY-ND 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nd/4.0/
+"
+const LICENSE_TEXT_CC_BY_NC: String = "
+    %s  © %s by %s is licensed under CC BY-NC 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc/4.0/
+"
+const LICENSE_TEXT_CC_BY_NC_SA: String = "
+    %s  © %s by %s is licensed under CC BY-NC-SA 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/
+"
+const LICENSE_TEXT_CC_BY_NC_ND: String = "
+    %s  © %s by %s is licensed under CC BY-NC-ND 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-nd/4.0/
+"
+const LICENSE_TEXT_RIGHTS_RESERVED: String = "%s  © %s by %s. All rights reserved"
 #endregion
 
 @export var api_handler: EditorAPIHandler
@@ -87,16 +99,12 @@ func setup(root: BaseRoot, default_image: Image) -> void:
 	uuid = object.uuid
 	object_owner = object.owner
 
-	var creation_time_string: String
-	if object.creation_time_utc == 0:
-		creation_time_string = "Never"
-	else:
+	var creation_time_string: String = "Never"
+	if object.creation_time_utc != 0:
 		creation_time_string = Time.get_date_string_from_unix_time(object.creation_time_utc)
 
-	var modified_time_string: String
-	if object.modified_time_utc == 0:
-		modified_time_string = "Never"
-	else:
+	var modified_time_string: String = "Never"
+	if object.modified_time_utc != 0:
 		modified_time_string = Time.get_date_string_from_unix_time(object.modified_time_utc)
 
 	info_menu.setup(object.name, object_file, object.image, object.tags, object.description)
@@ -136,11 +144,11 @@ func collect_object_values() -> ObjectMeta:
 	object.publicity = upload_menu.publicity_options.get_selected_id()
 	object.license = upload_menu.license_options.get_selected_id()
 
-	if object.license == 3:
+	if object.license == 8:
 		pass # todo: custom licenses
 
-	object.creation_time_utc = upload_menu.creation_text.text
-	object.modified_time_utc = upload_menu.last_update_text.text
+	object.creation_time_utc = Time.get_unix_time_from_datetime_string(upload_menu.creation_text.text)
+	object.modified_time_utc = Time.get_unix_time_from_datetime_string(upload_menu.last_update_text.text)
 
 	object.image_bytes = info_menu.image_bytes
 	return object
@@ -151,8 +159,25 @@ func upload() -> void:
 	if object == null:
 		push_error("null object on upload, this is a bug.")
 		return
+	
+	var response = await api_handler.make_request(
+		HTTPClient.METHOD_GET,
+		USER_INFO_ENDPOINT % object.owner.to_string(),
+		PackedStringArray([account_handler.get_token_header()]),
+	)
+	var result = api_handler.handle_response(
+		response[0],
+		response[2],
+		[200],
+		["username"],
+	)
 
-	# todo: dont send unchanged object data? maybe keep remote object to compare
+	if !result[0]:
+		push_error("error while getting username:\n %s \n %s \n %s" % [result[1], result[2], result[3]])
+		return
+
+	var creator_name:String = result[4]["username"]
+
 	var upload_values: Dictionary[String, Variant] = {
 		"name": object.name,
 		"publicity": object.publicity,
@@ -162,17 +187,24 @@ func upload() -> void:
 		"encryption_key": object_key as Array[int],
 		"encryption_iv": object_iv as Array[int],
 	}
-
 	match object.license:
 		0:
-			upload_values["license"] = LICENSE_TEXT_GPL
+			upload_values["license"] = LICENSE_TEXT_CC_0 % [object.name, creator_name]
 		1:
-			upload_values["license"] = LICENSE_TEXT_MIT
+			upload_values["license"] = LICENSE_TEXT_CC_BY % [object.name, Time.get_datetime_dict_from_unix_time(object.creation_time_utc)["year"], creator_name]
 		2:
-			upload_values["license"] = LICENSE_TEXT_CC_ND
+			upload_values["license"] = LICENSE_TEXT_CC_BY_SA % [object.name, Time.get_datetime_dict_from_unix_time(object.creation_time_utc)["year"], creator_name]
 		3:
-			upload_values["license"] = LICENSE_TEXT_CC_SA
+			upload_values["license"] = LICENSE_TEXT_CC_BY_ND % [object.name, Time.get_datetime_dict_from_unix_time(object.creation_time_utc)["year"], creator_name]
 		4:
+			upload_values["license"] = LICENSE_TEXT_CC_BY_NC % [object.name, Time.get_datetime_dict_from_unix_time(object.creation_time_utc)["year"], creator_name]
+		5:
+			upload_values["license"] = LICENSE_TEXT_CC_BY_NC_SA % [object.name, Time.get_datetime_dict_from_unix_time(object.creation_time_utc)["year"], creator_name]
+		6:
+			upload_values["license"] = LICENSE_TEXT_CC_BY_NC_ND % [object.name, Time.get_datetime_dict_from_unix_time(object.creation_time_utc)["year"], creator_name]
+		7:
+			upload_values["license"] = LICENSE_TEXT_RIGHTS_RESERVED % [object.name, Time.get_datetime_dict_from_unix_time(object.creation_time_utc)["year"], creator_name]
+		8:
 			upload_values["license"] = object.custom_license
 		_:
 			push_warning("unhandled license type!")
@@ -186,7 +218,7 @@ func upload() -> void:
 
 	upload_menu.upload_button.disabled = true
 
-	var response = await api_handler.make_request(
+	response = await api_handler.make_request(
 		HTTPClient.METHOD_POST,
 		OBJECT_INFO_ENDPOINT % [type_string, object.uuid.to_string()],
 		PackedStringArray([account_handler.get_token_header()]),
@@ -194,9 +226,9 @@ func upload() -> void:
 	)
 
 	if response[0] != 200:
-		print(response)
+		push_error("upload failed: %s" % str(response))
 		upload_menu.upload_button.disabled = false
-		return # todo: error handling
+		return
 
 	var blob_uploader: HTTPRequest = HTTPRequest.new()
 	add_child(blob_uploader)
@@ -456,7 +488,7 @@ func get_object_info(uuid: UUID, object_type: BaseRoot.ObjectType) -> ObjectMeta
 		],
 	)
 	var values: Dictionary[String, Variant] = result[4]
-
+	
 	if !result[0]:
 		return null
 
@@ -480,22 +512,60 @@ func get_object_info(uuid: UUID, object_type: BaseRoot.ObjectType) -> ObjectMeta
 
 	object.publicity = values["publicity"]
 
-	object.license = 0
-	match values["license"]:
-		LICENSE_TEXT_GPL:
-			object.license = 0
-		LICENSE_TEXT_MIT:
-			object.license = 1
-		LICENSE_TEXT_CC_ND:
-			object.license = 2
-		LICENSE_TEXT_CC_SA:
-			object.license = 3
-		_:
-			object.license = 4
-			object.custom_license = values["license"]
-
 	object.creation_time_utc = values["created_at"]
 	object.modified_time_utc = values["updated_at"]
+
+	object.license = 0
+	
+	var creation_year:String = str(Time.get_datetime_dict_from_unix_time(object.creation_time_utc)["year"])
+	
+	response = await api_handler.make_request(
+		HTTPClient.METHOD_GET,
+		USER_INFO_ENDPOINT % object.owner.to_string(),
+		PackedStringArray([account_handler.get_token_header()]),
+	)
+	result = api_handler.handle_response(
+		response[0],
+		response[2],
+		[200],
+		["username"],
+	)
+
+	if !result[0]:
+		push_error("error while getting username:\n %s \n %s \n %s" % [result[1], result[2], result[3]])
+		return null
+
+	var creator_name:String = result[4]["username"]
+	
+	var cc0:String = LICENSE_TEXT_CC_0 % [object.name, creator_name]
+	var ccby:String = LICENSE_TEXT_CC_BY % [object.name, creation_year, creator_name]
+	var ccbysa:String = LICENSE_TEXT_CC_BY_SA % [object.name, creation_year, creator_name]
+	var ccbynd:String = LICENSE_TEXT_CC_BY_ND % [object.name, creation_year, creator_name]
+	var ccbync:String = LICENSE_TEXT_CC_BY_NC % [object.name, creation_year, creator_name]
+	var ccbyncsa:String = LICENSE_TEXT_CC_BY_NC_SA % [object.name, creation_year, creator_name]
+	var ccbyncnd:String = LICENSE_TEXT_CC_BY_NC_ND % [object.name, creation_year, creator_name]
+	var rightsreserved:String = LICENSE_TEXT_RIGHTS_RESERVED % [object.name, creation_year, creator_name]
+	
+	match values["license"]:
+		cc0:
+			object.license = 0
+		ccby:
+			object.license = 1
+		ccbysa:
+			object.license = 2
+		ccbynd:
+			object.license = 3
+		ccbync:
+			object.license = 4
+		ccbyncsa:
+			object.license = 5
+		ccbyncnd:
+			object.license = 6
+		rightsreserved:
+			object.license = 7
+		_:
+			object.license = 8
+			object.custom_license = values["license"]
 
 	object.image = Image.new()
 

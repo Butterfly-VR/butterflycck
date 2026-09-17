@@ -16,4 +16,4 @@ func _on_button_pressed() -> void:
 
 
 func _on_line_edit_text_changed(new_text: String) -> void:
-	tag_string = new_text.to_ascii_buffer().get_string_from_ascii()
+	tag_string = new_text
