@@ -14,27 +14,13 @@ const PCK_INTERNAL_PATH: String = "res://_loaded_content/%s/%s/root.tscn"
 const PCK_ITEM_PATH: String = "res://_loaded_content/%s/%s/%s"
 
 #region Licenses
-const LICENSE_TEXT_CC_0: String = "
-    %s  by %s is marked CC0 1.0. To view a copy of this mark, visit https://creativecommons.org/publicdomain/zero/1.0/
-"
-const LICENSE_TEXT_CC_BY: String = "
-    %s  © %s by %s is licensed under CC BY 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by/4.0/
-"
-const LICENSE_TEXT_CC_BY_SA: String = "
-    %s  © %s by %s is licensed under CC BY-SA 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-sa/4.0/
-"
-const LICENSE_TEXT_CC_BY_ND: String = "
-    %s  © %s by %s is licensed under CC BY-ND 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nd/4.0/
-"
-const LICENSE_TEXT_CC_BY_NC: String = "
-    %s  © %s by %s is licensed under CC BY-NC 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc/4.0/
-"
-const LICENSE_TEXT_CC_BY_NC_SA: String = "
-    %s  © %s by %s is licensed under CC BY-NC-SA 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/
-"
-const LICENSE_TEXT_CC_BY_NC_ND: String = "
-    %s  © %s by %s is licensed under CC BY-NC-ND 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-nd/4.0/
-"
+const LICENSE_TEXT_CC_0: String = "%s  by %s is marked CC0 1.0. To view a copy of this mark, visit https://creativecommons.org/publicdomain/zero/1.0/"
+const LICENSE_TEXT_CC_BY: String = "%s  © %s by %s is licensed under CC BY 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by/4.0/"
+const LICENSE_TEXT_CC_BY_SA: String = "%s  © %s by %s is licensed under CC BY-SA 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-sa/4.0/"
+const LICENSE_TEXT_CC_BY_ND: String = "%s  © %s by %s is licensed under CC BY-ND 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nd/4.0/"
+const LICENSE_TEXT_CC_BY_NC: String = "%s  © %s by %s is licensed under CC BY-NC 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc/4.0/"
+const LICENSE_TEXT_CC_BY_NC_SA: String = "%s  © %s by %s is licensed under CC BY-NC-SA 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/"
+const LICENSE_TEXT_CC_BY_NC_ND: String = "%s  © %s by %s is licensed under CC BY-NC-ND 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-nd/4.0/"
 const LICENSE_TEXT_RIGHTS_RESERVED: String = "%s  © %s by %s. All rights reserved"
 #endregion
 
