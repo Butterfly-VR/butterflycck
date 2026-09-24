@@ -30,6 +30,7 @@ const LICENSE_TEXT_RIGHTS_RESERVED: String = "%s  © %s by %s. All rights reserv
 @export var upload_menu: EditorUploadMenu
 
 var object_file: FileAccess
+var object_server_variant:FileAccess
 
 var object_type: BaseRoot.ObjectType
 var uuid: UUID
@@ -72,10 +73,16 @@ func setup(root: BaseRoot, default_image: Image) -> void:
 
 	if !object:
 		object = await make_object(root, default_image)
+	
+	var server_root:BaseRoot = root.duplicate()
 
 	object_file = await create_finialized_file(root, object.uuid)
+	
+	strip_visuals(server_root)
+	object_server_variant = await create_finialized_file(server_root, object.uuid)
 
 	root.queue_free()
+	server_root.queue_free()
 
 	if !object_file:
 		push_error("upload failed: failed to create file")
@@ -131,7 +138,7 @@ func collect_object_values() -> ObjectMeta:
 	object.license = upload_menu.license_options.get_selected_id()
 
 	if object.license == 8:
-		pass # todo: custom licenses
+		object.custom_license = upload_menu.custom_license_box.text
 
 	object.creation_time_utc = Time.get_unix_time_from_datetime_string(upload_menu.creation_text.text)
 	object.modified_time_utc = Time.get_unix_time_from_datetime_string(upload_menu.last_update_text.text)
@@ -268,6 +275,8 @@ func test_locally() -> void:
 	test_file.store_line("object path: %s" % object_file.get_path_absolute())
 	test_file.store_line("key: %s" % object_key)
 	test_file.store_line("iv: %s" % object_iv)
+	
+	test_file.flush()
 
 	OS.create_instance(PackedStringArray(["--object_override=%s" % test_file.get_path()]))
 
@@ -275,6 +284,38 @@ func test_locally() -> void:
 
 	print("starting game...")
 
+func strip_visuals(root:BaseRoot) -> void:
+	EditorSceneTreeHelper.call_children_recursive(root, strip_visuals_inner)
+
+func strip_visuals_inner(next_node:Node) -> bool:
+	# not exhaustive, should target anything that could bloat file sizes
+	const VISUAL_RESOURCES:Array[StringName] = ["AnimatedTexture", "ArrayMesh", "AtlasTexture", 
+	"BaseMaterial3D", "BlitMaterial", "BoxMesh", "CanvasTexture", "CapsuleMesh", "CompressedCubemap",
+	"CompressedCubemapArray", "CompressedTexture2D", "CompressedTexture2DArray", "CompressedTexture3D",
+	"CompressedTextureLayered", "Cubemap", "CubemapArray", "CylinderMesh", "DPITexture", "DrawableTexture2D",
+	"Environment", "ExternalTexture", "FogMaterial", "Font", "FontFile",
+	"FontVariation", "Image", "ImageTexture", "ImageTexture3D", "ImageTextureLayered", "ImmediateMesh",
+	"LightmapGIData", "Material", "Mesh", "MeshLibrary", "MeshTexture", "MultiMesh", "ORMMaterial3D",
+	"PanoramaSkyMaterial", "PortableCompressedTexture2D",
+	"PrimitiveMesh",
+	"PrismMesh",
+	"ProceduralSkyMaterial",
+	"QuadMesh", "ShaderMaterial", "Skin", "Sky", "SphereMesh", "SpriteFrame", "StandardMaterial3D", "TextMesh",
+	"Texture", "Texture2DArray", "Texture2DArrayRD", "Texture2DRD", "Texture3D", "Texture23DRD", "TextureCubemapArrayRD",
+	"TextureCubemapRD", "TextureLayered", "TextureLayeredRD", "Theme", "TileMapPattern", "TileSet", "TorusMesh",
+	"ViewPortTexture", "Shader", "VisualShader", "VoxelGIData", "World2D", "World3D"]
+	
+	if next_node is CCKMarker:
+		return false
+	
+	for property:Dictionary in next_node.get_property_list():
+		var property_check:Callable = func(x:StringName) -> bool:
+			return property["class_name"] == x
+		
+		if VISUAL_RESOURCES.any(property_check):
+			next_node[property["name"]] = null
+	
+	return true
 
 func create_finialized_file(root: BaseRoot, uuid: UUID) -> FileAccess:
 	if object_file:

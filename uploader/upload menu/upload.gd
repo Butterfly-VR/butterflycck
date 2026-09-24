@@ -12,6 +12,7 @@ const KILOBYTE: int = 1024
 @export var last_update_text: Label
 @export var publicity_options: OptionButton
 @export var license_options: OptionButton
+@export var custom_license_box:TextEdit
 @export var confirmation1: CheckBox
 @export var confirmation2: CheckBox
 @export var upload_button: Button
@@ -39,6 +40,9 @@ func setup(
 
 	publicity_options.select(publicity)
 	license_options.select(license)
+	
+	if license == 8:
+		custom_license_box.text = custom_license
 
 
 func get_size_string(size: int) -> String:
