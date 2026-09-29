@@ -4,6 +4,7 @@ class_name EditorUploadHandler
 
 const OBJECT_INFO_ENDPOINT: String = "/api/v0/%s/%s"
 const OBJECT_DOWNLOAD_ENDPOINT: String = "/api/v0/%s/%s/epck"
+const OBJECT_SERVER_VARIANT_ENDPOINT: String = "/api/v0/%s/%s/server"
 const OBJECT_IMAGE_ENDPOINT: String = "/api/v0/%s/%s/image"
 const USER_INFO_ENDPOINT: String = "/api/v0/user/%s"
 const GIGABYTE: int = MEGABYTE * 1024
@@ -210,6 +211,8 @@ func upload() -> void:
 			type_string = "Avatar"
 
 	upload_menu.upload_button.disabled = true
+	
+	var success:bool = true
 
 	response = await api_handler.make_request(
 		HTTPClient.METHOD_POST,
@@ -220,8 +223,7 @@ func upload() -> void:
 
 	if response[0] != 200:
 		push_error("upload failed: %s" % str(response))
-		upload_menu.upload_button.disabled = false
-		return
+		success = false
 
 	var blob_uploader: HTTPRequest = HTTPRequest.new()
 	add_child(blob_uploader)
@@ -236,9 +238,8 @@ func upload() -> void:
 	response = await blob_uploader.request_completed
 
 	if response[1] != 200:
-		print(response)
-		upload_menu.upload_button.disabled = false
-		return # todo: error handling
+		push_error("upload failed: %s" % str(response))
+		success = false
 
 	object_file.seek(0)
 
@@ -253,12 +254,29 @@ func upload() -> void:
 	response = await blob_uploader.request_completed
 
 	if response[1] != 200:
-		print(response)
-		return # todo: error handling
+		push_error("upload failed: %s" % str(response))
+		success = false
+	
+	object_server_variant.seek(0)
+	
+	blob_uploader.request_raw(
+		"https://" + api_handler.target_host + ":" + str(api_handler.target_port)
+		+ OBJECT_SERVER_VARIANT_ENDPOINT % [type_string, object.uuid.to_string()],
+		PackedStringArray([account_handler.get_token_header()]),
+		HTTPClient.METHOD_POST,
+		object_server_variant.get_buffer(object_server_variant.get_length()),
+	)
+
+	response = await blob_uploader.request_completed
+
+	if response[1] != 200:
+		push_error("upload failed: %s" % str(response))
+		success = false
 
 	blob_uploader.queue_free()
 	upload_menu.upload_button.disabled = false
-	print("upload completed!")
+	if success:
+		print("upload completed!")
 
 
 func test_locally() -> void:
@@ -318,9 +336,6 @@ func strip_visuals_inner(next_node:Node) -> bool:
 	return true
 
 func create_finialized_file(root: BaseRoot, uuid: UUID) -> FileAccess:
-	if object_file:
-		object_file.close()
-
 	var internal_path = PCK_INTERNAL_PATH % [root.get_object_type(), uuid]
 
 	if !root.on_pre_upload():
