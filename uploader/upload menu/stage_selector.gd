@@ -77,10 +77,10 @@ func setup(root: BaseRoot, default_image: Image) -> void:
 	
 	var server_root:BaseRoot = root.duplicate()
 
-	object_file = await create_finialized_file(root, object.uuid)
+	object_file = await create_finialized_file(root, object.uuid, false)
 	
 	strip_visuals(server_root)
-	object_server_variant = await create_finialized_file(server_root, object.uuid)
+	object_server_variant = await create_finialized_file(server_root, object.uuid, true)
 
 	root.queue_free()
 	server_root.queue_free()
@@ -335,7 +335,7 @@ func strip_visuals_inner(next_node:Node) -> bool:
 	
 	return true
 
-func create_finialized_file(root: BaseRoot, uuid: UUID) -> FileAccess:
+func create_finialized_file(root: BaseRoot, uuid: UUID, reuse_key:bool) -> FileAccess:
 	var internal_path = PCK_INTERNAL_PATH % [root.get_object_type(), uuid]
 
 	if !root.on_pre_upload():
@@ -433,8 +433,10 @@ func create_finialized_file(root: BaseRoot, uuid: UUID) -> FileAccess:
 	)
 
 	var crypto := Crypto.new()
-	object_key = crypto.generate_random_bytes(32)
-	object_iv = crypto.generate_random_bytes(16)
+	
+	if !reuse_key:
+		object_key = crypto.generate_random_bytes(32)
+		object_iv = crypto.generate_random_bytes(16)
 
 	var aes: AESContext = AESContext.new()
 	aes.start(AESContext.MODE_CBC_ENCRYPT, object_key, object_iv)
