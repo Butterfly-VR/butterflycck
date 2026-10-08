@@ -486,7 +486,7 @@ func make_object(root: BaseRoot, image: Image) -> ObjectMeta:
 	object.image_size_KB = 0
 
 	object.publicity = 0
-	object.license = 0
+	object.license = 7
 
 	object.creation_time_utc = 0
 	object.modified_time_utc = 0
