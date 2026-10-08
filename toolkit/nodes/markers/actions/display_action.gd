@@ -28,22 +28,30 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	var warnings: Array[BaseRoot.Warning] = get_universal_warnings()
 
 	if get_parent() is not Label3D:
-		warnings.append(BaseRoot.Warning.new(
+		warnings.append(
+			BaseRoot
+			.Warning
+			.new(
 				BaseRoot.Warning.WarningLevel.Error,
 				"DisplayAction must be child of Label3D",
 				"This is where the text for the DisplayAction will be shown",
 				get_parent(),
 				false,
-			))
+			)
+		)
 
 	if !text.contains("%s"):
-		warnings.append(BaseRoot.Warning.new(
+		warnings.append(
+			BaseRoot
+			.Warning
+			.new(
 				BaseRoot.Warning.WarningLevel.Error,
 				"DisplayAction text missing placeholder",
 				"The text must contain a '%s' placeholder to tell the \
 				DisplayAction where to show the value",
 				self,
 				false,
-			))
+			)
+		)
 
 	return warnings

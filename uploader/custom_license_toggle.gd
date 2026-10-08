@@ -1,7 +1,8 @@
 @tool
 extends OptionButton
 
-@export var target:TextEdit
+@export var target: TextEdit
+
 
 func _process(delta: float) -> void:
 	if selected == 8:

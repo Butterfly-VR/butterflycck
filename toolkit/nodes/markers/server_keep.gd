@@ -4,6 +4,7 @@ extends CCKMarker
 ## of that parent, when this object is loaded on a gameserver.
 class_name RetainOnServer
 
+
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	return get_universal_warnings()
 

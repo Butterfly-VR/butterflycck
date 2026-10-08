@@ -8,7 +8,7 @@ extends Node
 ## [br]
 ## This is done for two main reasons: it allows predefined scripts to run
 ## on an object without giving an attacker the ability to execute arbitrary
-## code on the client, and it allows the implementation of a marker to change 
+## code on the client, and it allows the implementation of a marker to change
 ## without needing to modify or reupload all previous uploads.
 class_name CCKMarker
 
@@ -19,14 +19,18 @@ func get_universal_warnings() -> Array[BaseRoot.Warning]:
 	var warnings: Array[BaseRoot.Warning] = []
 
 	for child in get_children():
-		warnings.append(BaseRoot.Warning.new(
+		warnings.append(
+			BaseRoot
+			.Warning
+			.new(
 				BaseRoot.Warning.WarningLevel.Warning,
 				"Markers should not have children",
 				"Children of marker nodes will be deleted on upload, the node you want a marker \
 						to target should be the parent of the marker.",
 				child,
 				false,
-			))
+			)
+		)
 		break
 
 	return warnings

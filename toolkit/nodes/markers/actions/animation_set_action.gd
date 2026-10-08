@@ -48,22 +48,30 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	var warnings: Array[BaseRoot.Warning] = get_universal_warnings()
 
 	if !target:
-		warnings.append(BaseRoot.Warning.new(
+		warnings.append(
+			BaseRoot
+			.Warning
+			.new(
 				BaseRoot.Warning.WarningLevel.Error,
 				"AnimationSetAction has no target",
 				"The Target should be the AnimationPlayer to set the animation for.",
 				self,
 				false,
-			))
+			)
+		)
 
 	if animation.is_empty():
-		warnings.append(BaseRoot.Warning.new(
+		warnings.append(
+			BaseRoot
+			.Warning
+			.new(
 				BaseRoot.Warning.WarningLevel.Error,
 				"AnimationSetAction has no animation",
 				"The animation parameter should be set to the target animation or to 'From Parameter' \
 			to take a parameter as the target.",
 				self,
 				false,
-			))
+			)
+		)
 
 	return warnings

@@ -96,10 +96,9 @@ func find_objects_in_scene(type: GDScript, scene_root: Node, origin_file_path: S
 			object.attached_uuid.to_string() if object.attached_uuid else "UUID not set"
 		)
 
-		listing.select_button.pressed.connect(inspector.object_selected.bind(
-				object,
-				origin_file_path,
-			))
+		listing.select_button.pressed.connect(
+			inspector.object_selected.bind(object, origin_file_path)
+		)
 
 		object_list.add_child(listing)
 

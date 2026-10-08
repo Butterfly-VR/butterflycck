@@ -53,7 +53,10 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	var warnings: Array[BaseRoot.Warning] = get_universal_warnings()
 
 	if get_parent() is not Node3D:
-		warnings.append(BaseRoot.Warning.new(
+		warnings.append(
+			BaseRoot
+			.Warning
+			.new(
 				BaseRoot.Warning.WarningLevel.Error,
 				"Collider config must be child of Node3D.",
 				"The parent node (+ the offset) determines where the Avatar's collider \
@@ -61,7 +64,8 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 						avatar's feet.",
 				self,
 				false,
-			))
+			)
+		)
 
 	# todo: check sizeand offset are in valid bounds based on aabb
 	return warnings

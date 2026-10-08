@@ -44,7 +44,10 @@ func get_base_class_warnings() -> Array[BaseRoot.Warning]:
 	)
 
 	if state.collider_settings_found == 0:
-		warnings.append(BaseRoot.Warning.new(
+		warnings.append(
+			BaseRoot
+			.Warning
+			.new(
 				BaseRoot.Warning.WarningLevel.Warning,
 				"Avatar missing collider config",
 				"An avatar should have a collider config node as a child to control \
@@ -52,42 +55,59 @@ func get_base_class_warnings() -> Array[BaseRoot.Warning]:
 						based on the Avatar's AABB which may be too big.",
 				self,
 				false,
-			))
+			)
+		)
 	if state.collider_settings_found > 1:
-		warnings.append(BaseRoot.Warning.new(
+		warnings.append(
+			BaseRoot
+			.Warning
+			.new(
 				BaseRoot.Warning.WarningLevel.Warning,
 				"Avatar has multiple collider configs",
 				"Only one of the configs will be applied in-game.",
 				state.last_collider_setting,
 				false,
-			))
+			)
+		)
 
 	if state.ik_controllers_found == 0:
-		warnings.append(BaseRoot.Warning.new(
+		warnings.append(
+			BaseRoot
+			.Warning
+			.new(
 				BaseRoot.Warning.WarningLevel.Warning,
 				"Avatar missing IK controller",
 				"Without an IKController IK animations (such as following the \
 						players view in desktop or vr) will not work.",
 				self,
 				false,
-			))
+			)
+		)
 	if state.ik_controllers_found > 1:
-		warnings.append(BaseRoot.Warning.new(
+		warnings.append(
+			BaseRoot
+			.Warning
+			.new(
 				BaseRoot.Warning.WarningLevel.Warning,
 				"Avatar has multiple IK controllers",
 				"Only one of the IK controllers will be applied in-game.",
 				state.last_ik_controller,
 				false,
-			))
+			)
+		)
 
 	if !state.has_animator:
-		warnings.append(BaseRoot.Warning.new(
+		warnings.append(
+			BaseRoot
+			.Warning
+			.new(
 				BaseRoot.Warning.WarningLevel.Info,
 				"Avatar missing animator",
 				"No AnimationPlayer or AnimationTree was found as a child of \
 						this avatar. Without one, this avatar will only be animated by IK.",
 				self,
 				false,
-			))
+			)
+		)
 
 	return warnings

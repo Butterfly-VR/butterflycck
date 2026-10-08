@@ -16,26 +16,34 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	var warnings: Array[BaseRoot.Warning] = get_universal_warnings()
 
 	if get_parent() is not Node3D:
-		warnings.append(BaseRoot.Warning.new(
+		warnings.append(
+			BaseRoot
+			.Warning
+			.new(
 				BaseRoot.Warning.WarningLevel.Error,
 				"Spawnpoint must be child of Node3D",
 				"The Node3D is where players will spawn.",
 				get_parent(),
 				false,
-			))
+			)
+		)
 
 	for sibling in get_parent().get_children():
 		if (
 			sibling.get_script() != null and sibling.get_class() == get_class()
 			and sibling.get_script().source_code == get_script().source_code and sibling != self
 		):
-			warnings.append(BaseRoot.Warning.new(
+			warnings.append(
+				BaseRoot
+				.Warning
+				.new(
 					BaseRoot.Warning.WarningLevel.Error,
 					"Duplicate Spawnpoints on node",
 					"A node cannot have more than one Spawnpoint attached.",
 					self,
 					false,
-				))
+				)
+			)
 
 	return warnings
 

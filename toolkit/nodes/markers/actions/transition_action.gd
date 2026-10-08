@@ -40,7 +40,8 @@ class UniquePathData:
 		x.start_point = start_point
 		return x
 
-func get_concatenated_state_machine_paths(target:AnimationTree) -> String:
+
+func get_concatenated_state_machine_paths(target: AnimationTree) -> String:
 	var root: AnimationRootNode = target.tree_root
 	var result: String = get_concatenated_state_machine_paths_recursive("ROOT", root)
 	result = result.trim_suffix(",")
@@ -49,7 +50,7 @@ func get_concatenated_state_machine_paths(target:AnimationTree) -> String:
 
 func get_concatenated_state_machine_paths_recursive(path: String, root: AnimationNode) -> String:
 	var result: String = ""
-	
+
 	if root is AnimationNodeStateMachine:
 		result = path + ","
 		for node_name in root.get_node_list():
@@ -76,6 +77,7 @@ func get_concatenated_state_machine_paths_recursive(path: String, root: Animatio
 			result += get_concatenated_state_machine_paths_recursive(new_path, node)
 
 	return result
+
 
 func _validate_property(property: Dictionary) -> void:
 	if property.name == "state_machine" and target:
@@ -128,9 +130,9 @@ func _validate_property(property: Dictionary) -> void:
 						other.valid = false
 						other = UniquePathData.create(other.original_path, other.start_point)
 						other.start_point -= 1
-						shortest_unique_paths[other.original_path.split("/", false).slice(
-								other.start_point
-							)] = other
+						shortest_unique_paths[
+							other.original_path.split("/", false).slice(other.start_point)
+						] = other
 
 		var result: String = ""
 
@@ -228,29 +230,41 @@ func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	var warnings: Array[BaseRoot.Warning] = get_universal_warnings()
 
 	if !target:
-		warnings.append(BaseRoot.Warning.new(
+		warnings.append(
+			BaseRoot
+			.Warning
+			.new(
 				BaseRoot.Warning.WarningLevel.Error,
 				"TransitionAction target not set",
 				"A TransitionAction must target an AnimationTree containing a state machine.",
 				self,
 				false,
-			))
+			)
+		)
 	if state_machine.is_empty() or state_machine == " ":
-		warnings.append(BaseRoot.Warning.new(
+		warnings.append(
+			BaseRoot
+			.Warning
+			.new(
 				BaseRoot.Warning.WarningLevel.Error,
 				"TransitionAction state machine not set",
 				"You must specify the state machine within the AnimationTree that this action will control.",
 				self,
 				false,
-			))
+			)
+		)
 	if target_node.is_empty() or target_node == " ":
-		warnings.append(BaseRoot.Warning.new(
+		warnings.append(
+			BaseRoot
+			.Warning
+			.new(
 				BaseRoot.Warning.WarningLevel.Error,
 				"TransitionAction target node not set",
 				"You must specify the animation node within the state machine that this action will transition to.",
 				self,
 				false,
-			))
+			)
+		)
 
 	# todo: check we arnt holding stale values (check set values exist in the enum)
 	return warnings

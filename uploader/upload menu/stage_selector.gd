@@ -31,7 +31,7 @@ const LICENSE_TEXT_RIGHTS_RESERVED: String = "%s  © %s by %s. All rights reserv
 @export var upload_menu: EditorUploadMenu
 
 var object_file: FileAccess
-var object_server_variant:FileAccess
+var object_server_variant: FileAccess
 
 var object_type: BaseRoot.ObjectType
 var uuid: UUID
@@ -74,11 +74,11 @@ func setup(root: BaseRoot, default_image: Image) -> void:
 
 	if !object:
 		object = await make_object(root, default_image)
-	
-	var server_root:BaseRoot = root.duplicate()
+
+	var server_root: BaseRoot = root.duplicate()
 
 	object_file = await create_finialized_file(root, object.uuid, false)
-	
+
 	strip_visuals(server_root)
 	object_server_variant = await create_finialized_file(server_root, object.uuid, true)
 
@@ -141,8 +141,12 @@ func collect_object_values() -> ObjectMeta:
 	if object.license == 8:
 		object.custom_license = upload_menu.custom_license_box.text
 
-	object.creation_time_utc = Time.get_unix_time_from_datetime_string(upload_menu.creation_text.text)
-	object.modified_time_utc = Time.get_unix_time_from_datetime_string(upload_menu.last_update_text.text)
+	object.creation_time_utc = Time.get_unix_time_from_datetime_string(
+		upload_menu.creation_text.text
+	)
+	object.modified_time_utc = Time.get_unix_time_from_datetime_string(
+		upload_menu.last_update_text.text
+	)
 
 	object.image_bytes = info_menu.image_bytes
 	return object
@@ -153,24 +157,21 @@ func upload() -> void:
 	if object == null:
 		push_error("null object on upload, this is a bug.")
 		return
-	
+
 	var response = await api_handler.make_request(
 		HTTPClient.METHOD_GET,
 		USER_INFO_ENDPOINT % object.owner.to_string(),
 		PackedStringArray([account_handler.get_token_header()]),
 	)
-	var result = api_handler.handle_response(
-		response[0],
-		response[2],
-		[200],
-		["username"],
-	)
+	var result = api_handler.handle_response(response[0], response[2], [200], ["username"])
 
 	if !result[0]:
-		push_error("error while getting username:\n %s \n %s \n %s" % [result[1], result[2], result[3]])
+		push_error(
+			"error while getting username:\n %s \n %s \n %s" % [result[1], result[2], result[3]]
+		)
 		return
 
-	var creator_name:String = result[4]["username"]
+	var creator_name: String = result[4]["username"]
 
 	var upload_values: Dictionary[String, Variant] = {
 		"name": object.name,
@@ -185,19 +186,47 @@ func upload() -> void:
 		0:
 			upload_values["license"] = LICENSE_TEXT_CC_0 % [object.name, creator_name]
 		1:
-			upload_values["license"] = LICENSE_TEXT_CC_BY % [object.name, Time.get_datetime_dict_from_unix_time(object.creation_time_utc)["year"], creator_name]
+			upload_values["license"] = LICENSE_TEXT_CC_BY % [
+				object.name,
+				Time.get_datetime_dict_from_unix_time(object.creation_time_utc)["year"],
+				creator_name,
+			]
 		2:
-			upload_values["license"] = LICENSE_TEXT_CC_BY_SA % [object.name, Time.get_datetime_dict_from_unix_time(object.creation_time_utc)["year"], creator_name]
+			upload_values["license"] = LICENSE_TEXT_CC_BY_SA % [
+				object.name,
+				Time.get_datetime_dict_from_unix_time(object.creation_time_utc)["year"],
+				creator_name,
+			]
 		3:
-			upload_values["license"] = LICENSE_TEXT_CC_BY_ND % [object.name, Time.get_datetime_dict_from_unix_time(object.creation_time_utc)["year"], creator_name]
+			upload_values["license"] = LICENSE_TEXT_CC_BY_ND % [
+				object.name,
+				Time.get_datetime_dict_from_unix_time(object.creation_time_utc)["year"],
+				creator_name,
+			]
 		4:
-			upload_values["license"] = LICENSE_TEXT_CC_BY_NC % [object.name, Time.get_datetime_dict_from_unix_time(object.creation_time_utc)["year"], creator_name]
+			upload_values["license"] = LICENSE_TEXT_CC_BY_NC % [
+				object.name,
+				Time.get_datetime_dict_from_unix_time(object.creation_time_utc)["year"],
+				creator_name,
+			]
 		5:
-			upload_values["license"] = LICENSE_TEXT_CC_BY_NC_SA % [object.name, Time.get_datetime_dict_from_unix_time(object.creation_time_utc)["year"], creator_name]
+			upload_values["license"] = LICENSE_TEXT_CC_BY_NC_SA % [
+				object.name,
+				Time.get_datetime_dict_from_unix_time(object.creation_time_utc)["year"],
+				creator_name,
+			]
 		6:
-			upload_values["license"] = LICENSE_TEXT_CC_BY_NC_ND % [object.name, Time.get_datetime_dict_from_unix_time(object.creation_time_utc)["year"], creator_name]
+			upload_values["license"] = LICENSE_TEXT_CC_BY_NC_ND % [
+				object.name,
+				Time.get_datetime_dict_from_unix_time(object.creation_time_utc)["year"],
+				creator_name,
+			]
 		7:
-			upload_values["license"] = LICENSE_TEXT_RIGHTS_RESERVED % [object.name, Time.get_datetime_dict_from_unix_time(object.creation_time_utc)["year"], creator_name]
+			upload_values["license"] = LICENSE_TEXT_RIGHTS_RESERVED % [
+				object.name,
+				Time.get_datetime_dict_from_unix_time(object.creation_time_utc)["year"],
+				creator_name,
+			]
 		8:
 			upload_values["license"] = object.custom_license
 		_:
@@ -211,8 +240,8 @@ func upload() -> void:
 			type_string = "Avatar"
 
 	upload_menu.upload_button.disabled = true
-	
-	var success:bool = true
+
+	var success: bool = true
 
 	response = await api_handler.make_request(
 		HTTPClient.METHOD_POST,
@@ -256,9 +285,9 @@ func upload() -> void:
 	if response[1] != 200:
 		push_error("upload failed: %s" % str(response))
 		success = false
-	
+
 	object_server_variant.seek(0)
-	
+
 	blob_uploader.request_raw(
 		"https://" + api_handler.target_host + ":" + str(api_handler.target_port)
 		+ OBJECT_SERVER_VARIANT_ENDPOINT % [type_string, object.uuid.to_string()],
@@ -293,7 +322,7 @@ func test_locally() -> void:
 	test_file.store_line("object path: %s" % object_file.get_path_absolute())
 	test_file.store_line("key: %s" % object_key)
 	test_file.store_line("iv: %s" % object_iv)
-	
+
 	test_file.flush()
 
 	OS.create_instance(PackedStringArray(["--object_override=%s" % test_file.get_path()]))
@@ -302,40 +331,100 @@ func test_locally() -> void:
 
 	print("starting game...")
 
-func strip_visuals(root:BaseRoot) -> void:
+
+func strip_visuals(root: BaseRoot) -> void:
 	EditorSceneTreeHelper.call_children_recursive(root, strip_visuals_inner)
 
-func strip_visuals_inner(next_node:Node) -> bool:
+
+func strip_visuals_inner(next_node: Node) -> bool:
 	# not exhaustive, should target anything that could bloat file sizes
-	const VISUAL_RESOURCES:Array[StringName] = ["AnimatedTexture", "ArrayMesh", "AtlasTexture", 
-	"BaseMaterial3D", "BlitMaterial", "BoxMesh", "CanvasTexture", "CapsuleMesh", "CompressedCubemap",
-	"CompressedCubemapArray", "CompressedTexture2D", "CompressedTexture2DArray", "CompressedTexture3D",
-	"CompressedTextureLayered", "Cubemap", "CubemapArray", "CylinderMesh", "DPITexture", "DrawableTexture2D",
-	"Environment", "ExternalTexture", "FogMaterial", "Font", "FontFile",
-	"FontVariation", "Image", "ImageTexture", "ImageTexture3D", "ImageTextureLayered", "ImmediateMesh",
-	"LightmapGIData", "Material", "Mesh", "MeshLibrary", "MeshTexture", "MultiMesh", "ORMMaterial3D",
-	"PanoramaSkyMaterial", "PortableCompressedTexture2D",
-	"PrimitiveMesh",
-	"PrismMesh",
-	"ProceduralSkyMaterial",
-	"QuadMesh", "ShaderMaterial", "Skin", "Sky", "SphereMesh", "SpriteFrame", "StandardMaterial3D", "TextMesh",
-	"Texture", "Texture2DArray", "Texture2DArrayRD", "Texture2DRD", "Texture3D", "Texture23DRD", "TextureCubemapArrayRD",
-	"TextureCubemapRD", "TextureLayered", "TextureLayeredRD", "Theme", "TileMapPattern", "TileSet", "TorusMesh",
-	"ViewPortTexture", "Shader", "VisualShader", "VoxelGIData", "World2D", "World3D"]
-	
+	const VISUAL_RESOURCES: Array[StringName] = [
+		"AnimatedTexture",
+		"ArrayMesh",
+		"AtlasTexture",
+		"BaseMaterial3D",
+		"BlitMaterial",
+		"BoxMesh",
+		"CanvasTexture",
+		"CapsuleMesh",
+		"CompressedCubemap",
+		"CompressedCubemapArray",
+		"CompressedTexture2D",
+		"CompressedTexture2DArray",
+		"CompressedTexture3D",
+		"CompressedTextureLayered",
+		"Cubemap",
+		"CubemapArray",
+		"CylinderMesh",
+		"DPITexture",
+		"DrawableTexture2D",
+		"Environment",
+		"ExternalTexture",
+		"FogMaterial",
+		"Font",
+		"FontFile",
+		"FontVariation",
+		"Image",
+		"ImageTexture",
+		"ImageTexture3D",
+		"ImageTextureLayered",
+		"ImmediateMesh",
+		"LightmapGIData",
+		"Material",
+		"Mesh",
+		"MeshLibrary",
+		"MeshTexture",
+		"MultiMesh",
+		"ORMMaterial3D",
+		"PanoramaSkyMaterial",
+		"PortableCompressedTexture2D",
+		"PrimitiveMesh",
+		"PrismMesh",
+		"ProceduralSkyMaterial",
+		"QuadMesh",
+		"ShaderMaterial",
+		"Skin",
+		"Sky",
+		"SphereMesh",
+		"SpriteFrame",
+		"StandardMaterial3D",
+		"TextMesh",
+		"Texture",
+		"Texture2DArray",
+		"Texture2DArrayRD",
+		"Texture2DRD",
+		"Texture3D",
+		"Texture23DRD",
+		"TextureCubemapArrayRD",
+		"TextureCubemapRD",
+		"TextureLayered",
+		"TextureLayeredRD",
+		"Theme",
+		"TileMapPattern",
+		"TileSet",
+		"TorusMesh",
+		"ViewPortTexture",
+		"Shader",
+		"VisualShader",
+		"VoxelGIData",
+		"World2D",
+		"World3D",
+	]
+
 	if next_node is CCKMarker:
 		return false
-	
-	for property:Dictionary in next_node.get_property_list():
-		var property_check:Callable = func(x:StringName) -> bool:
+
+	for property: Dictionary in next_node.get_property_list():
+		var property_check: Callable = func(x: StringName) -> bool:
 			return property["class_name"] == x
-		
+
 		if VISUAL_RESOURCES.any(property_check):
 			next_node[property["name"]] = null
-	
+
 	return true
 
-func create_finialized_file(root: BaseRoot, uuid: UUID, reuse_key:bool) -> FileAccess:
+
+func create_finialized_file(root: BaseRoot, uuid: UUID, reuse_key: bool) -> FileAccess:
 	var internal_path = PCK_INTERNAL_PATH % [root.get_object_type(), uuid]
 
 	if !root.on_pre_upload():
@@ -433,7 +522,7 @@ func create_finialized_file(root: BaseRoot, uuid: UUID, reuse_key:bool) -> FileA
 	)
 
 	var crypto := Crypto.new()
-	
+
 	if !reuse_key:
 		object_key = crypto.generate_random_bytes(32)
 		object_iv = crypto.generate_random_bytes(16)
@@ -532,7 +621,7 @@ func get_object_info(uuid: UUID, object_type: BaseRoot.ObjectType) -> ObjectMeta
 		],
 	)
 	var values: Dictionary[String, Variant] = result[4]
-	
+
 	if !result[0]:
 		return null
 
@@ -560,36 +649,39 @@ func get_object_info(uuid: UUID, object_type: BaseRoot.ObjectType) -> ObjectMeta
 	object.modified_time_utc = values["updated_at"]
 
 	object.license = 0
-	
-	var creation_year:String = str(Time.get_datetime_dict_from_unix_time(object.creation_time_utc)["year"])
-	
+
+	var creation_year: String = str(
+		Time.get_datetime_dict_from_unix_time(object.creation_time_utc)["year"]
+	)
+
 	response = await api_handler.make_request(
 		HTTPClient.METHOD_GET,
 		USER_INFO_ENDPOINT % object.owner.to_string(),
 		PackedStringArray([account_handler.get_token_header()]),
 	)
-	result = api_handler.handle_response(
-		response[0],
-		response[2],
-		[200],
-		["username"],
-	)
+	result = api_handler.handle_response(response[0], response[2], [200], ["username"])
 
 	if !result[0]:
-		push_error("error while getting username:\n %s \n %s \n %s" % [result[1], result[2], result[3]])
+		push_error(
+			"error while getting username:\n %s \n %s \n %s" % [result[1], result[2], result[3]]
+		)
 		return null
 
-	var creator_name:String = result[4]["username"]
-	
-	var cc0:String = LICENSE_TEXT_CC_0 % [object.name, creator_name]
-	var ccby:String = LICENSE_TEXT_CC_BY % [object.name, creation_year, creator_name]
-	var ccbysa:String = LICENSE_TEXT_CC_BY_SA % [object.name, creation_year, creator_name]
-	var ccbynd:String = LICENSE_TEXT_CC_BY_ND % [object.name, creation_year, creator_name]
-	var ccbync:String = LICENSE_TEXT_CC_BY_NC % [object.name, creation_year, creator_name]
-	var ccbyncsa:String = LICENSE_TEXT_CC_BY_NC_SA % [object.name, creation_year, creator_name]
-	var ccbyncnd:String = LICENSE_TEXT_CC_BY_NC_ND % [object.name, creation_year, creator_name]
-	var rightsreserved:String = LICENSE_TEXT_RIGHTS_RESERVED % [object.name, creation_year, creator_name]
-	
+	var creator_name: String = result[4]["username"]
+
+	var cc0: String = LICENSE_TEXT_CC_0 % [object.name, creator_name]
+	var ccby: String = LICENSE_TEXT_CC_BY % [object.name, creation_year, creator_name]
+	var ccbysa: String = LICENSE_TEXT_CC_BY_SA % [object.name, creation_year, creator_name]
+	var ccbynd: String = LICENSE_TEXT_CC_BY_ND % [object.name, creation_year, creator_name]
+	var ccbync: String = LICENSE_TEXT_CC_BY_NC % [object.name, creation_year, creator_name]
+	var ccbyncsa: String = LICENSE_TEXT_CC_BY_NC_SA % [object.name, creation_year, creator_name]
+	var ccbyncnd: String = LICENSE_TEXT_CC_BY_NC_ND % [object.name, creation_year, creator_name]
+	var rightsreserved: String = LICENSE_TEXT_RIGHTS_RESERVED % [
+		object.name,
+		creation_year,
+		creator_name,
+	]
+
 	match values["license"]:
 		cc0:
 			object.license = 0
