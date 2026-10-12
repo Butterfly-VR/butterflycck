@@ -79,8 +79,7 @@ func setup(root: BaseRoot, default_image: Image) -> void:
 
 	object_file = await create_finialized_file(root, object.uuid, false)
 
-	strip_visuals(server_root)
-	object_server_variant = await create_finialized_file(server_root, object.uuid, true)
+	object_server_variant = await create_finialized_file(server_root, object.uuid, true, true)
 
 	root.queue_free()
 	server_root.queue_free()
@@ -411,9 +410,6 @@ func strip_visuals_inner(next_node: Node) -> bool:
 		"World3D",
 	]
 
-	if next_node is CCKMarker:
-		return false
-
 	for property: Dictionary in next_node.get_property_list():
 		var property_check: Callable = func(x: StringName) -> bool:
 			return property["class_name"] == x
@@ -424,7 +420,7 @@ func strip_visuals_inner(next_node: Node) -> bool:
 	return true
 
 
-func create_finialized_file(root: BaseRoot, uuid: UUID, reuse_key: bool) -> FileAccess:
+func create_finialized_file(root: BaseRoot, uuid: UUID, reuse_key: bool, strip_visuals:bool = false) -> FileAccess:
 	var internal_path = PCK_INTERNAL_PATH % [root.get_object_type(), uuid]
 
 	if !root.on_pre_upload():
@@ -459,7 +455,10 @@ func create_finialized_file(root: BaseRoot, uuid: UUID, reuse_key: bool) -> File
 
 	if found_uncleaned_marker:
 		return null
-
+	
+	if strip_visuals:
+		strip_visuals(root)
+	
 	var pack: PackedScene = PackedScene.new()
 	pack.pack(root.get_child(0))
 
