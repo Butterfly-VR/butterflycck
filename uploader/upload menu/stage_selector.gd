@@ -77,9 +77,7 @@ func setup(root: BaseRoot, default_image: Image) -> void:
 
 	var server_root: BaseRoot = root.duplicate()
 
-	object_file = await create_finialized_file(root, object.uuid, false)
-
-	object_server_variant = await create_finialized_file(server_root, object.uuid, true, true)
+	object_file = await create_finialized_file(root, object.uuid)
 
 	root.queue_free()
 	server_root.queue_free()
@@ -331,96 +329,9 @@ func test_locally() -> void:
 	print("starting game...")
 
 
-func strip_visuals(root: BaseRoot) -> void:
-	EditorSceneTreeHelper.call_children_recursive(root, strip_visuals_inner)
 
 
-func strip_visuals_inner(next_node: Node) -> bool:
-	# not exhaustive, should target anything that could bloat file sizes
-	const VISUAL_RESOURCES: Array[StringName] = [
-		"AnimatedTexture",
-		"ArrayMesh",
-		"AtlasTexture",
-		"BaseMaterial3D",
-		"BlitMaterial",
-		"BoxMesh",
-		"CanvasTexture",
-		"CapsuleMesh",
-		"CompressedCubemap",
-		"CompressedCubemapArray",
-		"CompressedTexture2D",
-		"CompressedTexture2DArray",
-		"CompressedTexture3D",
-		"CompressedTextureLayered",
-		"Cubemap",
-		"CubemapArray",
-		"CylinderMesh",
-		"DPITexture",
-		"DrawableTexture2D",
-		"Environment",
-		"ExternalTexture",
-		"FogMaterial",
-		"Font",
-		"FontFile",
-		"FontVariation",
-		"Image",
-		"ImageTexture",
-		"ImageTexture3D",
-		"ImageTextureLayered",
-		"ImmediateMesh",
-		"LightmapGIData",
-		"Material",
-		"Mesh",
-		"MeshLibrary",
-		"MeshTexture",
-		"MultiMesh",
-		"ORMMaterial3D",
-		"PanoramaSkyMaterial",
-		"PortableCompressedTexture2D",
-		"PrimitiveMesh",
-		"PrismMesh",
-		"ProceduralSkyMaterial",
-		"QuadMesh",
-		"ShaderMaterial",
-		"Skin",
-		"Sky",
-		"SphereMesh",
-		"SpriteFrame",
-		"StandardMaterial3D",
-		"TextMesh",
-		"Texture",
-		"Texture2DArray",
-		"Texture2DArrayRD",
-		"Texture2DRD",
-		"Texture3D",
-		"Texture23DRD",
-		"TextureCubemapArrayRD",
-		"TextureCubemapRD",
-		"TextureLayered",
-		"TextureLayeredRD",
-		"Theme",
-		"TileMapPattern",
-		"TileSet",
-		"TorusMesh",
-		"ViewPortTexture",
-		"Shader",
-		"VisualShader",
-		"VoxelGIData",
-		"World2D",
-		"World3D",
-	]
-
-	for property: Dictionary in next_node.get_property_list():
-		var property_check: Callable = func(x: StringName) -> bool:
-			return property["class_name"] == x
-
-		if VISUAL_RESOURCES.any(property_check):
-			next_node[property["name"]] = null
-
-	return true
-
-
-func create_finialized_file(root: BaseRoot, uuid: UUID, reuse_key: bool, strip_visuals:bool = false) -> FileAccess:
+func create_finialized_file(root: BaseRoot, uuid: UUID) -> FileAccess:
 	var internal_path = PCK_INTERNAL_PATH % [root.get_object_type(), uuid]
 
 	if !root.on_pre_upload():
@@ -455,9 +366,6 @@ func create_finialized_file(root: BaseRoot, uuid: UUID, reuse_key: bool, strip_v
 
 	if found_uncleaned_marker:
 		return null
-	
-	if strip_visuals:
-		strip_visuals(root)
 	
 	var pack: PackedScene = PackedScene.new()
 	pack.pack(root.get_child(0))
@@ -522,9 +430,8 @@ func create_finialized_file(root: BaseRoot, uuid: UUID, reuse_key: bool, strip_v
 
 	var crypto := Crypto.new()
 
-	if !reuse_key:
-		object_key = crypto.generate_random_bytes(32)
-		object_iv = crypto.generate_random_bytes(16)
+	object_key = crypto.generate_random_bytes(32)
+	object_iv = crypto.generate_random_bytes(16)
 
 	var aes: AESContext = AESContext.new()
 	aes.start(AESContext.MODE_CBC_ENCRYPT, object_key, object_iv)
