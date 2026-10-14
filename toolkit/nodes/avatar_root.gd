@@ -13,6 +13,7 @@ class WarningCallState:
 	var has_animator: bool = false
 	var last_collider_setting: AvatarColliderConfig = null
 	var last_ik_controller: IKController = null
+	var last_layer_one_collider:PhysicsBody3D = null
 
 
 ## Returns [constant BaseRoot.ObjectType.avatar].
@@ -31,6 +32,9 @@ func get_base_class_warnings() -> Array[BaseRoot.Warning]:
 		func(x: Node) -> bool:
 			if x is AnimationPlayer or x is AnimationTree:
 				state.has_animator = true
+			elif x is PhysicsBody3D:
+				if (x as CollisionObject3D).collision_layer & 1:
+					state.last_layer_one_collider = x
 			elif x is CCKMarker:
 				if x is AvatarColliderConfig:
 					state.collider_settings_found += 1
@@ -106,6 +110,20 @@ func get_base_class_warnings() -> Array[BaseRoot.Warning]:
 				"No AnimationPlayer or AnimationTree was found as a child of \
 						this avatar. Without one, this avatar will only be animated by IK.",
 				self,
+				false,
+			)
+		)
+
+	if state.last_layer_one_collider:
+		warnings.append(
+			BaseRoot
+			.Warning
+			.new(
+				BaseRoot.Warning.WarningLevel.Warning,
+				"Avatar layer 1 collider",
+				"this avatar contains a layer 1 collider, meaning it will collide with itself. 
+						this is usually not intended.",
+				state.last_layer_one_collider,
 				false,
 			)
 		)

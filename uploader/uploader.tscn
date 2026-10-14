@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://by0bg3o6n23tr" path="res://addons/butterflycck/uploader/settings/game_path_setting.gd" id="5_y1y70"]
 [ext_resource type="Script" uid="uid://ev7sb04axtf" path="res://addons/butterflycck/uploader/handlers/account_handler.gd" id="6_3y055"]
 [ext_resource type="Script" uid="uid://cldi6lmhnkah6" path="res://addons/butterflycck/uploader/upload menu/stage_selector.gd" id="6_y1y70"]
+[ext_resource type="Script" uid="uid://dtwc6lopugsvk" path="res://addons/butterflycck/uploader/warning_level_silencer.gd" id="7_kteqf"]
 [ext_resource type="Script" uid="uid://cxo8vuqrwttpa" path="res://addons/butterflycck/uploader/upload menu/info.gd" id="7_tippu"]
 [ext_resource type="Script" uid="uid://bxrga38xhucjl" path="res://addons/butterflycck/uploader/upload menu/tag_manager.gd" id="8_fv5sc"]
 [ext_resource type="Script" uid="uid://bqx1e2wx8thi7" path="res://addons/butterflycck/uploader/upload menu/upload.gd" id="9_su35f"]
@@ -35,7 +36,6 @@ layout_mode = 2
 text = "warning: changes to scenes made while on this page may not be counted or may cause bugs / failed uploads. this will be fixed later"
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer" unique_id=1721660990]
-visible = false
 layout_mode = 2
 
 [node name="Button" type="Button" parent="VBoxContainer/HBoxContainer2" unique_id=1214213353]
@@ -372,6 +372,25 @@ size_flags_horizontal = 3
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Log Out"
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="TabContainer/Settings/SettingsList" unique_id=1786259632]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="TabContainer/Settings/SettingsList/HBoxContainer3" unique_id=698939592]
+layout_mode = 2
+text = "ignore warnings of this level and lower:"
+
+[node name="OptionButton" type="OptionButton" parent="TabContainer/Settings/SettingsList/HBoxContainer3" unique_id=842291032]
+layout_mode = 2
+selected = 0
+item_count = 3
+popup/item_0/text = "None"
+popup/item_0/id = 2
+popup/item_1/text = "Info"
+popup/item_1/id = 0
+popup/item_2/text = "Warning"
+popup/item_2/id = 1
+script = ExtResource("7_kteqf")
 
 [node name="ObjectUpload" type="HBoxContainer" parent="TabContainer" unique_id=989589414]
 visible = false
