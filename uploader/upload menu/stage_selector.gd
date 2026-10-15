@@ -329,8 +329,6 @@ func test_locally() -> void:
 	print("starting game...")
 
 
-
-
 func create_finialized_file(root: BaseRoot, uuid: UUID) -> FileAccess:
 	var internal_path = PCK_INTERNAL_PATH % [root.get_object_type(), uuid]
 
@@ -366,7 +364,7 @@ func create_finialized_file(root: BaseRoot, uuid: UUID) -> FileAccess:
 
 	if found_uncleaned_marker:
 		return null
-	
+
 	var pack: PackedScene = PackedScene.new()
 	pack.pack(root.get_child(0))
 

@@ -23,9 +23,7 @@ func _on_visibility_changed() -> void:
 			PackedStringArray([account_handler.get_token_header()]),
 		)
 
-		@warning_ignore(
-			"unsafe_call_argument"
-		)
+		@warning_ignore("unsafe_call_argument")
 		var result: Array[Variant] = api_handler.handle_response(
 			response[0],
 			response[2],
@@ -194,9 +192,7 @@ func on_confirm(id: UUID, type_string: String) -> void:
 		OBJECT_DELETE_ENDPOINT % [type_string, id.to_string()],
 		PackedStringArray([account_handler.get_token_header()]),
 	)
-	@warning_ignore(
-		"unsafe_call_argument"
-	)
+	@warning_ignore("unsafe_call_argument")
 	var result: Array[Variant] = api_handler.handle_response(response[0], response[2], [200], [])
 
 	if !result[0]:

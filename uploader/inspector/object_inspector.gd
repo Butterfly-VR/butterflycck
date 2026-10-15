@@ -38,15 +38,19 @@ func object_selected(original_root: BaseRoot, original_file_path: String) -> voi
 	await get_tree().physics_frame
 
 	var warnings: Array[BaseRoot.Warning] = original_root.get_upload_warnings()
-	
+
 	match persistance_handler.register_value("settings", "settings", "minimum_warning_level", 0):
 		1:
-			warnings = warnings.filter(func(x:BaseRoot.Warning) -> bool:
-				return x.level > BaseRoot.Warning.WarningLevel.Info)
+			warnings = warnings.filter(
+				func(x: BaseRoot.Warning) -> bool:
+					return x.level > BaseRoot.Warning.WarningLevel.Info,
+			)
 		2:
-			warnings = warnings.filter(func(x:BaseRoot.Warning) -> bool:
-				return x.level > BaseRoot.Warning.WarningLevel.Warning)
-	
+			warnings = warnings.filter(
+				func(x: BaseRoot.Warning) -> bool:
+					return x.level > BaseRoot.Warning.WarningLevel.Warning,
+			)
+
 	warnings.sort_custom(
 		func(a: BaseRoot.Warning, b: BaseRoot.Warning) -> bool:
 			return a.level < b.level,

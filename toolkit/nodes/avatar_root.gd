@@ -13,7 +13,7 @@ class WarningCallState:
 	var has_animator: bool = false
 	var last_collider_setting: AvatarColliderConfig = null
 	var last_ik_controller: IKController = null
-	var last_layer_one_collider:PhysicsBody3D = null
+	var last_layer_one_collider: PhysicsBody3D = null
 
 
 ## Returns [constant BaseRoot.ObjectType.avatar].
