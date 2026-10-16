@@ -31,7 +31,6 @@ const LICENSE_TEXT_RIGHTS_RESERVED: String = "%s  © %s by %s. All rights reserv
 @export var upload_menu: EditorUploadMenu
 
 var object_file: FileAccess
-var object_server_variant: FileAccess
 
 var object_type: BaseRoot.ObjectType
 var uuid: UUID
@@ -275,22 +274,6 @@ func upload() -> void:
 		PackedStringArray([account_handler.get_token_header()]),
 		HTTPClient.METHOD_POST,
 		object_file.get_buffer(object_file.get_length()),
-	)
-
-	response = await blob_uploader.request_completed
-
-	if response[1] != 200:
-		push_error("upload failed: %s" % str(response))
-		success = false
-
-	object_server_variant.seek(0)
-
-	blob_uploader.request_raw(
-		"https://" + api_handler.target_host + ":" + str(api_handler.target_port)
-		+ OBJECT_SERVER_VARIANT_ENDPOINT % [type_string, object.uuid.to_string()],
-		PackedStringArray([account_handler.get_token_header()]),
-		HTTPClient.METHOD_POST,
-		object_server_variant.get_buffer(object_server_variant.get_length()),
 	)
 
 	response = await blob_uploader.request_completed
