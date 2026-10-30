@@ -20,8 +20,8 @@ func on_target_type_changed(selected_type: int) -> void:
 	inspector.hide_self()
 
 	for child in object_list.get_children():
+		remove_child(child)
 		child.queue_free()
-	await get_tree().physics_frame
 
 	self.selected_type = selected_type
 	match selected_type:

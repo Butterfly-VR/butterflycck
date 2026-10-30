@@ -121,7 +121,7 @@ func assign_uuid() -> void:
 	else:
 		new_uuid = UUID.from_String(_uuid)
 		if !new_uuid:
-			new_uuid = UUID.new(true)
+			new_uuid = attached_uuid
 	_uuid = new_uuid.to_string()
 	attached_uuid = new_uuid
 
