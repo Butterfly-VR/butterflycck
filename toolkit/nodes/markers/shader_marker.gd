@@ -1,3 +1,4 @@
+@tool
 extends CCKMarker
 class_name ShaderMarker
 ## allows you to apply custom shaders. 
@@ -10,12 +11,29 @@ func _validate_property(property: Dictionary) -> void:
 	if property.name == "material_path" and get_parent():
 		property.hint = PropertyHint.PROPERTY_HINT_ENUM
 
-		var result: String = ""
-		for property_values in get_parent().get_property_list():
-			if (property_values.class_name as String) == "Shader":
-				result += (property_values.name as String).trim_prefix("parameters/") + ","
+		var result:String = recusive_property_search(get_parent())
 
 		property.hint_string = result.trim_suffix(",") if !result.is_empty() else "None"
+
+static func recusive_property_search(root:Object) -> String:
+	var result:String = ""
+	for property_values in root.get_property_list():
+		if property_values.name == "owner":
+			continue
+		if (property_values.class_name as String) == "ShaderMaterial":
+			result += (property_values.name as String) + ","
+			continue
+		if property_values.type == Variant.Type.TYPE_ARRAY:
+			for item in root[property_values.name]:
+				if item is ShaderMaterial:
+					result += (property_values.name as String) + ","
+				elif item is Object:
+					if root[property_values.name]:
+						result += recusive_property_search(root[property_values.name])
+		if property_values.type == Variant.Type.TYPE_OBJECT:
+			if root[property_values.name]:
+				result += recusive_property_search(root[property_values.name])
+	return result
 
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	var warnings: Array[BaseRoot.Warning] = get_universal_warnings()
