@@ -2,42 +2,65 @@
 extends CCKMarker
 class_name ShaderMarker
 ## allows you to apply custom shaders. 
+##
 ## Currently shader preprocessing is not allowed. Must be a child of the target node.
 
-@export var shader:ShaderMaterial
+@export var shader:Shader
 @export_enum("None") var material_path:String
+@export var surface_idx:int = 0
 
 func _validate_property(property: Dictionary) -> void:
 	if property.name == "material_path" and get_parent():
+		var result:String = ""
+		
+		for property_values in get_parent().get_property_list():
+			if (property_values.class_name as String) == "Mesh":
+				result += get_parent().name + "/" + (property_values.name as String) + ","
+				continue
+
 		property.hint = PropertyHint.PROPERTY_HINT_ENUM
-
-		var result:String = recusive_property_search(get_parent())
-
 		property.hint_string = result.trim_suffix(",") if !result.is_empty() else "None"
-
-static func recusive_property_search(root:Object) -> String:
-	var result:String = ""
-	for property_values in root.get_property_list():
-		if property_values.name == "owner":
-			continue
-		if (property_values.class_name as String) == "ShaderMaterial":
-			result += (property_values.name as String) + ","
-			continue
-		if property_values.type == Variant.Type.TYPE_ARRAY:
-			for item in root[property_values.name]:
-				if item is ShaderMaterial:
-					result += (property_values.name as String) + ","
-				elif item is Object:
-					if root[property_values.name]:
-						result += recusive_property_search(root[property_values.name])
-		if property_values.type == Variant.Type.TYPE_OBJECT:
-			if root[property_values.name]:
-				result += recusive_property_search(root[property_values.name])
-	return result
 
 func get_uploader_warnings() -> Array[BaseRoot.Warning]:
 	var warnings: Array[BaseRoot.Warning] = get_universal_warnings()
-
+	
+	var found_property:bool = false
+	
+	if get_parent():
+		for property in get_parent().get_property_list():
+			if material_path.contains("/") and property.name == material_path.split("/")[1]:
+				found_property = true
+				var mesh:Mesh = get_parent()[property.name]
+				
+				if mesh.get_surface_count() <= surface_idx:
+					warnings.append(
+						BaseRoot
+						.Warning
+						.new(
+							BaseRoot.Warning.WarningLevel.Error,
+							"Surface index out of bounds",
+							"This ShaderMarker targets a surface on a mesh of it's parnet, \
+									but the specified surface does not exist.",
+							self,
+							false,
+						)
+					)
+				
+				break
+	
+	if !found_property:
+		warnings.append(
+			BaseRoot
+			.Warning
+			.new(
+				BaseRoot.Warning.WarningLevel.Error,
+				"ShaderMarker has no Mesh target",
+				"Check you have selected a valid Mesh property from the ShaderMarker's parent.",
+				self,
+				false,
+			)
+		)
+	
 	return warnings
 
 
@@ -48,21 +71,24 @@ func prep_for_upload() -> bool:
 
 	values["version"] = get_marker_version_string()
 	
-	var shader_code:String = shader.shader.code
+	var shader_code:String = shader.code
 	
 	var ranges:Array[Vector2i]
-	var current_range:Vector2i = Vector2i(0, shader_code.length() + 1)
+	var current_range:Vector2i = Vector2i(0, 0)
+	var inside_preprocessing:bool = false
 	
-	for idx:int in range(shader_code):
+	for idx:int in range(shader_code.length()):
 		var c:String = shader_code[idx]
 		
-		if c == "\n" and current_range.y < shader_code.length():
+		if c == "#" and !inside_preprocessing:
+			inside_preprocessing = true
+			current_range.x = idx
+			continue
+		
+		if c == "\n" and inside_preprocessing:
+			inside_preprocessing = false
 			current_range.y = idx
 			ranges.push_back(current_range)
-			current_range = Vector2i(0, shader_code.length() + 1)
-		
-		if c == "#" and current_range.y > shader_code.length():
-			current_range = Vector2i(idx, 0)
 	
 	while ranges.size() > 0:
 		var range:Vector2i = ranges.pop_back()
@@ -70,10 +96,9 @@ func prep_for_upload() -> bool:
 	
 	shader_code = "#pragma disable_preprocessor\n" + shader_code
 	
-	shader.shader = null
-	values["material"] = shader
 	values["shader_code"] = shader_code
-	values["target_property"] = material_path
+	values["surface_idx"] = surface_idx
+	values["target_property"] = material_path.split("/")[1]
 
 	parent.set_meta("ShaderMarker", values)
 
