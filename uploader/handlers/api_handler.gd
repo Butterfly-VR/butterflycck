@@ -7,7 +7,7 @@ const BASE_RECONNECT_DELAY: float = 0.1
 const RECONNECT_DELAY_RECOVERY_SECONDS: float = 5
 const REQUEST_TIMEOUT_SECONDS: float = 5
 const PING_ENDPOINT: String = "/api/v0"
-# todo: make readonly once its available
+
 var headers: PackedStringArray = PackedStringArray(
 	["User-Agent: Pirulo/1.0 (Godot)", "Accept: */*"]
 )

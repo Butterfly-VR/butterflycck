@@ -35,8 +35,6 @@ func on_target_type_changed(selected_type: int) -> void:
 
 # searches the file system for scenes, then searches those scenes for objects
 func find_objects(type: GDScript) -> void:
-	# file system tree traversal
-	# todo: make not recursive
 	var root_dir: String = "res://"
 	var scene_files: Array[String] = find_objects_recursive(type, root_dir)
 	var load_threads: Dictionary[String, Thread] = { }

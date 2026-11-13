@@ -23,7 +23,6 @@ class NodeStackItem:
 
 # callable should return a boolean
 # if the callable is false then that nodes children are skipped
-# todo: this feels kinda awkward with godot semantics maybe theres a better way?
 static func call_children_recursive(
 	root: Node,
 	callable: Callable,
