@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://byhwewt66i856"]
+
+[ext_resource type="Script" uid="uid://b585c4h1rycfj" path="res://addons/butterflycck/toolkit/nodes/markers/shader_marker.gd" id="2_1axo8"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_cj4e3"]
+
+[sub_resource type="Shader" id="Shader_046mi"]
+code = "shader_type spatial;
+
+uniform vec4 base_color : source_color = vec4(0.1, 0.4, 0.9, 1.0);
+uniform vec4 rim_color : source_color = vec4(0.2, 0.8, 1.0, 1.0);
+
+void fragment() {
+    vec4 color = base_color;
+
+    float pulse = sin(TIME * 2.0) * 0.15;
+    color.rgb += pulse;
+
+    ALBEDO = color.rgb;
+
+    float rim = 1.0 - dot(
+        NORMAL,
+        VIEW
+    );
+
+    rim = pow(rim, 3.0);
+
+    EMISSION = rim_color.rgb * rim;
+}"
+
+[node name="MeshInstance3D" type="MeshInstance3D" unique_id=547029087]
+mesh = SubResource("CapsuleMesh_cj4e3")
+
+[node name="ShaderMarker" type="Node" parent="." unique_id=179417701]
+script = ExtResource("2_1axo8")
+shader = SubResource("Shader_046mi")
+material_path = "MeshInstance3D/mesh"
+metadata/_custom_type_script = "uid://b585c4h1rycfj"
