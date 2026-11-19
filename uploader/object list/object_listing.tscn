@@ -22,7 +22,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "name"
 
-[node name="Label2" type="Label" parent="HBoxContainer" unique_id=527864653]
+[node name="Label2" type="Label" parent="HBoxContainer" unique_id=1310747682]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "attached id"

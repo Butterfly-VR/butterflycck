@@ -70,7 +70,11 @@ func object_selected(original_root: BaseRoot, original_file_path: String) -> voi
 
 		listing.find_button.pressed.connect(
 			func():
-				var path: NodePath = warning.source.owner.get_path_to(warning.source)
+				var path: NodePath
+				if warning.source.owner:
+					path = warning.source.owner.get_path_to(warning.source)
+				else:
+					path = "."
 				EditorInterface.open_scene_from_path(original_file_path)
 				await get_tree().physics_frame
 				await get_tree().physics_frame

@@ -1,13 +1,17 @@
 [gd_scene format=3 uid="uid://bitwhj1em7l5f"]
 
 [ext_resource type="Script" uid="uid://dwey28cbdlv0l" path="res://addons/butterflycck/uploader/object_listing.gd" id="1_wk8oa"]
+[ext_resource type="Script" uid="uid://c3r5a2r5thvlc" path="res://addons/butterflycck/uploader/object list/copy.gd" id="2_eg53a"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_73yy4"]
+bg_color = Color(0.13682574, 0.13682574, 0.13682568, 1)
 
 [node name="ObjectListing" type="HBoxContainer" unique_id=1570567570 node_paths=PackedStringArray("name_label", "publicity_label", "creation_time_label", "uuid_label", "delete_button")]
 script = ExtResource("1_wk8oa")
 name_label = NodePath("HBoxContainer2/Label")
 publicity_label = NodePath("HBoxContainer2/Label2")
 creation_time_label = NodePath("HBoxContainer2/Label3")
-uuid_label = NodePath("HBoxContainer3/Label2")
+uuid_label = NodePath("HBoxContainer3/PanelContainer/HBoxContainer/Label2")
 delete_button = NodePath("HBoxContainer3/Button")
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="." unique_id=1849184503]
@@ -31,8 +35,22 @@ layout_mode = 2
 size_flags_horizontal = 3
 alignment = 2
 
-[node name="Label2" type="Label" parent="HBoxContainer3" unique_id=191722436]
+[node name="PanelContainer" type="PanelContainer" parent="HBoxContainer3" unique_id=1961742306]
 layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_73yy4")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer3/PanelContainer" unique_id=1134867840]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="HBoxContainer3/PanelContainer/HBoxContainer" unique_id=1274676826 node_paths=PackedStringArray("target")]
+layout_mode = 2
+text = "Copy"
+script = ExtResource("2_eg53a")
+target = NodePath("../Label2")
+
+[node name="Label2" type="Label" parent="HBoxContainer3/PanelContainer/HBoxContainer" unique_id=679248207]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "UNNAMED"
 
 [node name="Button" type="Button" parent="HBoxContainer3" unique_id=107577168]
