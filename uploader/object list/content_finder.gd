@@ -10,13 +10,18 @@ const OBJECT_LISTING: PackedScene = preload(
 @export var page_selector: EditorPageSelector
 
 var selected_type: int = 0
+var tree:SceneTree
 
 
 func _ready() -> void:
-	get_tree().get_first_node_in_group("ButterflyCCKPlugin").scene_saved.connect(on_save)
+	tree = get_tree()
+	tree.get_first_node_in_group("ButterflyCCKPlugin").scene_saved.connect(on_save)
 
 
 func on_target_type_changed(selected_type: int) -> void:
+	if !tree:
+		return
+	
 	inspector.hide_self()
 
 	for child in object_list.get_children():
@@ -55,9 +60,9 @@ func find_objects(type: GDScript) -> void:
 		var load_thread: Thread = load_threads[file]
 
 		while !load_thread.is_started():
-			await get_tree().physics_frame
+			await tree.physics_frame
 		while load_thread.is_alive():
-			await get_tree().physics_frame
+			await tree.physics_frame
 
 		var scene: Node = load_thread.wait_to_finish().instantiate()
 		find_objects_in_scene(type, scene, file)

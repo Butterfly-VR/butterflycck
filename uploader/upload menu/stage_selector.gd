@@ -32,7 +32,7 @@ const LICENSE_TEXT_RIGHTS_RESERVED: String = "%s  © %s by %s. All rights reserv
 
 var object_file: FileAccess
 
-var object_type: BaseRoot.ObjectType
+var object_type: String
 var uuid: UUID
 var object_owner: UUID
 
@@ -42,8 +42,8 @@ var object_iv: PackedByteArray
 
 class ObjectMeta:
 	var name: String
-	var object_type: BaseRoot.ObjectType
-	var publicity: int
+	var object_type: String
+	var publicity: String
 	var license: int
 	var custom_license: String
 	var description: String
@@ -130,8 +130,16 @@ func collect_object_values() -> ObjectMeta:
 
 	object.object_size_KB = upload_menu.object_size / 1000
 	object.image_size_KB = info_menu.image_bytes.size() / 1000
-
-	object.publicity = upload_menu.publicity_options.get_selected_id()
+	
+	match upload_menu.publicity_options.get_selected_id():
+		0:
+			object.publicity = "Private"
+		1:
+			object.publicity = "Friends"
+		2:
+			object.publicity = "Unlisted"
+		3:
+			object.publicity = "Public"
 	object.license = upload_menu.license_options.get_selected_id()
 
 	if object.license == 8:
@@ -228,59 +236,55 @@ func upload() -> void:
 		_:
 			push_warning("unhandled license type!")
 
-	var type_string: String
-	match object.object_type:
-		0:
-			type_string = "World"
-		1:
-			type_string = "Avatar"
-
 	upload_menu.upload_button.disabled = true
 
 	var success: bool = true
 
 	response = await api_handler.make_request(
 		HTTPClient.METHOD_POST,
-		OBJECT_INFO_ENDPOINT % [type_string, object.uuid.to_string()],
+		OBJECT_INFO_ENDPOINT % [object.object_type, object.uuid.to_string()],
 		PackedStringArray([account_handler.get_token_header()]),
 		JSON.stringify(upload_values),
 	)
 
 	if response[0] != 200:
-		push_error("upload failed: %s" % str(response))
+		push_error("upload failed: %s %s" % [str(response[0]), str(response[2])])
 		success = false
-
+	
 	var blob_uploader: HTTPRequest = HTTPRequest.new()
 	add_child(blob_uploader)
-	blob_uploader.request_raw(
-		"https://" + api_handler.target_host + ":" + str(api_handler.target_port)
-		+ OBJECT_IMAGE_ENDPOINT % [type_string, object.uuid.to_string()],
-		PackedStringArray([account_handler.get_token_header()]),
-		HTTPClient.METHOD_POST,
-		object.image_bytes,
-	)
+	
+	if success:
+		blob_uploader.request_raw(
+			"https://" + api_handler.target_host + ":" + str(api_handler.target_port)
+			+ OBJECT_IMAGE_ENDPOINT % [object.object_type, object.uuid.to_string()],
+			PackedStringArray([account_handler.get_token_header()]),
+			HTTPClient.METHOD_POST,
+			object.image_bytes,
+		)
 
-	response = await blob_uploader.request_completed
+		response = await blob_uploader.request_completed
 
-	if response[1] != 200:
-		push_error("upload failed: %s" % str(response))
-		success = false
+		if response[1] != 200:
+			push_error("upload failed: %s %s" % [str(response[1]), PackedByteArray(response[3]).get_string_from_utf8()])
+			success = false
 
 	object_file.seek(0)
+	
+	if success:
+		blob_uploader.request_raw(
+			"https://" + api_handler.target_host + ":" + str(api_handler.target_port)
+			+ OBJECT_DOWNLOAD_ENDPOINT % [object.object_type, object.uuid.to_string()],
+			PackedStringArray([account_handler.get_token_header()]),
+			HTTPClient.METHOD_POST,
+			object_file.get_buffer(object_file.get_length()),
+		)
 
-	blob_uploader.request_raw(
-		"https://" + api_handler.target_host + ":" + str(api_handler.target_port)
-		+ OBJECT_DOWNLOAD_ENDPOINT % [type_string, object.uuid.to_string()],
-		PackedStringArray([account_handler.get_token_header()]),
-		HTTPClient.METHOD_POST,
-		object_file.get_buffer(object_file.get_length()),
-	)
+		response = await blob_uploader.request_completed
 
-	response = await blob_uploader.request_completed
-
-	if response[1] != 200:
-		push_error("upload failed: %s" % str(response))
-		success = false
+		if response[1] != 200:
+			push_error("upload failed: %s %s" % [str(response[1]), PackedByteArray(response[3]).get_string_from_utf8()])
+			success = false
 
 	blob_uploader.queue_free()
 	upload_menu.upload_button.disabled = false
@@ -450,7 +454,12 @@ func make_object(root: BaseRoot, image: Image) -> ObjectMeta:
 	var object: ObjectMeta = ObjectMeta.new()
 
 	object.name = root.object_name if root.object_name else root.name
-	object.object_type = root.get_object_type()
+	
+	match root.get_object_type():
+		BaseRoot.ObjectType.world:
+			object.object_type = "World"
+		BaseRoot.ObjectType.avatar:
+			object.object_type = "Avatar"
 
 	object.description = ""
 	object.tags = PackedStringArray()
@@ -461,7 +470,7 @@ func make_object(root: BaseRoot, image: Image) -> ObjectMeta:
 	object.object_size_KB = 0
 	object.image_size_KB = 0
 
-	object.publicity = 0
+	object.publicity = "Private"
 	object.license = 7
 
 	object.creation_time_utc = 0
@@ -608,9 +617,23 @@ func get_object_info(uuid: UUID, object_type: BaseRoot.ObjectType) -> ObjectMeta
 	var bytes: PackedByteArray = image_response[3]
 	image_downloader.queue_free()
 
-	if object.image.load_png_from_buffer(bytes) != OK:
-		if object.image.load_webp_from_buffer(bytes) != OK:
-			if object.image.load_jpg_from_buffer(bytes) != OK:
-				push_error("failed to parse response image")
+	var png_signature:PackedByteArray = "89504E470D0A1A0A".hex_decode()
+	var jpg_signature:PackedByteArray = "FFD8FF".hex_decode()
+	var webp_signature:PackedByteArray = "52494646".hex_decode()
+	
+	var new_image: Image = Image.new()
+
+	if bytes.slice(0, png_signature.size()) == png_signature:
+		if new_image.load_png_from_buffer(bytes) == OK:
+			object.image = new_image
+	elif bytes.slice(0, jpg_signature.size()) == jpg_signature:
+		if new_image.load_jpg_from_buffer(bytes) == OK:
+			object.image = new_image
+	elif bytes.slice(0, webp_signature.size()) == webp_signature:
+		if new_image.load_webp_from_buffer(bytes) == OK:
+			object.image = new_image
+	else:
+		push_error("failed to parse image file: unrecognised format")
+		object.image = Image.create_empty(8, 8, false, Image.FORMAT_RGB8)
 
 	return object

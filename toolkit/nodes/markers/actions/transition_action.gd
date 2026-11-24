@@ -211,8 +211,9 @@ func get_action_info() -> Dictionary[String, Variant]:
 	values["target"] = get_parent().get_path_to(target)
 	values["state_machine"] = path_lookup[state_machine] if state_machine != "ROOT" else "ROOT"
 	values["target_node"] = target_node
-	if source_node != "None":
-		values["source_node"] = source_node
+	# source node should be set even when None
+	# todo: what happens if a node is named "None"?
+	values["source_node"] = source_node
 	values["teleport"] = teleport
 
 	return values

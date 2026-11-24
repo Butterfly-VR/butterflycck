@@ -7,7 +7,7 @@ const GIZMO_FOLDER: String = "res://addons/butterflycck/toolkit/gizmos/"
 var main_panel_instance
 
 
-func _enter_tree() -> void:
+func _ready() -> void:
 	add_to_group("ButterflyCCKPlugin")
 
 	# setup uplaod panel

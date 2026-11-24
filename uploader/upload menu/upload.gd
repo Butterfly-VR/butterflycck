@@ -25,7 +25,7 @@ func setup(
 	root_pack: FileAccess,
 	creation_time: String,
 	last_update_time: String,
-	publicity: int,
+	publicity: String,
 	license: int,
 	custom_license: String = "",
 ) -> void:
@@ -37,8 +37,16 @@ func setup(
 
 	creation_text.text = creation_time
 	last_update_text.text = last_update_time
-
-	publicity_options.select(publicity)
+	
+	match publicity:
+		"Private":
+			publicity_options.select(0)
+		"Friends":
+			publicity_options.select(1)
+		"Unlisted":
+			publicity_options.select(2)
+		"Public":
+			publicity_options.select(3)
 	license_options.select(license)
 
 	if license == 8:

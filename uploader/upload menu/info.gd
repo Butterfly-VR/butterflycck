@@ -54,19 +54,27 @@ func _on_image_upload_start() -> void:
 
 
 func _on_image_selected(path: String) -> void:
+	var png_signature:PackedByteArray = "89504E470D0A1A0A".hex_decode()
+	var jpg_signature:PackedByteArray = "FFD8FF".hex_decode()
+	var webp_signature:PackedByteArray = "52494646".hex_decode()
+	
 	var new_image: Image = Image.new()
 	var buffer: PackedByteArray = FileAccess.get_file_as_bytes(path)
-	if new_image.load_png_from_buffer(buffer) == OK:
-		image_bytes = buffer
-		image_display.texture = ImageTexture.create_from_image(new_image)
-		image_size.text = get_size_string(image_bytes.size())
-	elif new_image.load_jpg_from_buffer(buffer) == OK:
-		image_bytes = buffer
-		image_display.texture = ImageTexture.create_from_image(new_image)
-		image_size.text = get_size_string(image_bytes.size())
-	elif new_image.load_webp_from_buffer(buffer) == OK:
-		image_bytes = buffer
-		image_display.texture = ImageTexture.create_from_image(new_image)
-		image_size.text = get_size_string(image_bytes.size())
+	
+	if buffer.slice(0, png_signature.size()) == png_signature:
+		if new_image.load_png_from_buffer(buffer) == OK:
+			image_bytes = buffer
+			image_display.texture = ImageTexture.create_from_image(new_image)
+			image_size.text = get_size_string(image_bytes.size())
+	elif buffer.slice(0, jpg_signature.size()) == jpg_signature:
+		if new_image.load_jpg_from_buffer(buffer) == OK:
+			image_bytes = buffer
+			image_display.texture = ImageTexture.create_from_image(new_image)
+			image_size.text = get_size_string(image_bytes.size())
+	elif buffer.slice(0, webp_signature.size()) == webp_signature:
+		if new_image.load_webp_from_buffer(buffer) == OK:
+			image_bytes = buffer
+			image_display.texture = ImageTexture.create_from_image(new_image)
+			image_size.text = get_size_string(image_bytes.size())
 	else:
 		push_error("failed to parse image file. must be png, jpg, or webp.")

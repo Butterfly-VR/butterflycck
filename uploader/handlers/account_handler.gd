@@ -21,12 +21,14 @@ var token_renewable: bool = false
 var user_id: UUID = UUID.new()
 var renew_timer: Timer = Timer.new()
 var token_checkable: bool = false
+var tree:SceneTree
 
 @export var api_handler: EditorAPIHandler
 @export var persistance_handler: EditorPersistanceHandler
 
 
 func _enter_tree() -> void:
+	tree = get_tree()
 	var saved_token: Array[int] = []
 	saved_token.assign(persistance_handler.register_value("user_login", "token", "token", []))
 	var expiry: int = persistance_handler.register_value("user_login", "token", "expiry", -1)
@@ -81,7 +83,7 @@ func set_token(token: Array[int], expiry_utc: int, renewable: bool) -> void:
 
 func check_token_valid() -> bool:
 	while !token_checkable:
-		await get_tree().physics_frame
+		await tree.physics_frame
 	return await is_token_valid(session_token, token_expiry_utc)
 
 
